@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+<!-- Display flash messages -->
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }} <!-- Display batch that was submitted -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<h1>Liste des Batch et leurs utilisation</h1>
+Batch index : Batch name <br/>
+
+
+<form method="POST">
+    {% for batch in batch_list: %}
+        {{batch[0]}} : <a type="submit" href = "{{ url_for('update_batch_info', batch_id=batch[0], batch_name=batch[1]) }}"> {{batch[1]}} </a> <br/>
+    {% endfor %}
+</form>
+
+{% endblock %}

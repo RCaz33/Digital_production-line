@@ -1,0 +1,253 @@
+
+{% extends 'base.html' %}
+
+
+{% block title %}
+<title>Register new Batch</title>
+{% endblock %}
+
+<script>
+  $(document).ready(function(){
+      $('#Step1_Exfoliation_Heure').datepicker({
+          format: 'hh:ii',
+          autoclose: true,
+          todayBtn: true,
+          todayHighlight: true,
+          showMeridian: false, // 24-hour format
+          minuteStep: 1
+      });
+  });
+  </script>
+
+{% block content %}
+
+
+<!-- Display flash messages -->
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }} <!-- Display batch that was submitted -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+
+<h1> Compléter le formulaire </h1>
+<br/>
+
+<form method="POST">
+
+
+  {{ form_KC8.hidden_tag() }}
+
+  <div class="container shadow border border-danger-subtle border-1">
+    <br/>
+    <div class="row justify-content-start">
+        <div class="col-3">
+            <h5>Étape 0 : Initialisation</h5>
+        </div>
+        <div class="col-3">
+            {{ form_KC8.KC8_Date.label }}
+            {{ form_KC8.KC8_Date(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ form_KC8.KC8_Initiales.label }}
+            {{ form_KC8.KC8_Initiales(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ form_KC8.Batch_KC8_name.label }}
+            {{ form_KC8.Batch_KC8_name(class="form-control") }}
+        </div>
+    </div>
+    <br/>
+  </div>
+
+  <br/><br/>
+
+  <div class="container .bg-light border border-5">
+    <br/>
+    <h5>Parametres Labo BaG</h5>
+    <br/><br/>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_Lab_HR.label }} 
+        </div>
+        <div class="col-sm">
+            {{ form_KC8.KC8_Lab_HR(class="form-control")}} 
+        </div>
+    </div>
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+          {{ form_KC8.KC8_Lab_T.label }} 
+        </div>
+        <div class="col-sm">
+          {{ form_KC8.KC8_Lab_T(class="form-control")}} 
+        </div>
+    </div>
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+          {{ form_KC8.KC8_BaG_T.label }} 
+        </div>
+        <div class="col-sm">
+          {{ form_KC8.KC8_BaG_T(class="form-control")}} 
+        </div>
+    </div>
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+          {{ form_KC8.KC8_BaG_O2_ppm.label }} 
+        </div>
+        <div class="col-sm">
+          {{ form_KC8.KC8_BaG_O2_ppm(class="form-control")}} 
+        </div>
+    </div>
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+          {{ form_KC8.KC8_Bag_H20_ppm.label }} 
+        </div>
+        <div class="col-sm">
+          {{ form_KC8.KC8_Bag_H20_ppm(class="form-control")}} 
+        </div>
+    </div>
+    
+    <br/>
+    
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+          {{ form_KC8.KC8_Batch_Graphite.label }}
+        </div>
+        <div class="col-sm">
+          {{ form_KC8.KC8_Batch_Graphite(class="form-control") }}
+        </div>
+    </div>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+          {{ form_KC8.KC8_Batch_K.label }}
+        </div>
+        <div class="col-sm">
+          {{ form_KC8.KC8_Batch_K(class="form-control") }}
+        </div>
+    </div>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+          {{ form_KC8.KC8_masse_K.label }}
+        </div>
+        <div class="col-sm">
+          {{ form_KC8.KC8_masse_K(class="form-control") }}
+        </div>
+    </div>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_masse_C.label }}
+        </div>
+        <div class="col-sm">
+            {{ form_KC8.KC8_masse_C(class="form-control") }}
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_Heating_thermostat_ref.label }}
+        </div>
+        <div class="col-sm">
+            {{ form_KC8.KC8_Heating_thermostat_ref(class="form-control") }}
+        </div>
+    </div>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_Heating_Start_Heure.label }}
+        </div>
+        <div class="col-sm">
+            {{ form_KC8.KC8_Heating_Start_Heure(class="form-control", placeholder='suggéré :'+":".join([str(datetime.datetime.now().hour), str(datetime.datetime.now().minute)]), default=":".join([str(datetime.datetime.now().hour), str(datetime.datetime.now().minute)])) }}
+        </div>
+    </div>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_Heating_End_Heure.label }}
+        </div>
+        <div class="col-sm">
+            {{ form_KC8.KC8_Heating_End_Heure(class="form-control", placeholder='suggéré :'+":".join([str(datetime.datetime.now().hour), str(datetime.datetime.now().minute)]), default=":".join([str(datetime.datetime.now().hour), str(datetime.datetime.now().minute)])) }}
+        </div>
+    </div>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_Visual_verification.label }}
+        </div>
+        <div class="col-sm">
+            {{ form_KC8.KC8_Visual_verification(class="form-check-input") }}
+        </div>
+    </div>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+          {{ form_KC8.KC8_Observation.label }}
+        </div>
+        <div class="col-sm", rows="3">
+          <textarea name="{{ form_KC8.KC8_Observation.name }}", class ="form-control", row="5", placeholder="Ecrire les informations ici ..."></textarea>
+        </div>
+    </div>  
+
+    <br/>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_Analsysis_date.label }}
+        </div>
+        <div class="col-sm">
+            {{ form_KC8.KC8_Analsysis_date(class="form-control") }}
+        </div>
+    </div>
+    
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_Analysis_Initiales.label }}
+        </div>
+        <div class="col-sm">
+            {{ form_KC8.KC8_Analysis_Initiales(class="form-control") }}
+        </div>
+    </div>
+    
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_Analysis_validation.label }}
+        </div>
+        <div class="col-sm">
+            {{ form_KC8.KC8_Analysis_validation(class="form-check-input") }}
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="row g-2 align-items-center">
+        <div class="col-sm">
+            {{ form_KC8.KC8_Analysis_Observation.label }}
+        </div>
+        <div class="col-sm", rows="3">
+            <textarea name="{{ form_KC8.KC8_Analysis_Observation.name }}", class ="form-control", row="5", placeholder="Ecrire les informations ici ..."></textarea>
+        </div>
+    </div>   
+    <br/>
+
+  </div>
+
+  <br/><br/>
+
+  <div class="container .bg-light border border-5">
+        <br/>
+        <div class="d-flex justify-content-center">
+        <button class="btn btn-primary center" type="submit"> Enregistrer Batch KC8 </button>
+        </div>
+        <br/>
+  </div>
+  <br/><br/>
+</form>
+
+
+{% endblock %}

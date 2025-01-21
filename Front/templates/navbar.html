@@ -1,0 +1,84 @@
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+
+    <a class="navbar-brand" href="https://www.carbon-waters.com/">
+      <img src="..\static\pict\CARBONWATERS-LogoSansBaselineWhite-RVB.png" alt="Logo CarbonWaters" height="50%" width="50%"   >
+    </a>
+
+    <div class="container-fluid">
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerProd" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarTogglerProd">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{{url_for('index')}}">
+              <br/>
+              Acceuil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" aria-disabled="true">
+                <img src="../static/pict/speedometer.png" alt="Link_Dash" width="30" height="24" class="align-text-top">
+                <br/>Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('Cahier_prod')}}">
+                <img src="../static/pict/transfer.png" alt="Link_Prod" width="30" height="24" class="align-text-top">
+                <br/>Cahier de <br/> Production
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('Fill_form_2023')}}">
+                <img src="../static/pict/lab-coat.png" alt="New_Batch" width="30" height="24" class="align-text-top">
+                <br/>Nouveau <br/> Batch
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('Fill_form_2023_X4')}}">
+                <img src="../static/pict/lab-coat.png" alt="New_Batch_X4" width="30" height="24" class="align-text-top">
+                <br/>Nouveau <br/> Batch 4X
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('Fill_form_KC8')}}">
+                <img src="../static/pict/lab-coat.png" alt="New_Batch_KC8" width="30" height="24" class="align-text-top">
+                <br/>Nouveau <br/> Batch KC8
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('FillIn_DB_2023')}}">
+                <img src="../static/pict/graph.png" alt="Link_Add_old_batch" width="30" height="24" class="align-text-top">
+                <br/> Mise à jour <br/> Base de données
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('FillIn_DB_2023_X4')}}">
+                <img src="../static/pict/graph.png" alt="Link_Add_old_batch" width="30" height="24" class="align-text-top">
+                <br/> Mise à jour <br/> BDD 4X
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('logout')}}">
+                <br/> Logout
+            </a>
+          </li>
+
+
+
+        </ul>
+        
+        <form class="d-flex" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-dark" type="submit">Search</button>
+        </form>
+
+        
+      </div>
+
+      
+
+    </div>
+
+</nav>

@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DB=${MYSQL_DATABASE}
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: mysql:8.0.37
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    restart: always
+
+  proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    restart: always
+
+volumes:
+  mysql_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /mnt/c/Users/RemiCazelles/Documents/3-Projet_formulaire/BDD_docker
+      o: bind
