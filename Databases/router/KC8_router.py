@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from schemas import Batch_KC8_Base
+from schemas import Batch_KC8_Base, Batch_KC8_Add
 from database.db_connect import get_db
 from database import db_KC8
 from typing import List
@@ -16,7 +16,7 @@ router = APIRouter(
 
 # Create batch
 @router.post('/', response_model=Batch_KC8_Base)
-def create_batch_KC8(request: Batch_KC8_Base,
+def create_batch_KC8(request: Batch_KC8_Add,
                     db: Session = Depends(get_db)):
   return db_KC8.create_batch_KC8(db, request)
 

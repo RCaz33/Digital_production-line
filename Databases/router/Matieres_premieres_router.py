@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from schemas import Matieres_premieres_Base
+from schemas import Matieres_premieres_Base, Matieres_premieres_Add
 from database.db_connect import get_db
 from database import db_matieres_premieres
 from typing import List
@@ -16,7 +16,7 @@ router = APIRouter(
 
 # Create batch
 @router.post('/', response_model=Matieres_premieres_Base)
-def create_matieres_premieres(request: Matieres_premieres_Base,
+def create_matieres_premieres(request: Matieres_premieres_Add,
                     db: Session = Depends(get_db)):
   return db_matieres_premieres.create_matieres_premieres(db, request)
 

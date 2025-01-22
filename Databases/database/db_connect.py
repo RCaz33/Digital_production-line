@@ -4,8 +4,8 @@ import os
 
 
 db_user = 'root' #os.environ['DB_USER']
-db_pass = 'pass' #os.environ['DB_PASS']
-db_name = 'CW_BDD' #os.environ['DB_NAME']
+db_pass = 'passpass' #os.environ['DB_PASS']
+db_name = 'CW_BDD_new' #os.environ['DB_NAME']
 
 MYSQL_DATABASE_URL = f"mysql+mysqlconnector://{db_user}:{db_pass}@localhost:3306/{db_name}"
 
@@ -15,6 +15,13 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+### create all the tables
+from database.models import *
+Base.metadata.create_all(engine)
+
+
+
 
 def get_db():  #get_session
   db = SessionLocal()

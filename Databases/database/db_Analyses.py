@@ -1,13 +1,13 @@
 from sqlalchemy.orm.session import Session
-from schemas import Analyses_Base
+from schemas import Analyses_Base, Analyses_Base_Add
 from database.models import DB_Analyses
 from fastapi import HTTPException, status
 
-from database import db_techniciens, db_ogd_step0 
+from database import db_techniciens, db_Analyses
 
 # CREATE
 
-def create_analyse(db: Session, request: Analyses_Base):  # uses schema 
+def create_analyse(db: Session, request: Analyses_Base_Add):  # uses schema 
 
   new_analyse = DB_Analyses(   # uses database
     # Analyses_id = request.Analyses_id, # AUTO-INCREMENT

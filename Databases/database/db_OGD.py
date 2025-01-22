@@ -3,7 +3,7 @@ from schemas import Batch_OGD_Base
 from database.models import DB_Batch_OGD
 from fastapi import HTTPException, status
 
-from database import db_techniciens, db_ogd_step0 
+from database import db_techniciens, db_OGD
 
 # CREATE
 

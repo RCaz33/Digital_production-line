@@ -1,20 +1,22 @@
 from sqlalchemy.orm.session import Session
-from schemas import Matieres_premieres_Base
+from schemas import Matieres_premieres_Base, Matieres_premieres_Add
 from database.models import DB_Matieres_premieres
 from fastapi import HTTPException, status
 
-from database import db_techniciens, db_ogd_step0 
+from database import db_techniciens, db_matieres_premieres
 
 # CREATE
 
-def create_MP(db: Session, request: Matieres_premieres_Base):  # uses schema 
+def create_matieres_premieres(db: Session, request: Matieres_premieres_Add):  # uses schema 
 
   new_matieres_premieres = DB_Matieres_premieres(   # uses database
     # MP_id = request.MP_id,
     MP_nom = request.MP_nom,
     MP_codeCW = request.MP_codeCW,
     MP_ref_fournisseur = request.MP_ref_fournisseur,
+    MP_date_reception = request.MP_date_reception,
     MP_quantite = request.MP_quantite,
+    MP_unite = request.MP_unite,
     MP_Analyses = request.MP_Analyses
 )
 
@@ -31,7 +33,7 @@ def create_MP(db: Session, request: Matieres_premieres_Base):  # uses schema
 
 # READ 
 
-def get_all_matieres_premieress(db: Session):
+def get_all_matieres_premieres(db: Session):
   return db.query(DB_Matieres_premieres).all()
 
 def get_matieres_premieres(db: Session, id: int):
@@ -63,7 +65,9 @@ def update_matieres_premieres(db: Session, id: int, request: Matieres_premieres_
     DB_Matieres_premieres.MP_nom : request.MP_nom,
     DB_Matieres_premieres.MP_codeCW : request.MP_codeCW,
     DB_Matieres_premieres.MP_ref_fournisseur : request.MP_ref_fournisseur,
+    DB_Matieres_premieres.MP_date_reception : request.MP_date_reception,
     DB_Matieres_premieres.MP_quantite : request.MP_quantite,
+    DB_Matieres_premieres.MP_unite : request.MP_unite,
     DB_Matieres_premieres.MP_Analyses : request.MP_Analyses})
   db.commit()
   return 'ok'

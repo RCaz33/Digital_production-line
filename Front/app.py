@@ -113,21 +113,29 @@ def logout():
 
 import requests
 ####################### Page d'acceuil / Dashboard #######################
+
+default_batch = None
 # @app.route("/")
 @app.route("/acceuil", methods=["GET","POST"])
 # @login_required
 def index():
-    response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
-    K_name,C_name,THF_name = get_matieres_premieres(response.json())
-
-
-    response = requests.get(f'http://127.0.0.1:8000/KC8/')
-    KC8_name = response.json()
+    global default_batch
+    if not default_batch:
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
+        K_name,C_name,THF_name = get_matieres_premieres(response)
+        default_batch = dict({'K':K_name,'C':C_name,'THF':THF_name})
+    
+    if not 'KC8' in default_batch.keys():
+        response = requests.get(f'http://127.0.0.1:8000/KC8/')
+        KC8_all = pd.DataFrame(response.json())
+        KC8_batch = KC8_all.loc[KC8_all.Batch_KC8_id==np.max(KC8_all.Batch_KC8_id),'Batch_KC8_name'].values[0]
+        default_batch['KC8'] = KC8_batch
+    
     return render_template("acceuil.html",
-                        n_batch_K = K_name,
-                        n_batch_C = C_name,
-                        n_batch_THF = THF_name,
-                        n_batch_KC8 = KC8_name,
+                        n_batch_K = default_batch['K'],
+                        n_batch_C = default_batch['C'],
+                        n_batch_THF = default_batch['THF'],
+                        n_batch_KC8 = default_batch['KC8'],
                         )
 
 

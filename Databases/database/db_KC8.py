@@ -1,13 +1,13 @@
 from sqlalchemy.orm.session import Session
-from schemas import Batch_KC8_Base
+from schemas import Batch_KC8_Base, Batch_KC8_Add
 from database.models import DB_Batch_KC8
 from fastapi import HTTPException, status
 
-from database import db_techniciens, db_ogd_step0 
+from database import db_techniciens, db_KC8 
 
 # CREATE
 
-def create_batch_KC8(db: Session, request: Batch_KC8_Base):  # uses schema 
+def create_batch_KC8(db: Session, request: Batch_KC8_Add):  # uses schema 
 
 #   batch_s0 = db_ogd_step0.get_batch_s0_by_batchname(db,request.Step1_BatchName)
 #   id = int(batch_s0.Batch_KC8_id)
@@ -15,13 +15,12 @@ def create_batch_KC8(db: Session, request: Batch_KC8_Base):  # uses schema
 #   tech_id = int(tech.Technicien_id)
 
   new_batch = DB_Batch_KC8(   # uses database
-    # Batch_KC8_id = request.Batch_KC8_id, # AUTO-INCREMENT
     Batch_KC8_name = request.Batch_KC8_name,
     Batch_KC8_date = request.Batch_KC8_date,
     Batch_KC8_Technicien = request.Batch_KC8_Technicien,
-    Batch_KC8_KC8_batch = request.Batch_KC8_K_batch,
-    Batch_KC8_KC8_masse = request.Batch_KC8_C_batch,
-    Batch_KC8_THF_batch = request.Batch_KC8_masse,
+    Batch_KC8_K_batch = request.Batch_KC8_K_batch,
+    Batch_KC8_C_batch = request.Batch_KC8_C_batch,
+    Batch_KC8_masse = request.Batch_KC8_masse,
     Batch_KC8_Temperature = request.Batch_KC8_Temperature,
     Batch_KC8_Agitation = request.Batch_KC8_Agitation,
     Batch_KC8_heure_debut = request.Batch_KC8_heure_debut,

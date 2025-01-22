@@ -37,7 +37,7 @@ class Form_Matieres_premieres(FlaskForm):
         ('K', 'Potassium'),
         ('THF', 'Solvant THF')
     ])
-    MP_codeCW = StringField('Code CW', [Length(max=10)]) 
+    MP_codeCW = SelectField('Code CW', choices=[f'CW_00{i}' for i in range(1,10)])
     MP_ref_fournisseur = StringField('ref fournisseur', [Length(max=50)]) 
     MP_quantite = FloatField('Quantité', default=20)
     MP_unite = SelectField('unite', choices=[

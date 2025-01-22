@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from schemas import Analyses_Base
+from schemas import Analyses_Base, Analyses_Base_Add
 from database.db_connect import get_db
 from database import db_Analyses
 from typing import List
@@ -16,7 +16,7 @@ router = APIRouter(
 
 # Create batch
 @router.post('/', response_model=Analyses_Base)
-def create_analyse(request: Analyses_Base,
+def create_analyse(request: Analyses_Base_Add,
                     db: Session = Depends(get_db)):
   return db_Analyses.create_analyse(db, request)
 

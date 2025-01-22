@@ -3,7 +3,7 @@ from schemas import Technicien_Base, Technicien_Create_record
 from database.models import DbTechnicient
 from fastapi import HTTPException, status
 
-from database import db_ogd_step0 
+# from database import db_ogd_step0 
 
 # CREATE
 

@@ -1,19 +1,15 @@
 import datetime
 from flask import flash
 import requests
-
+import pandas as pd
 
 
 
 def get_matieres_premieres(response):
-
-    print(response)
-    K_name='potasiim#b9286'
-    
-    C_name='carbon#30789'
-
-    THF_name='THF#986'
-
+    data = pd.DataFrame(response.json())
+    K_name=data.loc[data.MP_nom == 'Potassium'].sort_values('MP_id')['MP_ref_fournisseur'].values[-1]
+    C_name=data.loc[data.MP_nom == 'Carbon'].sort_values('MP_id')['MP_ref_fournisseur'].values[-1]
+    THF_name=data.loc[data.MP_nom == 'THF'].sort_values('MP_id')['MP_ref_fournisseur'].values[-1]
     return K_name,C_name,THF_name
 
 
