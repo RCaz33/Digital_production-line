@@ -20,67 +20,71 @@
 <!-- Get informations -->
 <h1> Nouveau batch KC8</h1>
 <div class="container shadow border border-danger-subtle border-1">
-    <br/>
-    <div class="row justify-content-start">
-    <div class="col-3">
-        <h5>Ajout d'un nouveau KC8</h5>
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_name.label }}
-        {{ Form_KC8.Batch_KC8_name(class="form-control") }}
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_date.label }}
-        {{ Form_KC8.Batch_KC8_date(class="form-control") }}
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_Technicien.label }}
-        {{ Form_KC8.Batch_KC8_Technicien(class="form-control") }}
-    </div>
-    <div class="col-3">
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_K_batch.label }}
-        {{ Form_KC8.Batch_KC8_K_batch(class="form-control") }}
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_C_batch.label }}
-        {{ Form_KC8.Batch_KC8_C_batch(class="form-control") }}
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_masse.label }}
-        {{ Form_KC8.Batch_KC8_masse(class="form-control") }}
-    </div>
-    <div class="col-3">
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_masse.label }}
-        {{ Form_KC8.Batch_KC8_masse(class="form-control") }}
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_masse.label }}
-        {{ Form_KC8.Batch_KC8_masse(class="form-control") }}
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_heure_debut.label }}
-        {{ Form_KC8.Batch_KC8_heure_debut(class="form-control") }}
-    </div>
-    <div class="col-3">
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_room_HR.label }}
-        {{ Form_KC8.Batch_KC8_room_HR(class="form-control") }}
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_room_T.label }}
-        {{ Form_KC8.Batch_KC8_room_T(class="form-control") }}
-    </div>
-    <div class="col-3">
-        {{ Form_KC8.Batch_KC8_heure_fin.label }}
-        {{ Form_KC8.Batch_KC8_heure_fin(class="form-control") }}
-    </div>
-    </div>
-    <br/>
+    <form action="{{ url_for('Add_KC8') }}" method="POST">
+        {{ Form_KC8.csrf_token }}
+        <br/>
+        <div class="row justify-content-start">
+        <div class="col-3">
+            <h5>Ajout d'un nouveau KC8</h5>
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_name.label }}
+            {{ Form_KC8.Batch_KC8_name(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_date.label }}
+            {{ Form_KC8.Batch_KC8_date(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_Technicien.label }}
+            {{ Form_KC8.Batch_KC8_Technicien(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_K_batch.label }}
+            {{ Form_KC8.Batch_KC8_K_batch(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_C_batch.label }}
+            {{ Form_KC8.Batch_KC8_C_batch(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_masse.label }}
+            {{ Form_KC8.Batch_KC8_masse(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_Temperature.label }}
+            {{ Form_KC8.Batch_KC8_Temperature(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_Agitation.label }}
+            {{ Form_KC8.Batch_KC8_Agitation(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_heure_debut.label }}
+            {{ Form_KC8.Batch_KC8_heure_debut(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_room_HR.label }}
+            {{ Form_KC8.Batch_KC8_room_HR(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_room_T.label }}
+            {{ Form_KC8.Batch_KC8_room_T(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_heure_fin.label }}
+            {{ Form_KC8.Batch_KC8_heure_fin(class="form-control") }}
+        </div>
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary">Validate</button>
+    </form>
 </div>
 
 

@@ -9,7 +9,7 @@ import datetime
 import json
 import plotly
 import plotly.express as px
-
+import config
 # import for bdd - mysql
 import mysql.connector as bdd_connect
 
@@ -18,12 +18,20 @@ from flask import Flask, jsonify, render_template, flash, redirect, url_for, req
 from flask_login import login_user, logout_user, login_required
 
 # import pour le back
-from utils import get_form_data, get_form_data_KC8, get_matieres_premieres
+from utils import get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
 from forms import *
-
 # Instanciate app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "somesecretkey" # secret key stored in app == env variable to hide
+
+
+
+# enable CSRF protection globally for a Flask app
+from flask_wtf.csrf import CSRFProtect
+csrf = CSRFProtect(app)
+
+
+
 
 # Database connexion for developpment
 from models import get_db_connection
@@ -143,6 +151,7 @@ def index():
 def Add_MP():
 
     form_MP = Form_Matieres_premieres()
+
     if form_MP.validate_on_submit():
         url = 'http://127.0.0.1:8000/matieres_premieres/'
         headers = {
@@ -151,9 +160,10 @@ def Add_MP():
         }
         data = {
             "MP_nom": request.form['MP_nom'],
-            "MP_codeCW": request.form['MP_codeCW'],
+            "MP_codeCW": config.codes_MP_CW[request.form['MP_nom']],
             "MP_ref_fournisseur": request.form['MP_ref_fournisseur'],
             "MP_quantite": request.form['MP_quantite'],
+            "MP_date_reception": request.form['MP_date_reception'],
             "MP_unite": request.form['MP_unite'],
             "MP_Analyses": "None"}
 
@@ -164,21 +174,20 @@ def Add_MP():
         for field,errors in form_MP.errors.items():
             for error in errors:
                 flash(f"Erreur pour le champ '{getattr(form_MP, field).label.text}' : {error}")
-
-    return render_template("Add_matiere_premiere.html",
-                           Form_Matieres_premieres=form_MP)
+    
+    form_MP.MP_date_reception.data = datetime.datetime.now()
+    return render_template("Add_matiere_premiere.html",Form_Matieres_premieres=form_MP)
 
 
 
 @app.route("/Nouveau_batch_KC8", methods=['GET','POST'])
 def Add_KC8():
-
     form_KC8 = Form_Batch_KC8()
+    url = 'http://127.0.0.1:8000/KC8/'
+    headers = {
+        'accept': 'application/json',
+        'Content-Type': 'application/json'}
     if form_KC8.validate_on_submit():
-        url = 'http://127.0.0.1:8000/KC8/'
-        headers = {
-            'accept': 'application/json',
-            'Content-Type': 'application/json'}
         data = {
             "Batch_KC8_name": request.form['Batch_KC8_name'],
             "Batch_KC8_date": request.form['Batch_KC8_date'],
@@ -202,13 +211,21 @@ def Add_KC8():
             for error in errors:
                 flash(f"Erreur pour le champ '{getattr(form_KC8, field).label.text}' : {error}")
 
-    return render_template("Add_matiere_premiere.html",
+    response = requests.get(url+'last', headers=headers)
+
+    form_KC8.Batch_KC8_name.data = response.json()['Batch_KC8_name']
+    form_KC8.Batch_KC8_date.data = datetime.datetime.now()
+    form_KC8.Batch_KC8_heure_debut.data = datetime.datetime.now()
+    form_KC8.Batch_KC8_K_batch.data = default_batch['K']
+    form_KC8.Batch_KC8_C_batch.data = default_batch['C']
+
+    return render_template("Add_batch_KC8.html",
                            Form_KC8=form_KC8)
 
-app.route("/Nouveau_batch_KC8", methods=['GET','POST'])
+@app.route("/Nouveau_batch_OGD", methods=['GET','POST'])
 def Add_OGD():
 
-    form_OGD = Form_Batch_KC8()
+    form_OGD = Form_Batch_OGD()
     if form_OGD.validate_on_submit():
         url = 'http://127.0.0.1:8000/OGD/'
         headers = {
@@ -238,9 +255,33 @@ def Add_OGD():
             for error in errors:
                 flash(f"Erreur pour le champ '{getattr(form_OGD, field).label.text}' : {error}")
 
-    return render_template("Add_matiere_premiere.html",
+    return render_template("Add_batch_OGD.html",
                            Form_OGD=form_OGD)
 
+
+
+@app.route("/Update_default_batch", methods=['GET','POST'])
+def Update_default_batch():
+    global default_batch
+
+    last_10_K, last_10_C, last_10_THF, last_10_KC8 = get_last_10_batch()
+
+    if request.method == 'POST':
+
+        print(10*"vv\n")
+        print(request.form.get('n_batch_K'))
+
+        default_batch['K']= request.form.get('n_batch_K')
+        default_batch['C']=request.form.get('n_batch_C')
+        default_batch['THF']=request.form.get('n_batch_THF')
+        default_batch['KC8']=request.form.get('n_batch_KC8')
+        return redirect(url_for('index')) 
+
+    return render_template("Update_default_batch.html",
+                           last_10_K=last_10_K,
+                           last_10_C=last_10_C,
+                           last_10_THF=last_10_THF,
+                           last_10_KC8=last_10_KC8)
 ####################### Mise à jour Batch #######################
 
 @app.route("/update_batch_info/<batch_name>",methods=["GET","POST"])
