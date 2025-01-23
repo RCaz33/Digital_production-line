@@ -45,6 +45,9 @@ def create_batch_KC8(db: Session, request: Batch_KC8_Add):  # uses schema
 def get_all_batch_KC8(db: Session):
   return db.query(DB_Batch_KC8).all()
 
+def get_last_batch_KC8(db: Session):
+  return db.query(DB_Batch_KC8).order_by(DB_Batch_KC8.Batch_KC8_id.desc()).first()
+
 def get_batch_KC8(db: Session, id: int):
   Batch_KC8 = db.query(DB_Batch_KC8).filter(DB_Batch_KC8.Batch_KC8_id == id).first()
   if not Batch_KC8:

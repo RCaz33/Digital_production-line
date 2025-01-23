@@ -1,5 +1,5 @@
 from sqlalchemy.orm.session import Session
-from schemas import Batch_OGD_Base
+from schemas import Batch_OGD_Base, Batch_OGD_Add
 from database.models import DB_Batch_OGD
 from fastapi import HTTPException, status
 
@@ -7,7 +7,7 @@ from database import db_techniciens, db_OGD
 
 # CREATE
 
-def create_batch_OGD(db: Session, request: Batch_OGD_Base):  # uses schema 
+def create_batch_OGD(db: Session, request: Batch_OGD_Add):  # uses schema 
 
 #   batch_s0 = db_ogd_step0.get_batch_s0_by_batchname(db,request.Step1_BatchName)
 #   id = int(batch_s0.Batch_OGD_id)
@@ -65,11 +65,11 @@ def get_batch_OGD_by_batchname(db: Session, batch_name: str):
 
 def update_batch_OGD(db: Session, id: int, request: Batch_OGD_Base):
   batch_OGD = db.query(DB_Batch_OGD).filter(DB_Batch_OGD.Batch_OGD_id == id)
-  tech = db_techniciens.get_tech_by_initials(db,request.Step1_Initiales)
-  tech_id = int(tech.Technicien_id)
-  if not batch_OGD.first():
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-      detail=f'User with id {id} not found')
+  # tech = db_techniciens.get_tech_by_initials(db,request.Step1_Initiales)
+  # tech_id = int(tech.Technicien_id)
+  # if not batch_OGD.first():
+  #   raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+  #     detail=f'User with id {id} not found')
   batch_OGD.update({  # uses database
     DB_Batch_OGD.Batch_OGD_id : id,  #### ATTENTION, PEUT ETRE BESOIN IDENTIFIER
     DB_Batch_OGD.Batch_OGD_name : request.Batch_OGD_name,

@@ -24,4 +24,7 @@
 
 
 
-9. create all the tables
+9. create all the tables (details?)
+    -> from sqlalchemy.orm import declarative_base
+    -> Base = declarative_base()
+    -> Base.metadata.create_all(engine)

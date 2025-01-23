@@ -25,6 +25,11 @@ def create_batch_KC8(request: Batch_KC8_Add,
 def get_all_batch_KC8(db: Session = Depends(get_db)):
   return db_KC8.get_all_batch_KC8(db)
 
+# Read last
+@router.get('/last', response_model=Batch_KC8_Base)
+def get_last_batch_KC8(db: Session = Depends(get_db)):
+  return db_KC8.get_last_batch_KC8(db)
+
 # Read one batch BY ID
 @router.get('/id/{id}', response_model=Batch_KC8_Base)
 def get_batch_KC8_id(id: int,

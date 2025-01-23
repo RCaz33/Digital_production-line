@@ -9,8 +9,7 @@ from database import db_techniciens, db_matieres_premieres
 
 def create_matieres_premieres(db: Session, request: Matieres_premieres_Add):  # uses schema 
 
-  new_matieres_premieres = DB_Matieres_premieres(   # uses database
-    # MP_id = request.MP_id,
+  new_matieres_premieres = DB_Matieres_premieres( 
     MP_nom = request.MP_nom,
     MP_codeCW = request.MP_codeCW,
     MP_ref_fournisseur = request.MP_ref_fournisseur,

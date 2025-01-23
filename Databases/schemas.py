@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
@@ -19,7 +19,8 @@ class Analyses_Base_Add(BaseModel):
     Analyse_code : str # 'CodeEchantillon_date_type_details'
 # every folder create create a new analyse
 #  
-
+# name of batch + date of analysis + type of analysis + details analysis
+                      # "nom_250129_Raman / nom_250202_DLS / .."
 class Matieres_premieres_Base(BaseModel):
     MP_id : int 
     MP_nom : str 
@@ -28,9 +29,7 @@ class Matieres_premieres_Base(BaseModel):
     MP_date_reception : datetime
     MP_quantite : float
     MP_unite : str
-    # MP_Analyses : List[Analyses_Base] = []
-    MP_Analyses : str # name of batch + date of analysis + type of analysis + details analysis
-                      # "nom_250129_Raman / nom_250202_DLS / .."
+    MP_Analyses : str 
 
 class Matieres_premieres_Add(BaseModel):
     MP_nom : str 
@@ -39,7 +38,6 @@ class Matieres_premieres_Add(BaseModel):
     MP_date_reception : datetime
     MP_quantite : float
     MP_unite : str
-    # MP_Analyses : List[Analyses_Base] = []
     MP_Analyses : str # name of batch + date of analysis + type of analysis + details analysis
    
 class Batch_KC8_Base(BaseModel):
@@ -53,7 +51,7 @@ class Batch_KC8_Base(BaseModel):
     Batch_KC8_Temperature : float
     Batch_KC8_Agitation : int 
     Batch_KC8_heure_debut : datetime
-    Batch_KC8_heure_fin : datetime
+    Batch_KC8_heure_fin : Optional[datetime] = None  
     Batch_KC8_room_HR : float
     Batch_KC8_room_T : float
     Batch_KC8_Analyses : str 
@@ -68,7 +66,7 @@ class Batch_KC8_Add(BaseModel):
     Batch_KC8_Temperature : float
     Batch_KC8_Agitation : int 
     Batch_KC8_heure_debut : datetime
-    Batch_KC8_heure_fin : datetime
+    Batch_KC8_heure_fin : Optional[datetime] = None  
     Batch_KC8_room_HR : float
     Batch_KC8_room_T : float
     Batch_KC8_Analyses : str 
@@ -78,13 +76,29 @@ class Batch_OGD_Base(BaseModel):
     Batch_OGD_name : str
     Batch_OGD_date : datetime
     Batch_OGD_Technicien : str
-    Batch_OGD_KC8_batch : int
+    Batch_OGD_KC8_batch : str
     Batch_OGD_KC8_masse : float
-    Batch_OGD_THF_batch : int
+    Batch_OGD_THF_batch : str
     Batch_OGD_Temperature : float
     Batch_OGD_Agitation : int 
     Batch_OGD_heure_debut : datetime
-    Batch_OGD_heure_fin : datetime
+    Batch_OGD_heure_fin : Optional[datetime] = None  
+    Batch_OGD_room_HR : float
+    Batch_OGD_room_T : float
+    Batch_OGD_Analyses : str 
+
+
+class Batch_OGD_Add(BaseModel):
+    Batch_OGD_name : str
+    Batch_OGD_date : datetime
+    Batch_OGD_Technicien : str
+    Batch_OGD_KC8_batch : str
+    Batch_OGD_KC8_masse : float
+    Batch_OGD_THF_batch : str
+    Batch_OGD_Temperature : float
+    Batch_OGD_Agitation : int 
+    Batch_OGD_heure_debut : datetime
+    Batch_OGD_heure_fin : Optional[datetime] = None  
     Batch_OGD_room_HR : float
     Batch_OGD_room_T : float
     Batch_OGD_Analyses : str 

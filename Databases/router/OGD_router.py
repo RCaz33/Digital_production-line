@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from schemas import Batch_OGD_Base
+from schemas import Batch_OGD_Base, Batch_OGD_Add
 from database.db_connect import get_db
 from database import db_OGD
 from typing import List
@@ -16,7 +16,7 @@ router = APIRouter(
 
 # Create batch
 @router.post('/', response_model=Batch_OGD_Base)
-def create_batch_OGD(request: Batch_OGD_Base,
+def create_batch_OGD(request: Batch_OGD_Add,
                     db: Session = Depends(get_db)):
   return db_OGD.create_batch_OGD(db, request)
 
@@ -35,6 +35,7 @@ def get_batch_OGD_id(id: int,
 @router.get('/name/{name}', response_model=Batch_OGD_Base)
 def get_batch_OGD_name(name: str,
              db: Session = Depends(get_db)):
+  print(name)
   return db_OGD.get_batch_OGD_by_batchname(db, name)
 
 

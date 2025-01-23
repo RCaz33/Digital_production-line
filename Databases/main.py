@@ -35,7 +35,7 @@ def index():
     return {'message': 'Hello world!'}
 
 
-# models.Base.metadata.create_all(engine)
+models.Base.metadata.create_all(engine) # create all table with CREATE IF NOT EXIST LOGIC
 
 # origins = [
 #   'http://127.0.0.1:5000'
@@ -55,4 +55,4 @@ def index():
 
 if __name__ == '__main__':
   import uvicorn
-  uvicorn.run(app,host="0.0.0.0", port=5001)
+  uvicorn.run(app,host="0.0.0.0", port=1000)
