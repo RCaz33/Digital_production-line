@@ -32,7 +32,7 @@ class LoginForm(FlaskForm):
 ########################################
 class Form_Matieres_premieres(FlaskForm):
     MP_nom = SelectField('Type', choices=config.matieres_premieres)
-    MP_ref_fournisseur = StringField('ref fournisseur', [Length(max=50)]) 
+    MP_ref_fournisseur = StringField('ref fournisseur', [Length(max=50),DataRequired()]) 
     MP_date_reception = DateTimeField('Date reception', format='%d/%m/%y')
     MP_quantite = FloatField('Quantité', default=20)
     MP_unite = SelectField('unite', choices=[
@@ -67,7 +67,7 @@ class Form_Batch_KC8(FlaskForm):
 
 class Form_Batch_OGD(FlaskForm):
     Batch_OGD_name = StringField('Nom Batch', [Length(max=10)])
-    Batch_OGD_date = DateTimeField('Date début production', format='%d%m%y')
+    Batch_OGD_date = DateTimeField('Date début production', format='%d/%m/%y')
     Batch_OGD_Technicien = SelectField('Technicien', choices=config.Techniciens_CW)
     Batch_OGD_KC8_batch =  StringField('Batch_KC8_name')
     Batch_OGD_KC8_masse = FloatField('Masse KC8 utliisé', default=50)
@@ -76,7 +76,7 @@ class Form_Batch_OGD(FlaskForm):
     Batch_OGD_Temperature = FloatField('Température agitation', default=50)
     Batch_OGD_Agitation = IntegerField('Vitesse agitation',default=250)
     Batch_OGD_heure_debut = TimeField('Heure de début', format='%H:%M')
-    Batch_OGD_heure_fin = TimeField('Heure de début', format='%H:%M')
+    Batch_OGD_heure_fin = TimeField('Heure de fin', format='%H:%M')
     Batch_OGD_room_HR = FloatField('Humidité (ppm)', default=0.09)
     Batch_OGD_room_T = FloatField('Temperature (°C)', default=25)
     Batch_OGD_Analyses = StringField('reference_analyses', [Length(max=60)])

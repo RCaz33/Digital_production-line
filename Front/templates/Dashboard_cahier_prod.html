@@ -3,7 +3,7 @@
 
 
 {% block title %}
-        <title> Welcome {{username}} </title>
+        <title> Cahier de prod </title>
 
         <!-- pour structurer la table genere avec panda -->
         <!-- <style>
@@ -30,34 +30,43 @@
 
 {% block content %}
 
-{% for batch in liste_batch: %}
-    {{ batch }}<br/>
-{% endfor %}
-<br/><br/>
+
+<div class="container">
+    <div class="row">
+        <!-- First Column -->
+        <div class="col-md-6">
+            <h2> Liste OGDs </h2>
+            {% for batch_OGD in batch_OGDs: %}
+                {{ batch_OGD }}
+                <a href="{{ url_for('update_batch_OGD', batch_name=batch_OGD) }}" >Mettre à jour</a>.
+                <br/>
+            {% endfor %}
+        </div>
+        <!-- Second Column -->
+        <div class="col-md-6">
+            <h2> Liste KC8s </h2>
+            {% for batch_KC8 in batch_KC8s: %}
+                {{ batch_KC8 }}
+                <a href="{{ url_for('update_batch_KC8', batch_name=batch_KC8) }}" >Mettre à jour</a>.
+                <br/>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 
 
-<h3> Evolution de la concentration des batchs </h3>
+<!-- <h3> Evolution de la concentration des batchs </h3>
 
 <div id='chart' class='chart'”></div>
-
-
 <h4> Détail du nombre de Batch, somme des concentration et concentration moyenne d'OGD pour la période {{ date_min }} - {{ date_max }} </h4>
-
 {{ html_table | safe }}
-
 <br/><br/><br/><br/>
-
-
-
 <br/><br/><br/><br/>
-
-
-
 <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 <script type='text/javascript'>
   var graphs = {{graphJSON | safe}};
   Plotly.plot('chart',graphs,{});
-</script>
+</script> -->
 
 {% endblock %}
 

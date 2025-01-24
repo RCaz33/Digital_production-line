@@ -16,7 +16,7 @@ class DB_Analyses(Base):
 class DB_Matieres_premieres(Base):
     __tablename__ = 'Matieres_premieres'
     MP_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    MP_nom = Column(String(10), nullable=False)
+    MP_nom = Column(String(20), nullable=False)
     MP_codeCW = Column(String(10), nullable=False)
     MP_ref_fournisseur = Column(String(50), nullable=False)
     MP_date_reception = Column(DateTime, nullable=False)

@@ -20,45 +20,44 @@
           <li class="nav-item">
             <a class="nav-link disabled" aria-disabled="true">
                 <img src="../static/pict/speedometer.png" alt="Link_Dash" width="30" height="24" class="align-text-top">
-                <br/>Dashboard
+                <br/>Dashboard Commerce
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('Cahier_prod')}}">
+            <a class="nav-link" href="{{url_for('dash_prod')}}">
+                <img src="../static/pict/speedometer.png" alt="Link_Dash" width="30" height="24" class="align-text-top">
+                <br/>Dashboard Production
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('dash_prod')}}">
                 <img src="../static/pict/transfer.png" alt="Link_Prod" width="30" height="24" class="align-text-top">
                 <br/>Cahier de <br/> Production
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('Fill_form_2023')}}">
+            <a class="nav-link" href="{{url_for('Add_KC8')}}">
                 <img src="../static/pict/lab-coat.png" alt="New_Batch" width="30" height="24" class="align-text-top">
-                <br/>Nouveau <br/> Batch
+                <br/>Batch KC8
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('Fill_form_2023_X4')}}">
+            <a class="nav-link" href="{{url_for('Add_OGD')}}">
                 <img src="../static/pict/lab-coat.png" alt="New_Batch_X4" width="30" height="24" class="align-text-top">
-                <br/>Nouveau <br/> Batch 4X
+                <br/>Batch OGD
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('Fill_form_KC8')}}">
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="{{url_for('update_batch_KC8', batch_name='')}}">
                 <img src="../static/pict/lab-coat.png" alt="New_Batch_KC8" width="30" height="24" class="align-text-top">
-                <br/>Nouveau <br/> Batch KC8
+                <br/>MaJ <br/> Batch KC8
             </a>
-          </li>
+          </li> -->
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('FillIn_DB_2023')}}">
+            <a class="nav-link" href="{{url_for('Add_MP')}}">
                 <img src="../static/pict/graph.png" alt="Link_Add_old_batch" width="30" height="24" class="align-text-top">
-                <br/> Mise à jour <br/> Base de données
+                <br/> Arrivage <br/> Matieres Premieres
             </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('FillIn_DB_2023_X4')}}">
-                <img src="../static/pict/graph.png" alt="Link_Add_old_batch" width="30" height="24" class="align-text-top">
-                <br/> Mise à jour <br/> BDD 4X
-            </a>
-          </li>
           <li class="nav-item">
             <a class="nav-link" href="{{url_for('logout')}}">
                 <br/> Logout

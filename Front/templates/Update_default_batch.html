@@ -23,6 +23,7 @@
             <div class="card">
                 <div class="card-body">
                     <form action="{{ url_for('Update_default_batch') }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
                         <div class="form-group">
                             <label for="n_batch_K">Batch Potassium</label>
                             <select class="form-control" id="n_batch_K" name="n_batch_K" required>

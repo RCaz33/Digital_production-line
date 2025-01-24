@@ -5,6 +5,25 @@ import pandas as pd
 import json
 
 
+
+
+def populate_form(form,response):
+    data = response.json()
+    for field in form:
+        for k,v in data.items():
+            if field.name == k:
+                if  '_date' in field.name :
+                    form[field.name].data = datetime.datetime.strptime(data[k], '%Y-%m-%dT%H:%M:%S')#.strftime(format='%d/%m/%y')
+                elif '_heure_debut' in field.name:
+                    form[field.name].data = datetime.datetime.strptime(data[k], '%Y-%m-%dT%H:%M:%S')#.strftime(format='%H:%M')
+                elif '_heure_fin' in field.name:
+                    form[field.name].data = datetime.datetime.now()
+                else:
+                    form[field.name].data = data[k]
+    return form
+
+
+
 def get_last_10_batch():
     headers = {
         'accept': 'application/json',
