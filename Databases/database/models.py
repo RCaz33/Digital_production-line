@@ -2,7 +2,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import Integer, String, Boolean, DateTime, Float, Time
 from database.db_connect import Base
-from sqlalchemy import Column
+from sqlalchemy import Column, JSON
 
 
 
@@ -12,6 +12,15 @@ class DB_Analyses(Base):
     Analyse_path_to_raw = Column(String(50), nullable=False)
     Analyse_code = Column(String(50), nullable=False) # 'CodeEchantillon_date_type_details'
 # every folder create create a new analyse
+
+class DB_Analyses_UV(Base):
+    __tablename__ = 'Analyses_UV'
+    Analyses_UV_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Analyse_UV_name = Column(String(50), nullable=False)
+    Analyse_UV_subname = Column(String(50), nullable=True) 
+    Analyse_UV_details =Column(String(300), nullable=True) 
+    Analyses_UV_data = Column(JSON, nullable=True) # 'CodeEchantillon_date_type_details'
+
 
 class DB_Matieres_premieres(Base):
     __tablename__ = 'Matieres_premieres'

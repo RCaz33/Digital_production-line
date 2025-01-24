@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
@@ -6,6 +6,20 @@ from datetime import datetime
 
 ## MUST HAVE THE SAME NAME AS IN MODELS.PY 
 
+
+class Analyses_UV_Base(BaseModel):
+    Analyses_UV_id = int
+    Analyse_UV_name = str
+    Analyse_UV_subname = str
+    Analyse_UV_details = str
+    Analyses_UV_data = Dict[str:Any]
+
+
+class Analyses_UV_Add(BaseModel):
+    Analyse_UV_name = str
+    Analyse_UV_subname = str
+    Analyse_UV_details = str
+    Analyses_UV_data = Dict[str:Any]
 
 
 class Analyses_Base(BaseModel):
