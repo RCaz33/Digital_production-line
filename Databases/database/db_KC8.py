@@ -67,8 +67,8 @@ def get_batch_KC8_by_batchname(db: Session, batch_name: str):
 
 def update_batch_KC8(db: Session, id: int, request: Batch_KC8_Base):
   Batch_KC8 = db.query(DB_Batch_KC8).filter(DB_Batch_KC8.Batch_KC8_id == id)
-  tech = db_techniciens.get_tech_by_initials(db,request.Step1_Initiales)
-  tech_id = int(tech.Technicien_id)
+  # tech = db_techniciens.get_tech_by_initials(db,request.Step1_Initiales)
+  # tech_id = int(tech.Technicien_id)
   if not Batch_KC8.first():
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
       detail=f'User with id {id} not found')

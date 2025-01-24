@@ -31,8 +31,15 @@ def get_matieres_premieres_id(id: int,
              db: Session = Depends(get_db)):
   return db_matieres_premieres.get_matieres_premieres(db, id)
 
-# Read one batch BY NAME
+
+# Read one batch BY REF
 @router.get('/name/{name}', response_model=Matieres_premieres_Base)
+def get_matieres_premieres_code(name: str,
+             db: Session = Depends(get_db)):
+  return db_matieres_premieres.get_matieres_premieres_by_ref(db, name)
+
+# Read one batch BY CODE
+@router.get('/code/{name}', response_model=Matieres_premieres_Base)
 def get_matieres_premieres_code(name: str,
              db: Session = Depends(get_db)):
   return db_matieres_premieres.get_matieres_premieres_by_code(db, name)

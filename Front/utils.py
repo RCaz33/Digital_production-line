@@ -6,6 +6,31 @@ import json
 
 
 
+def update_stocks_K_C(data):
+        headers = {
+        'accept': 'application/json',
+        'Content-Type': 'application/json'}
+        status=dict()
+        # update stock of K 
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_K_batch"]}')
+        status['get_K'] = response.status_code
+        updated_batch = response.json()
+        updated_batch['MP_quantite'] = int(updated_batch['MP_quantite'] - (39/(39+(8*12))*int(data['Batch_KC8_masse'])))
+        response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
+        status['post_K'] = response.status_code
+        
+        # update stock of C
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_C_batch"]}')
+        updated_batch = response.json()
+        status['get_C'] = response.status_code
+        updated_batch['MP_quantite'] = updated_batch['MP_quantite'] - ((8*12)/(39+(8*12))*int(data['Batch_KC8_masse']))
+        response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
+        status['post_C'] = response.status_code
+
+        return status
+
+
+
 
 def populate_form(form,response):
     data = response.json()

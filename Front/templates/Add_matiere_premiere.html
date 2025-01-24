@@ -75,7 +75,7 @@
                             <div class="card-body">
                                 {% for batch in batch_C %}
                                     Nom : {{ batch[0] }}, </br>Qte : {{ batch[1] }}  {{batch[2]}}
-                                    <a href="{{ url_for('update_batch_OGD', batch_name=batch[0]) }}" class="alert-link">Modifier</a>.
+                                    <a href="{{ url_for('Inspect_MP', MP_ref_fournisseur=batch[0]) }}" class="alert-link">Inspecter</a>.
                                     </br>
                                 {% endfor %}
                             </div>
@@ -93,7 +93,7 @@
                             <div class="card-body">
                                 {% for batch in batch_K %}
                                     Nom : {{ batch[0] }}, </br>Qte : {{ batch[1] }}  {{batch[2]}}
-                                    <a href="{{ url_for('update_batch_OGD', batch_name=batch[0]) }}" class="alert-link">Modifier</a>.
+                                    <a href="{{ url_for('Inspect_MP', MP_ref_fournisseur=batch[0]) }}" class="alert-link">Inspecter</a>.
                                     </br>
                                 {% endfor %}
                             </div>
@@ -111,7 +111,7 @@
                             <div class="card-body">
                                 {% for batch in batch_THF %}
                                     Nom : {{ batch[0] }}, </br>Qte : {{ batch[1] }} {{batch[2]}}
-                                    <a href="{{ url_for('update_batch_OGD', batch_name=batch[0]) }}" class="alert-link">Modifier</a>.
+                                    <a href="{{ url_for('Inspect_MP', MP_ref_fournisseur=batch[0]) }}" class="alert-link">Inspecter</a>.
                                     </br>
                                 {% endfor %}
                             </div>

@@ -17,7 +17,7 @@ from flask import Flask, jsonify, render_template, flash, redirect, url_for, req
 from flask_login import login_user, logout_user, login_required
 
 # import pour le back
-from utils import populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
+from utils import update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
 from forms import *
 # Instanciate app
 app = Flask(__name__)
@@ -121,22 +121,21 @@ def logout():
 import requests
 ####################### Page d'acceuil / Dashboard #######################
 
-default_batch = None
+# configure default batch
+response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
+K_name,C_name,THF_name = get_matieres_premieres(response)
+default_batch = dict({'K':K_name,'C':C_name,'THF':THF_name})
+response = requests.get(f'http://127.0.0.1:8000/KC8/')
+KC8_all = pd.DataFrame(response.json())
+KC8_batch = KC8_all.loc[KC8_all.Batch_KC8_id==np.max(KC8_all.Batch_KC8_id),'Batch_KC8_name'].values[0]
+default_batch['KC8'] = KC8_batch
+
+
 # @app.route("/")
 @app.route("/acceuil", methods=["GET","POST"])
 # @login_required
 def index():
     global default_batch
-    if not default_batch:
-        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
-        K_name,C_name,THF_name = get_matieres_premieres(response)
-        default_batch = dict({'K':K_name,'C':C_name,'THF':THF_name})
-    
-    if not 'KC8' in default_batch.keys():
-        response = requests.get(f'http://127.0.0.1:8000/KC8/')
-        KC8_all = pd.DataFrame(response.json())
-        KC8_batch = KC8_all.loc[KC8_all.Batch_KC8_id==np.max(KC8_all.Batch_KC8_id),'Batch_KC8_name'].values[0]
-        default_batch['KC8'] = KC8_batch
     
     # batch without ending time
     response = requests.get(f'http://127.0.0.1:8000/OGD/')
@@ -149,6 +148,7 @@ def index():
     stock_MP.index = stock_MP['MP_ref_fournisseur']
     stock_MP.drop(columns='MP_ref_fournisseur',inplace=True)
     stock_MP = stock_MP.T.to_dict()
+    Stock_KC8 = requests.get(f'http://127.0.0.1:8000/KC8/name/{default_batch["KC8"]}')
 
 
     return render_template("acceuil.html",
@@ -159,8 +159,8 @@ def index():
                         n_batch_THF = default_batch['THF'],
                         stock_THF = stock_MP[default_batch['THF']]['MP_quantite'],
                         n_batch_KC8 = default_batch['KC8'],
-                        batch_en_cours = OGD_en_cours,
-                        datetime=datetime.datetime)
+                        stock_KC8 = Stock_KC8.json()['Batch_KC8_masse'],
+                        batch_en_cours = OGD_en_cours)
 
 
 @app.route("/Nouvelle_matiere_premiere", methods=['GET','POST'])
@@ -210,6 +210,37 @@ def Add_MP():
 
 
 
+@app.route("/Inspecter_matiere_premiere/<MP_ref_fournisseur>", methods=['GET', 'POST'])
+def Inspect_MP(MP_ref_fournisseur):
+    print(MP_ref_fournisseur)
+    headers = {
+            'accept': 'application/json',
+            'Content-Type': 'application/json'}
+    
+    response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{MP_ref_fournisseur}', headers=headers)
+    form_MP = Form_Matieres_premieres()
+
+    data = response.json()
+    for field in form_MP:
+        if field.name in ['csrf_token','submit']:
+            continue
+        elif 'date' in field.name:
+            form_MP[field.name].data = datetime.datetime.strptime(data[field.name], '%Y-%m-%dT%H:%M:%S')
+        else:
+            form_MP[field.name].data = data[field.name]
+        
+    # récupère toute les analyses associées à un batch
+    # response = requests.get(f'http://
+    
+    return render_template("Add_matiere_premiere.html",
+                           Form_Matieres_premieres=form_MP)
+
+
+
+
+
+
+
 @app.route("/Nouveau_batch_KC8", methods=['GET','POST'])
 def Add_KC8():
     form_KC8 = Form_Batch_KC8()
@@ -243,10 +274,13 @@ def Add_KC8():
             "Batch_KC8_room_T": request.form['Batch_KC8_room_T'],
             "Batch_KC8_Analyses": "None"}
 
-
-        print([])
         response = requests.post(url, headers=headers, data=json.dumps(data))
         flash(json.dumps({'status': 'OK', 'response': response.json()}), 200)
+
+        # Update Matieres premieres
+        update_stocks_K_C(data) 
+
+
         return redirect(url_for('index'))
     else:
         for field,errors in form_KC8.errors.items():
@@ -298,10 +332,24 @@ def Add_OGD():
             "Batch_OGD_room_HR": request.form['Batch_OGD_room_HR'],
             "Batch_OGD_room_T": request.form['Batch_OGD_room_T'],
             "Batch_OGD_Analyses": "None"}
-        print(10*'DATA\n',data)
-        print([type(a) for a,b in data.items()])
+
         response = requests.post(url, headers=headers, data=json.dumps(data))
         flash(json.dumps({'status': 'OK', 'response': response.json()}), 200)
+
+
+        # update stock of KC8 
+        response = requests.get(f'http://127.0.0.1:8000/KC8/name/{data["Batch_OGD_KC8_batch"]}')
+        updated_batch = response.json()
+        updated_batch['Batch_KC8_masse'] = int(updated_batch['Batch_KC8_masse'] - int(data['Batch_OGD_KC8_masse']))
+        response2 = requests.post(f'http://127.0.0.1:8000/KC8/update/{updated_batch["Batch_KC8_id"]}', headers=headers, data=json.dumps(updated_batch))
+
+        # update stock of THF
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_OGD_THF_batch"]}')
+        updated_batch = response.json()
+        updated_batch['MP_quantite'] = updated_batch['MP_quantite'] - int(data['Batch_OGD_THF_Volume'])
+        response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
+
+
         return redirect(url_for('index'))
     else:
         for field,errors in form_OGD.errors.items():

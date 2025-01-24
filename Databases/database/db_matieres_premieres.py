@@ -42,6 +42,13 @@ def get_matieres_premieres(db: Session, id: int):
       detail=f'matieres_premieres with id {id} not found')
   return matieres_premieress
 
+def get_matieres_premieres_by_ref(db: Session, ref_matieres_premieres: str):
+  matieres_premieress = db.query(DB_Matieres_premieres).filter(DB_Matieres_premieres.MP_ref_fournisseur == ref_matieres_premieres).first()
+  if not matieres_premieress:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+      detail=f'matieres_premieres with code {ref_matieres_premieres} not found')
+  return matieres_premieress
+
 def get_matieres_premieres_by_code(db: Session, code_matieres_premieres: str):
   matieres_premieress = db.query(DB_Matieres_premieres).filter(DB_Matieres_premieres.MP_codeCW == code_matieres_premieres).first()
   if not matieres_premieress:
