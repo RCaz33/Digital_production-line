@@ -12,14 +12,32 @@
   </div>
 {% endfor %}
 
-<h1>Liste des Batch et leurs utilisation</h1>
-Batch index : Batch name <br/>
 
+<div class="container">
+  <div class="row">
+      <!-- First Column -->
+      <div class="col-md-2">
+        <h3> Les différents batchs sont ordonnés par ordre d'ajout.</h3>
+      </div>
+      <div class="col-md-3">
+          <h2> Batch OGDs :</h2>
+          {% for batch_OGD in batch_OGDs: %}
+              {{ batch_OGD }}
+              <a href="{{ url_for('update_batch_OGD', batch_name=batch_OGD) }}" >Mettre à jour</a>.
+              <br/>
+          {% endfor %}
+      </div>
+      <!-- Second Column -->
+      <div class="col-md-3">
+          <h2> Batch KC8s :</h2>
+          {% for batch_KC8 in batch_KC8s: %}
+              {{ batch_KC8 }}
+              <a href="{{ url_for('update_batch_KC8', batch_name=batch_KC8) }}" >Mettre à jour</a>.
+              <br/>
+          {% endfor %}
+      </div>
+  </div>
+</div>
 
-<form method="POST">
-    {% for batch in batch_list: %}
-        {{batch[0]}} : <a type="submit" href = "{{ url_for('update_batch_info', batch_id=batch[0], batch_name=batch[1]) }}"> {{batch[1]}} </a> <br/>
-    {% endfor %}
-</form>
 
 {% endblock %}

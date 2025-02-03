@@ -12,3 +12,5 @@ Techniciens_CW = ['FB','IT','CD','JP','MM','RS','WL','LB','LC','TB']
 codes_MP_CW = dict({'Carbone': 'CW_001',
                     'Potassium': 'CW_002',
                     'THF': 'CW_003'})
+
+unitees = ['Kg','L']

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>
+    Nouveau produit
+</title>
+{% endblock %}
+
+
+
+
+
+
+<!-- #######  A COMPLETER  -->
+
+
+
+
+
+{% block content %}
+
+<!-- Display flash messages -->
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }} <!-- Display batch that was submitted -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<!-- Get informations -->
+<h1> Nouveau Produit</h1>
+<div class="container shadow border border-danger-subtle border-1">
+    <form action="{{ url_for('Add_produit') }}" method="POST">
+        {{ Form_Produit.csrf_token }}
+        <br/>
+        <div class="row justify-content-start">
+        <div class="col-3">
+            <h5>Ajout d'un nouveau OGD</h5>
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_ref_CW.label }}
+            {{ Form_Produit.Batch_Produit_ref_CW(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_date.label }}
+            {{ Form_Produit.Batch_Produit_date(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_Technicien.label }}
+            {{ Form_Produit.Batch_Produit_Technicien(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_OGD_batch.label }}
+            {{ Form_Produit.Batch_Produit_OGD_batch(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_OGD_Qte.label }}
+            {{ Form_Produit.Batch_Produit_OGD_Qte(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_additif_bacth.label }}
+            {{ Form_Produit.Batch_Produit_additif_bacth(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_additif_Qte.label }}
+            {{ Form_Produit.Batch_Produit_additif_Qte(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_Analyses.label }}
+            {{ Form_Produit.Batch_Produit_Analyses(class="form-control") }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Validate</button>
+
+    </form>
+
+
+
+
+
+{% endblock %}
+

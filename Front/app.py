@@ -1,6 +1,8 @@
 
 # Import general
 import os
+import io
+import base64
 import datetime
 import pandas as pd
 import numpy as np
@@ -28,7 +30,6 @@ app.config['SECRET_KEY'] = "somesecretkey" # secret key stored in app == env var
 # enable CSRF protection globally for a Flask app
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 csrf = CSRFProtect(app)
-
 
 
 
@@ -163,6 +164,23 @@ def index():
                         batch_en_cours = OGD_en_cours)
 
 
+@app.route("/acceuil_commerce", methods=["GET","POST"])
+# @login_required
+def dash_commerce():
+    global default_batch
+    
+    # batch without ending time
+    response = requests.get(f'http://127.0.0.1:8000/OGD/')
+    Prod_all = pd.DataFrame(response.json())
+    Prod_commandes = Prod_all.loc[Prod_all.Batch_OGD_heure_fin.isnull(),['Batch_OGD_name','Batch_OGD_heure_debut']].values
+
+    form_envoi = Form_Envoi()
+    return render_template("acceuil_commerce.html",
+                        # img_base64 = fig,
+                        produits_en_attente = Prod_commandes,
+                        From_envoi = form_envoi)
+
+
 @app.route("/Nouvelle_matiere_premiere", methods=['GET','POST'])
 def Add_MP():
 
@@ -204,9 +222,10 @@ def Add_MP():
     batch_THF = MP.loc[MP.MP_nom=='THF',['MP_ref_fournisseur','MP_quantite','MP_unite']].values
     return render_template("Add_matiere_premiere.html",
                            Form_Matieres_premieres=form_MP,
-                           batch_C=batch_C,
-                           batch_K=batch_K,
-                           batch_THF=batch_THF)
+                           batch_C=batch_C[::-1],
+                           batch_K=batch_K[::-1],
+                           batch_THF=batch_THF[::-1],
+                           Inspect=False)
 
 
 
@@ -231,8 +250,8 @@ def Inspect_MP(MP_ref_fournisseur):
         
     # récupère toute les analyses associées à un batch
     # response = requests.get(f'http://
-    
     return render_template("Add_matiere_premiere.html",
+                           Inspect = True,
                            Form_Matieres_premieres=form_MP)
 
 
@@ -371,6 +390,70 @@ def Add_OGD():
 
 
 
+@app.route("/Nouveau_batch_produit", methods=['GET','POST'])
+def Add_Produit():
+    global default_batch
+    form_OGD = Form_Batch_OGD()
+    if form_OGD.validate_on_submit():
+        url = 'http://127.0.0.1:8000/Produit/'
+        headers = {
+            'accept': 'application/json',
+            'Content-Type': 'application/json'}
+        
+
+        Produit_date = request.form['Batch_Produit_date']
+        Produit_date = datetime.datetime.strptime(Produit_date, '%d/%m/%y')
+        # OGD_heure_debut = request.form['Batch_OGD_heure_debut']
+        # OGD_heure_debut = datetime.datetime.strptime(OGD_heure_debut, '%H:%M').time()
+        # OGD_heure_debut = datetime.datetime.combine(OGD_date_debut.date(),OGD_heure_debut )
+
+        data = {
+            "Batch_Produit_ref_CW": request.form['Batch_Produit_ref_CW'],
+            "Batch_Produit_date": Produit_date.isoformat(),
+            "Batch_Produit_Technicien": request.form['Batch_Produit_Technicien'],
+            "Batch_Produit_OGD_batch": request.form['Batch_Produit_OGD_batch'],
+            "Batch_Produit_OGD_Qte": request.form['Batch_Produit_OGD_Qte'],
+            "Batch_Produit_additif_bacth": request.form['Batch_Produit_additif_bacth'],
+            "Batch_Produit_additif_Qte": request.form['Batch_Produit_additif_Qte'],
+            "Batch_Produit_Analyses": "None",}
+
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        flash(json.dumps({'status': 'OK', 'response': response.json()}), 200)
+
+
+        # # update stock of OGD 
+        # response = requests.get(f'http://127.0.0.1:8000/OGD/name/{data["Batch_Produit_OGD_batch"]}')
+        # updated_batch = response.json()
+        # updated_batch['Batch_Produit_OGD_Qte'] = int(updated_batch['Batch_Produit_OGD_Qte'] - int(data['Batch_Produit_OGD_Qte']))
+        # response2 = requests.post(f'http://127.0.0.1:8000/Produit/update/{updated_batch["Batch_Produit_id"]}', headers=headers, data=json.dumps(updated_batch))
+
+        # update stock of stabilisant
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_Produit_stabilisant_bacth"]}')
+        updated_batch = response.json()
+        updated_batch['MP_quantite'] = updated_batch['MP_quantite'] - int(data['Batch_Produit_stabilisant_Qte'])
+        response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
+
+
+        return redirect(url_for('index'))
+    else:
+        for field,errors in form_OGD.errors.items():
+            for error in errors:
+                flash(f"Erreur pour le champ '{getattr(form_OGD, field).label.text}' : {error}")
+
+    # formate le nom de batch OGD avec la semaine (today.isocalendar()[1]:02)
+    today = datetime.datetime.now()
+    form_OGD.Batch_OGD_name.data = f"OGD{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
+    form_OGD.Batch_OGD_date.data = today
+
+    form_OGD.Batch_OGD_heure_debut.data = today
+    form_OGD.Batch_OGD_KC8_batch.data = default_batch['KC8']
+    form_OGD.Batch_OGD_THF_batch.data = default_batch['THF']
+
+
+    return render_template("Add_batch_OGD.html",
+                           Form_OGD=form_OGD)
+
+
 @app.route("/Update_default_batch", methods=['GET','POST'])
 def Update_default_batch():
     global default_batch
@@ -429,7 +512,7 @@ def update_batch_OGD(batch_name):
         flash(json.dumps({'status': response.status_code}), 200)
         return redirect(url_for('index')) 
     
-    # reformater les datetime pour afficahge correct dans le form
+    # reformater les datetime pour affichage correct dans le form
     form_OGD['Batch_OGD_date'].data = form_OGD['Batch_OGD_date'].data.strftime(format='%d/%m/%y')
     form_OGD['Batch_OGD_heure_debut'].data = form_OGD['Batch_OGD_heure_debut'].data.strftime(format='%H:%M')
     return render_template("MaJ_batch_OGD.html",
@@ -481,20 +564,27 @@ def supprimer_KC8(batch_name):
     flash(f'{response.status_code} :Batch {batch_name} supprimé')
     return redirect(url_for('index'))
 
-@app.route('/del_OGD/<batch_name>', methods=['GET'])
+@app.route('/del_OGD/<batch_name>', methods=['GET','POST'])
 def supprimer_OGD(batch_name):
+
     response = requests.get(f'http://127.0.0.1:8000/OGD/name/{batch_name}')
-    batch_id = response.json()['Batch_OGD_id']
+    data = response.json()
+    batch_id = data['Batch_OGD_id']
     print(response.json())
     print(batch_id)
     print(type(batch_id))
-    response = requests.get(f'http://127.0.0.1:8000/OGD/delete/{(batch_id)}')
-    flash(f'{response.status_code} Batch {batch_name} supprimé')
-    return redirect(url_for('index'))
+
+    # displau confirmation message
+    if request.method == 'POST':
+        response = requests.get(f'http://127.0.0.1:8000/OGD/delete/{(batch_id)}')
+        flash(f'{response.status_code} Batch {batch_name} supprimé')
+        return redirect(url_for('index'))
+    form = Confirm_delete()
+    return render_template('confirm_delete.html', batch_data=data, form=form)
 
 
-@app.route("/Dashboard_production",methods=["GET","POST"])
-def dash_prod():
+@app.route("/Cahier_production",methods=["GET","POST"])
+def cahier_prod():
     url = 'http://127.0.0.1:8000/'
     headers = {
     'accept': 'application/json',
@@ -508,13 +598,70 @@ def dash_prod():
     batch_KC8 = pd.DataFrame(response.json()).sort_values('Batch_KC8_id', ascending=False)['Batch_KC8_name'].values
 
 
-    return render_template("Dashboard_cahier_prod.html",
+    return render_template("Cahier_prod.html",
                            batch_OGDs=batch_OGD,
                            batch_KC8s=batch_KC8)
 
 
+@app.route("/Dashboard_production",methods=["GET","POST"])
+def dash_prod():
+    # get data from bdd
+        # analyses UV
+    url = 'http://127.0.0.1:8000/'
+    headers = {
+    'accept': 'application/json',
+    'Content-Type': 'application/json'}
+    response = requests.get(url+f'analyses_UV',headers=headers)
+    UV_OGD = pd.DataFrame(response.json())
+    UV_OGD['conc'] = UV_OGD[['Analyse_UV_name','Analyse_UV_details','Analyses_UV_data']].apply(lambda x: x[2]['200'] / float(x[1]['dillution'].split(':')[1]), axis=1)
+        # info batch date
+    response = requests.get(url+f'OGD',headers=headers)
+    batch_OGD = pd.DataFrame(response.json())
+
+    # create new df
+    df=pd.merge(batch_OGD[['Batch_OGD_name','Batch_OGD_date','Batch_OGD_KC8_masse']],
+            UV_OGD[['Analyse_UV_name','conc']],
+            left_on='Batch_OGD_name',
+            right_on='Analyse_UV_name',
+            how='inner')
+        # format date
+    df['Batch_OGD_date'] = pd.to_datetime(df['Batch_OGD_date'])
+    df['week'] = df.Batch_OGD_date.apply(lambda x : x.week) #df.Batch_name.apply(lambda x : pd.to_datetime(int(x[2:4]),unit='W').week)  # df['date'].dt.week # 
+    df['month'] = df.Batch_OGD_date.apply(lambda x : x.month) #Batch_name.apply(lambda x : pd.to_datetime(int(x[2:4]),unit='W').month) # df['date'].dt.month # 
+    df['year'] = df.Batch_OGD_date.apply(lambda x : x.year)
+    df.Batch_OGD_KC8_masse = df.Batch_OGD_KC8_masse.apply(lambda x : int(round(x)))
+        # Pivot Table
+    table = pd.pivot_table(df, 
+                    index=[ 'month', 'week'], 
+                    values=['Batch_OGD_name', 'conc'], 
+                    aggfunc={'Batch_OGD_name': 'count', 'conc': ['sum', 'mean']})
+    html_table = table.to_html(index=True)
+        # create graph
+    fig = px.box(df, x='Batch_OGD_date', y="conc", points="all")
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return render_template("Dashboard_cahier_prod.html",
+                           graphJSON=graphJSON,
+                           html_table=html_table)
 
 
+
+
+
+
+
+
+@app.route("/Envois",methods=["GET","POST"])
+def Add_envoi():
+    return render_template("Envois.html")
+
+
+@app.route("/Produits",methods=["GET","POST"])
+def Add_produit():
+    form_produit = Form_Produit()
+    return render_template("Add_batch_produit.html",
+                           Form_Produit=form_produit
+                           )
 
 
 

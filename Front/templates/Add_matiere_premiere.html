@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
 {% block title %}
+
+
 <title>
-    Nouveau batch de matiere
+    Batch de matiere premiere
 </title>
 {% endblock %}
 
@@ -57,72 +59,85 @@
         </div>
         <div class="col-3">
             {{ Form_Matieres_premieres.MP_unite.label }}
-            {{ Form_Matieres_premieres.MP_unite(class="form-control") }}
+            {{ Form_Matieres_premieres.MP_unite(class="form-control", default_value='ddd') }}
         </div>
         </div>
         <br/>
     </form>
 </div>
 
-<div class="container shadow border border-danger-subtle border-1">
-    <div class="row align-items-start">
-        <div class="col">
-            <div class="container mt-5">
-                <h1>Batch Carbone</h1>
-                <div class="row justify-content-left">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body">
-                                {% for batch in batch_C %}
-                                    Nom : {{ batch[0] }}, </br>Qte : {{ batch[1] }}  {{batch[2]}}
-                                    <a href="{{ url_for('Inspect_MP', MP_ref_fournisseur=batch[0]) }}" class="alert-link">Inspecter</a>.
-                                    </br>
-                                {% endfor %}
+{% if not Inspect %}
+    <div class="container shadow border border-danger-subtle border-1">
+        <div class="row align-items-start">
+            <div class="col">
+                <div class="container mt-5">
+                    <h1>Batch Carbone</h1>
+                    <div class="row justify-content-left">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% for batch in batch_C %}
+                                        Nom : {{ batch[0] }}, </br>Qte : {{ batch[1] }}  {{batch[2]}}
+                                        <a href="{{ url_for('Inspect_MP', MP_ref_fournisseur=batch[0]) }}" class="alert-link">Inspecter</a>.
+                                        </br>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>    
-            </div>
-        </div>
-        <div class="col">
-            <div class="container mt-5">
-                <h1>Batch Potassium</h1>
-                <div class="row justify-content-left">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body">
-                                {% for batch in batch_K %}
-                                    Nom : {{ batch[0] }}, </br>Qte : {{ batch[1] }}  {{batch[2]}}
-                                    <a href="{{ url_for('Inspect_MP', MP_ref_fournisseur=batch[0]) }}" class="alert-link">Inspecter</a>.
-                                    </br>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>    
-            </div>
-        </div>
-        <div class="col">
-            <div class="container mt-5">
-                <h1>Batch THF</h1>
-                <div class="row justify-content-left">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body">
-                                {% for batch in batch_THF %}
-                                    Nom : {{ batch[0] }}, </br>Qte : {{ batch[1] }} {{batch[2]}}
-                                    <a href="{{ url_for('Inspect_MP', MP_ref_fournisseur=batch[0]) }}" class="alert-link">Inspecter</a>.
-                                    </br>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
+                    </div>    
                 </div>
-            </div>  
+            </div>
+            <div class="col">
+                <div class="container mt-5">
+                    <h1>Batch Potassium</h1>
+                    <div class="row justify-content-left">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% for batch in batch_K %}
+                                        Nom : {{ batch[0] }}, </br>Qte : {{ batch[1] }}  {{batch[2]}}
+                                        <a href="{{ url_for('Inspect_MP', MP_ref_fournisseur=batch[0]) }}" class="alert-link">Inspecter</a>.
+                                        </br>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+            <div class="col">
+                <div class="container mt-5">
+                    <h1>Batch THF</h1>
+                    <div class="row justify-content-left">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    {% for batch in batch_THF %}
+                                        Nom : {{ batch[0] }}, </br>Qte : {{ batch[1] }} {{batch[2]}}
+                                        <a href="{{ url_for('Inspect_MP', MP_ref_fournisseur=batch[0]) }}" class="alert-link">Inspecter</a>.
+                                        </br>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+            </div>
         </div>
     </div>
-</div>
+{% endif %}
 
+
+{% if Inspect %}
+
+    {% for field in Form_Matieres_premieres %}
+    {{ Form_Matieres_premieres[field.name].label }} : {{ Form_Matieres_premieres[field.name].data }}
+    </br>
+    {% endfor %}
+
+
+
+{% endif %}
 
 
 {% endblock %}
