@@ -14,3 +14,5 @@ codes_MP_CW = dict({'Carbone': 'CW_001',
                     'THF': 'CW_003'})
 
 unitees = ['Kg','L']
+
+Produits_CW = ['W2','W2NC','W3','W3NC','W10','W10NC','EpoF','EpoC']

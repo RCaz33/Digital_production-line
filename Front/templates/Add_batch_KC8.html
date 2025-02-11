@@ -17,6 +17,29 @@
   </div>
 {% endfor %}
 
+
+<script>
+    function performOperation() {
+        const inputValue = document.getElementById('m').value;
+        const number = parseFloat(inputValue);
+
+        if (!isNaN(number)) {
+            // Perform the mathematical operation (e.g., squaring the number)
+            const result_K = number * 0.33 *1000;
+            const result_C = number * 0.66 *1000;
+            // Update the result in the HTML
+            document.getElementById('result_K').innerText = `m(K) :\n ${result_K} g`;
+            document.getElementById('result_C').innerText = `m(C) :\n ${result_C} g`;
+
+        } else {
+            // Handle invalid input
+            document.getElementById('result_display').innerText = 'Please enter a valid number';
+        }
+    }
+</script>
+
+
+
 <!-- Get informations -->
 <h1> Nouveau batch KC8</h1>
 <div class="container shadow border border-danger-subtle border-1">
@@ -49,9 +72,13 @@
             {{ Form_KC8.Batch_KC8_C_batch.label }}
             {{ Form_KC8.Batch_KC8_C_batch(class="form-control") }}
         </div>
-        <div class="col-3">
+        <div class="col-2">
             {{ Form_KC8.Batch_KC8_masse.label }}
-            {{ Form_KC8.Batch_KC8_masse(class="form-control") }}
+            {{ Form_KC8.Batch_KC8_masse(class="form-control", id='m') }}
+        </div>
+        <div class="col-1">
+        </br>
+            <button type="button" class="btn btn-light" onclick="performOperation()">Calculate</button>
         </div>
         <div class="col-3">
         </div>
@@ -63,9 +90,25 @@
             {{ Form_KC8.Batch_KC8_Agitation.label }}
             {{ Form_KC8.Batch_KC8_Agitation(class="form-control") }}
         </div>
+        <div class="col-1">
+        </div>
+        <div class="col-1">
+            <p id="result_K">m(K) : </p>
+        </div>
+        <div class="col-1">
+            <p id="result_C">m(C) : </p>
+        </div>
+        <div class="col-3">
+        </div>
+
+
         <div class="col-3">
             {{ Form_KC8.Batch_KC8_heure_debut.label }}
             {{ Form_KC8.Batch_KC8_heure_debut(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
         </div>
         <div class="col-3">
         </div>
@@ -77,9 +120,23 @@
             {{ Form_KC8.Batch_KC8_room_T.label }}
             {{ Form_KC8.Batch_KC8_room_T(class="form-control") }}
         </div>
+        <div class="col-1">
         </div>
-        <br/>
-        <button type="submit" class="btn btn-primary">Validate</button>
+        <div class="col-2">
+            </br>
+            <button type="submit" class="btn btn-primary align-right">Validate</button>
+            </br>
+
+        </div>
+        </br>
+
+  
+        
+
+
+
+  
+
     </form>
 </div>
 

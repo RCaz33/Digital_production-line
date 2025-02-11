@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from router import OGD_router, KC8_router, Matieres_premieres_router,Analyses_router, Techniciens_router, Analyses_UV_router
+from router import Envoi_router, Produit_router, OGD_router, KC8_router, Matieres_premieres_router,Analyses_router, Techniciens_router, Analyses_UV_router
 
 from database import models
 from database.db_connect import engine
@@ -18,17 +18,9 @@ app.include_router(Analyses_UV_router.router)
 app.include_router(Matieres_premieres_router.router)
 app.include_router(KC8_router.router)
 app.include_router(OGD_router.router)
+app.include_router(Produit_router.router)
+app.include_router(Envoi_router.router)
 app.include_router(Techniciens_router.router)
-
-
-# app.include_router(Step0_router.router)
-# app.include_router(Step1_router.router)
-# app.include_router(Step2_router.router)
-# app.include_router(Step3_router.router)
-# app.include_router(Step4_router.router)
-
-
-
 
 
 @app.get('/')

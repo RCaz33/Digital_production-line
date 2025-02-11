@@ -7,21 +7,28 @@ from sklearn.metrics import rand_score
 
 ##############
 import mlflow
+
 ##############
 
 
 #####################
-# region = "France Central" # "West Europe"
-# subscription_id = "974386b8-dfe6-43cc-94af-17335974d64a" 
-# resource_group = "mlops-promo"
-# workspace_name = "mlops-workspace-promo" # "rc_trackmlflow"
+region = "France Central" # "West Europe"
+subscription_id = "974386b8-dfe6-43cc-94af-17335974d64a"
+resource_group = "mlops-promo"
+workspace = "mlops-workspace-promo"
 # azureml_mlflow_uri = f"azureml://{region}.api.azureml.ms/mlflow/v1.0/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.MachineLearningServices/workspaces/{workspace_name}"
 # mlflow.set_tracking_uri(azureml_mlflow_uri)
-
+credentials = DefaultAzureCredential()
+ml_client = MLClient(
+    subscription_id=subscription_id,
+    resource_group_name=resource_group,
+    credential=credentials,)
+ws = ml_client.workspaces.get(name=workspace)
 ####################
 
 # mlflow.set_tracking_uri("sqlite:///mlflow.db")
-mlflow.set_experiment("k-means groups")
+mlflow.set_tracking_uri = ws.mlflow_tracking_uri
+mlflow.set_experiment(experiment_name="k-means-groups")
 
 def load_pickle(filename: str):
     with open(filename, "rb") as f_in:

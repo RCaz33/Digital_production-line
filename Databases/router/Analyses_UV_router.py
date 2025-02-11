@@ -9,8 +9,8 @@ from typing import List
 
 
 router = APIRouter(
-    prefix="/analyses",
-    tags=["Analyses"],
+    prefix="/analyses_UV",
+    tags=["Analyses_UV"],
 )
 
 

@@ -18,7 +18,7 @@ class DB_Analyses_UV(Base):
     Analyses_UV_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     Analyse_UV_name = Column(String(50), nullable=False)
     Analyse_UV_subname = Column(String(50), nullable=True) 
-    Analyse_UV_details =Column(String(300), nullable=True) 
+    Analyse_UV_details = Column(JSON, nullable=True)
     Analyses_UV_data = Column(JSON, nullable=True) # 'CodeEchantillon_date_type_details'
 
 
@@ -43,7 +43,7 @@ class DB_Batch_KC8(Base):
     Batch_KC8_Technicien = Column(String(5), nullable=False)
     Batch_KC8_K_batch = Column(String(50), nullable=False)
     Batch_KC8_C_batch = Column(String(50), nullable=False)
-    Batch_KC8_masse = Column(Integer, nullable=False)
+    Batch_KC8_masse = Column(Float, nullable=False)
     Batch_KC8_Temperature = Column(Float, default=20.0, nullable=False)
     Batch_KC8_Agitation = Column(Integer, nullable=False)
     Batch_KC8_heure_debut = Column(DateTime, nullable=False)
@@ -64,7 +64,7 @@ class DB_Batch_OGD(Base):
     Batch_OGD_KC8_batch = Column(String(10), nullable=False)
     Batch_OGD_KC8_masse = Column(Float, default=20.0, nullable=False)
     Batch_OGD_THF_batch = Column(String(50), nullable=False)
-    Batch_OGD_THF_Volume = Column(Integer, default=500, nullable=False)
+    Batch_OGD_THF_Volume = Column(Float, default=500, nullable=False)
     Batch_OGD_Temperature = Column(Float, default=20.0, nullable=False)
     Batch_OGD_Agitation = Column(Integer, nullable=False)
     Batch_OGD_heure_debut = Column(DateTime, nullable=False)
@@ -81,6 +81,39 @@ class DbTechnicient(Base):
     Technicien_info_2 = Column(String(100), nullable=False)
 
 
+class DB_Batch_Produit(Base):
+    __tablename__ = 'Batch_produit'
+    Batch_Produit_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Batch_Produit_ref_CW = Column(String(10), nullable=False, unique=True)
+    Batch_Produit_date = Column(DateTime, nullable=False)
+    Batch_Produit_Technicien = Column(String(10), nullable=False)
+    Batch_Produit_OGD_batch = Column(String(10), nullable=False, unique=True)
+    Batch_Produit_OGD_Qte = Column(Float, default=20.0, nullable=False)
+    Batch_Produit_stabilisant_bacth = Column(String(10), nullable=False, unique=True)  # can be EPO ou viscosant
+    Batch_Produit_stabilisant_Qte = Column(Float, default=20.0, nullable=False)
+    Batch_Produit_Analyses = Column(String(50), nullable=False)
+
+
+class DB_Envoi(Base):
+    __tablename__ = 'Envois'
+    Envoi_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Envoi_date_commande = Column(DateTime, nullable=False)
+    Envoi_client_name = Column(String(50), nullable=False)
+    Envoi_produit_name = Column(String(10), nullable=False)
+    Envoi_produit_batch = Column(String(10), nullable=True)
+    Envoi_produit_Qte = Column(Float, nullable=False)
+    Envoi_produit_emballage = Column(String(10), nullable=False)
+    Envoi_date_prevu = Column(DateTime, nullable=False)
+    Envoi_date_effective = Column(DateTime, nullable=True)
+    Envoi_code_coli = Column(String(50), nullable=True, unique=True)
+    Envoi_delivered = Column(Boolean)
+    Envoi_retour_client = Column(JSON, nullable=True)
+    
+class DB_Client(Base):
+    __tablename__ = 'Clients'
+    CLient_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Client_nom = Column(String(50), nullable=False)
+    CLient_adresse = Column(String(50), nullable=False)
 
 # class DbForm_S0(Base):
 #     __tablename__ = 'Batch_OGD'

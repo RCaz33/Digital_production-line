@@ -30,17 +30,16 @@
 
 {% block content %}
 
-
 <!-- 
-    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-    <script type='text/javascript'>
-    var graphs = {{graphJSON | safe}};
-    Plotly.plot('chart',graphs,{});
-    </script> -->
-
+    <div id='chart' class='chart'”>
+        <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+        <script type='text/javascript'>
+        var graphs = {{graphJSON | safe}};
+        Plotly.plot('chart',graphs,{});
+        </script>
+    </div> -->
     <h3> Evolution de la concentration des batchs </h3>
 
-    <div id='chart' class='chart'”></div>
     <h4> Détail du nombre de Batch, somme des concentration et concentration moyenne d'OGD pour la période {{ date_min }} - {{ date_max }} </h4>
     {{ html_table | safe }}
     <br/><br/><br/><br/>

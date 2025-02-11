@@ -80,10 +80,25 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <h1>Batch en cours</h1>
+            <h1>Batch KC8 en cours</h1>
             <div class="card">
                 <div class="card-body">
-                    {% for batch in batch_en_cours %}
+                    {% for batch in KC8_en_cours %}
+                        <div class="alert alert-primary d-flex align-items-center" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
+                        Nom : {{ batch[0] }}, date : {{ batch[1] }} 
+                        <a href="{{ url_for('update_batch_KC8', batch_name=batch[0]) }}" class="alert-link">Mettre à jour le statut</a>.<!-- Display batch that was submitted -->
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h1>Batch OGD en cours</h1>
+            <div class="card">
+                <div class="card-body">
+                    {% for batch in OGD_en_cours %}
                         <div class="alert alert-primary d-flex align-items-center" role="alert">
                         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
                         Nom : {{ batch[0] }}, date : {{ batch[1] }} 
@@ -94,7 +109,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
             <h1>Batch produits à valider</h1>
             <div class="card">
                 <div class="card-body">
@@ -102,13 +117,13 @@
                         <div class="alert alert-primary d-flex align-items-center" role="alert">
                         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
                         Nom : {{ produit[0] }}, date : {{ produit[1] }} 
-                        <a href="{{ url_for('Add_Produit', produit_name=produit[0]) }}" class="alert-link">Lancer production</a>.<!-- Display batch that was submitted -->
+                        <a href="{{ url_for('Add_Produit', produit_name=produit[0]) }}" class="alert-link">Lancer production</a>.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>    
 </div>
 

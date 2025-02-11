@@ -8,31 +8,30 @@ from datetime import datetime
 
 
 class Analyses_UV_Base(BaseModel):
-    Analyses_UV_id = int
-    Analyse_UV_name = str
-    Analyse_UV_subname = str
-    Analyse_UV_details = str
-    Analyses_UV_data = Dict[str:Any]
+    Analyses_UV_id : int
+    Analyse_UV_name : str
+    Analyse_UV_subname : str
+    Analyse_UV_details :  Dict[str,Any]
+    Analyses_UV_data : Dict[str,Any]
 
 
 class Analyses_UV_Add(BaseModel):
-    Analyse_UV_name = str
-    Analyse_UV_subname = str
-    Analyse_UV_details = str
-    Analyses_UV_data = Dict[str:Any]
+    Analyse_UV_name : str
+    Analyse_UV_subname : str
+    Analyse_UV_details :  Dict[str,Any]
+    Analyses_UV_data : Dict[str,Any]
 
 
 class Analyses_Base(BaseModel):
     Analyses_id : int 
     Analyse_path_to_raw : str
-    Analyse_code : str # 'CodeEchantillon_date_type_details'
-# every folder create create a new analyse
-#  
+    Analyse_code : str 
+    
+
 class Analyses_Base_Add(BaseModel):
     Analyse_path_to_raw : str
-    Analyse_code : str # 'CodeEchantillon_date_type_details'
-# every folder create create a new analyse
-#  
+    Analyse_code : str 
+    
 # name of batch + date of analysis + type of analysis + details analysis
                       # "nom_250129_Raman / nom_250202_DLS / .."
 class Matieres_premieres_Base(BaseModel):
@@ -116,6 +115,70 @@ class Batch_OGD_Add(BaseModel):
     Batch_OGD_room_HR : float
     Batch_OGD_room_T : float
     Batch_OGD_Analyses : str 
+
+
+
+class Batch_Produit_Base(BaseModel):
+    Batch_Produit_id : int 
+    Batch_Produit_name : str
+    Batch_Produit_date : datetime
+    Batch_Produit_Technicien : str
+    Batch_Produit_OGD_batch : str
+    Batch_Produit_OGD_Qte : float
+    Batch_Produit_stabilisant_bacth : str
+    Batch_Produit_stabilisant_Qte : float
+    Batch_Produit_Analyses : str 
+
+
+class Batch_Produit_Add(BaseModel):
+    Batch_Produit_name : str
+    Batch_Produit_date : datetime
+    Batch_Produit_Technicien : str
+    Batch_Produit_OGD_batch : str
+    Batch_Produit_OGD_Qte : float
+    Batch_Produit_stabilisant_bacth : str
+    Batch_Produit_stabilisant_Qte : float
+    Batch_Produit_Agitation : int 
+    Batch_Produit_Analyses : str 
+
+class Envoi_Base(BaseModel):
+    Envoi_id : int 
+    Envoi_date_commande : datetime
+    Envoi_client_name : str
+    Envoi_produit_name : str
+    Envoi_produit_batch : Optional[str] = None
+    Envoi_produit_Qte : float
+    Envoi_produit_emballage : str
+    Envoi_date_prevu : datetime
+    Envoi_date_effective : Optional[datetime] = None
+    Envoi_code_coli : Optional[str] = None
+    Envoi_delivered : Optional[bool] = False
+    Envoi_retour_client : Optional[Dict[str,Any]] = None
+
+class Envoi_Add(BaseModel):
+    Envoi_date_commande : datetime
+    Envoi_client_name : str
+    Envoi_produit_name : str
+    Envoi_produit_batch : Optional[str] = None
+    Envoi_produit_Qte : float
+    Envoi_produit_emballage : str
+    Envoi_date_prevu : datetime
+    Envoi_date_effective : Optional[datetime] = None
+    Envoi_code_coli : Optional[str] = None
+    Envoi_delivered : Optional[bool] = False
+    Envoi_retour_client : Optional[Dict[str,Any]] = None
+
+
+class Client_Base(BaseModel):
+    Client_id : int
+    Client_nom : str
+    Client_adresse : str
+
+class Client_Add(BaseModel):
+    Client_nom : str
+    Client_adresse : str
+
+
 ##### Batch_OGD
 
 # Batch data retrieved from formulaire

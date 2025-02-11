@@ -15,7 +15,7 @@ def update_stocks_K_C(data):
         response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_K_batch"]}')
         status['get_K'] = response.status_code
         updated_batch = response.json()
-        updated_batch['MP_quantite'] = int(updated_batch['MP_quantite'] - (39/(39+(8*12))*int(data['Batch_KC8_masse'])))
+        updated_batch['MP_quantite'] = int(updated_batch['MP_quantite'] - (39/(39+(8*12))*float(data['Batch_KC8_masse'])))
         response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
         status['post_K'] = response.status_code
         
@@ -23,7 +23,7 @@ def update_stocks_K_C(data):
         response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_C_batch"]}')
         updated_batch = response.json()
         status['get_C'] = response.status_code
-        updated_batch['MP_quantite'] = updated_batch['MP_quantite'] - ((8*12)/(39+(8*12))*int(data['Batch_KC8_masse']))
+        updated_batch['MP_quantite'] = updated_batch['MP_quantite'] - ((8*12)/(39+(8*12))*float(data['Batch_KC8_masse']))
         response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
         status['post_C'] = response.status_code
 
@@ -58,7 +58,7 @@ def get_last_10_batch():
     url = 'http://127.0.0.1:8000/matieres_premieres/'
     data = pd.DataFrame(requests.get(url).json())
     last_10_K=data.loc[data.MP_nom == 'Potassium'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:]
-    last_10_C=data.loc[data.MP_nom == 'Carbon'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:]
+    last_10_C=data.loc[data.MP_nom == 'Carbone'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:]
     last_10_THF=data.loc[data.MP_nom == 'THF'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:]
     # get last KC8
     url = 'http://127.0.0.1:8000/KC8/'
@@ -70,7 +70,7 @@ def get_last_10_batch():
 def get_matieres_premieres(response):
     data = pd.DataFrame(response.json())
     K_name=data.loc[data.MP_nom == 'Potassium'].sort_values('MP_id')['MP_ref_fournisseur'].values[-1]
-    C_name=data.loc[data.MP_nom == 'Carbon'].sort_values('MP_id')['MP_ref_fournisseur'].values[-1]
+    C_name=data.loc[data.MP_nom == 'Carbone'].sort_values('MP_id')['MP_ref_fournisseur'].values[-1]
     THF_name=data.loc[data.MP_nom == 'THF'].sort_values('MP_id')['MP_ref_fournisseur'].values[-1]
     return K_name,C_name,THF_name
 

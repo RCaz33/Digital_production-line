@@ -54,7 +54,7 @@ class Form_Batch_KC8(FlaskForm):
     Batch_KC8_Technicien = SelectField('Technicien', choices=config.Techniciens_CW)
     Batch_KC8_K_batch =  StringField('Batch_K_name')
     Batch_KC8_C_batch =  StringField('Batch_C_name')
-    Batch_KC8_masse = IntegerField('Masse totale (g)',[NumberRange(min=0, max=1000)], default=200)
+    Batch_KC8_masse = FloatField('Masse totale (Kg)', default=0.6)
     Batch_KC8_Temperature = FloatField('Température agitation', default=50)
     Batch_KC8_Agitation = IntegerField('Vitesse agitation',default=250)
     Batch_KC8_heure_debut = TimeField('Heure de début', format='%H:%M')
@@ -92,7 +92,7 @@ class Form_Produit(FlaskForm):
 class Form_Envoi(FlaskForm):
     Envoi_date_commande = DateTimeField('Date commande', format='%d/%m/%y')
     Envoi_client_name = StringField('Nom Client', [Length(max=10)])
-    Envoi_produit_name = StringField('Nom Produit', [Length(max=10)])
+    Envoi_produit_name = SelectField('Type', choices=config.Produits_CW)
     Envoi_produit_batch = StringField('Reference Batch', [Length(max=10)])
     Envoi_produit_Qte = FloatField('Qte produit', default=50)
     Envoi_produit_emballage =  StringField('Conditionnement', [Length(max=10)])
@@ -100,7 +100,12 @@ class Form_Envoi(FlaskForm):
     Envoi_date_effective = DateTimeField('Date envoi effective', format='%d/%m/%y')
     Envoi_code_coli = StringField('Reference coli', [Length(max=50)])
     Envoi_retour_client = TextAreaField('Metadata')
-
+    Envoi_submit = SubmitField('Nouvelle demande')
 
 class Confirm_delete(FlaskForm):
     submit = SubmitField('Confirm Delete')
+
+
+class Form_calculate_K_C(FlaskForm):
+    submit = SubmitField('Calculate')
+    
