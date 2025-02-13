@@ -28,14 +28,15 @@
 {% endfor %}
 
 <!-- Get informations -->
-<h1> Nouvelle demande d'envoi</h1>
+<h1> Nouvelle commande : demande de production</h1>
 <div class="container shadow border border-danger-subtle border-1">
-    <form action="{{url_for('Add_envoi')}}" method="POST">
+    <form method="POST">
         {{ Form_Envoi.csrf_token }}
         <br/>
         <div class="row justify-content-start">
         <div class="col-3">
-            <h5>Ajout d'un nouveau Produit</h5>
+            <h5>Ajout d'une nouvelle demande</h5>
+            <h6>Préciser Date d'envoi prévue</h6>
         </div>
         <div class="col-3">
             {{ Form_Envoi.Envoi_date_commande.label }}
@@ -45,10 +46,9 @@
             {{ Form_Envoi.Envoi_client_name.label }}
             {{ Form_Envoi.Envoi_client_name(class="form-control") }}
         </div>
-
         <div class="col-3">
-            {{ Form_Envoi.Envoi_produit_batch.label }}
-            {{ Form_Envoi.Envoi_produit_batch(class="form-control") }}
+            {{ Form_Envoi.Envoi_produit_name.label }}
+            {{ Form_Envoi.Envoi_produit_name(class="form-control") }}
         </div>
         <div class="col-9">
         </div>
@@ -58,34 +58,32 @@
         </div>
         <div class="col-9">
         </div>
-     
-
-        <div class="col-3">
-            {{ Form_Envoi.Envoi_produit_emballage.label }}
-            {{ Form_Envoi.Envoi_produit_emballage(class="form-control",placeholder="métal / verre / polymère") }}
-        </div>
-        <div class="col-3">
-        </div>
         <div class="col-3">
             {{ Form_Envoi.Envoi_date_prevu.label }}
             {{ Form_Envoi.Envoi_date_prevu(class="form-control",placeholder="entrez date au format jj/mm/aa",) }}
         </div>
         <div class="col-3">
-            {{ Form_Envoi.Envoi_date_effective.label }}
-            {{ Form_Envoi.Envoi_date_effective(class="form-control",placeholder="entrez date au format jj/mm/aa",) }}
         </div>
         <div class="col-3">
-            {{ Form_Envoi.Envoi_code_coli.label }}
-            {{ Form_Envoi.Envoi_code_coli(class="form-control",placeholder="Utilisé pour le suivi des retours client",) }}
-        </div>
-        <div class="col-9">
+            <br/>
+            <a href="{{ url_for('dash_commerce') }}" class="btn btn-warning">Retour Commerce</a>
         </div>
         <div class="col-3">
+        </div>
+        <!-- <div class="col-3">
             </br>
             {{Form_Envoi.Envoi_submit(class="btn btn-primary")}}
+            </br>
+        </div> -->
+        <div class="col-3">
+            <br/>
+            <button class="btn btn-primary" type="submit" name='submit' value="submit"> Enregistrer </button>
         </div>
-    </form>
 
+    </br>
+    </form>
+    </br>
+</div>
 
 
 

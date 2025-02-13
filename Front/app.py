@@ -129,10 +129,10 @@ import requests
 # configure default batch
 global default_batch
 response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
-print(10*"RESPONSE\n")
-print(response.json())
+
 K_name,C_name,THF_name = get_matieres_premieres(response)
 default_batch = dict({'K':K_name,'C':C_name,'THF':THF_name})
+
 response = requests.get(f'http://127.0.0.1:8000/KC8/')
 KC8_all = pd.DataFrame(response.json())
 KC8_batch = KC8_all.loc[KC8_all.Batch_KC8_id==np.max(KC8_all.Batch_KC8_id),'Batch_KC8_name'].values[0]
@@ -145,7 +145,8 @@ default_batch['KC8'] = KC8_batch
 # @login_required
 def index():
 
-    
+    global default_batch
+
     # batch without ending time
     response = requests.get(f'http://127.0.0.1:8000/OGD/')
     OGD_all = pd.DataFrame(response.json())
@@ -164,7 +165,7 @@ def index():
     stock_MP = stock_MP.T.to_dict()
     Stock_KC8 = requests.get(f'http://127.0.0.1:8000/KC8/name/{default_batch["KC8"]}')
 
-    print(stock_MP)
+    print(Stock_KC8)
     return render_template("acceuil.html",
                         n_batch_K = default_batch['K'],
                         stock_K = stock_MP[default_batch['K']]['MP_quantite'],
@@ -297,16 +298,18 @@ def Add_KC8():
             "Batch_KC8_Technicien": request.form['Batch_KC8_Technicien'],
             "Batch_KC8_K_batch": request.form['Batch_KC8_K_batch'],
             "Batch_KC8_C_batch": request.form['Batch_KC8_C_batch'],
-            "Batch_KC8_masse": request.form['Batch_KC8_masse'],
-            "Batch_KC8_Temperature": request.form['Batch_KC8_Temperature'],
-            "Batch_KC8_Agitation": request.form['Batch_KC8_Agitation'],
+            "Batch_KC8_masse": float(request.form['Batch_KC8_masse']),
+            "Batch_KC8_Temperature": float(request.form['Batch_KC8_Temperature']),
+            "Batch_KC8_Agitation": int(request.form['Batch_KC8_Agitation']),
             "Batch_KC8_heure_debut": KC8_heure_debut.isoformat(),
             "Batch_KC8_heure_fin": None,
-            "Batch_KC8_room_HR": request.form['Batch_KC8_room_HR'],
-            "Batch_KC8_room_T": request.form['Batch_KC8_room_T'],
+            "Batch_KC8_room_HR": float(request.form['Batch_KC8_room_HR']),
+            "Batch_KC8_room_T": float(request.form['Batch_KC8_room_T']),
             "Batch_KC8_Analyses": "None"}
 
+        print(json.dumps(data))
         response = requests.post(url, headers=headers, data=json.dumps(data))
+        print(response.content)
         flash(json.dumps({'status': 'OK', 'response': response.json()}), 200)
 
         # Update Matieres premieres
@@ -635,8 +638,10 @@ def dash_prod():
     'accept': 'application/json',
     'Content-Type': 'application/json'}
     response = requests.get(url+f'analyses_UV',headers=headers)
-    UV_OGD = pd.DataFrame(response.json())
-    UV_OGD['conc'] = UV_OGD[['Analyse_UV_name','Analyse_UV_details','Analyses_UV_data']].apply(lambda x: x[2]['200'] / float(x[1]['dillution'].split(':')[1]), axis=1)
+    UV_OGD = pd.DataFrame(response.json())[['Analyse_UV_name','Analyse_UV_subname','Analyse_UV_details','Analyses_UV_data']]
+    UV_OGD = UV_OGD.loc[UV_OGD.Analyse_UV_subname == 'UV']
+    print(UV_OGD)
+    UV_OGD['conc'] = UV_OGD.apply(lambda x: x[3]['200'] / float(x[2]['dillution'].split(':')[1]), axis=1)
         # info batch date
     response = requests.get(url+f'OGD',headers=headers)
     batch_OGD = pd.DataFrame(response.json())
@@ -672,29 +677,92 @@ def dash_prod():
 @app.route("/Dashboard_commerce",methods=["GET","POST"])
 def dash_commerce():
 
+    # display available products
+
+
     # demande batch produit 
     response = requests.get(f'http://127.0.0.1:8000/Envoi/')
     Envois_all = pd.DataFrame(response.json())
-    Envois_en_cours = Envois_all.loc[Envois_all.Envoi_produit_batch.isnull(),['Envoi_produit_name','Envoi_produit_Qte']].values
+    Envois_en_cours = Envois_all.loc[Envois_all.Envoi_produit_batch.isnull(),['Envoi_produit_name','Envoi_produit_Qte']][::-1].values
 
-
-    data_produits = pd.DataFrame(data=[['W3',30],
-                                       ['W3NC',25],
-                                       ['W10',5],
-                                       ['W10NC',2],
-                                       ['EpoC',18],
-                                       ['EpoF',22]],
-                                columns = ['Produits','Quantité'],
-                                index=range(6)
-                                 )
-    fig = px.bar(data_produits,x='Produits',y='Quantité', title='Stock produits')
+    response = requests.get(f'http://127.0.0.1:8000/Produit/')
+    array = np.array([(a['Batch_Produit_ref_CW'],a['Batch_Produit_OGD_Qte']) for a in response.json()])
+    df = pd.DataFrame(array, columns=['produit','Qté'])
+    df['Categorie'] = df.produit.apply(lambda x :x.split("-")[0])
+    df['Qté'] = df['Qté'].astype(float)
+    fig = px.bar(df,x='Categorie',y='Qté',color='produit',title='Stocks des produits sur étagère')
     graphJSON = json.dumps(fig,cls=plotly.utils.PlotlyJSONEncoder)
 
-    print(Envois_en_cours)
 
     return render_template("acceuil_commerce.html",
                            graphJSON=graphJSON,
                            produits_en_attente=Envois_en_cours)
+
+
+@app.route("/Clients", methods=['GET','POST'])
+def acceuil_clients():
+    response = requests.get(f'http://127.0.0.1:8000/Client/')
+    Clients_all = pd.DataFrame(response.json())
+    table_client = Clients_all.to_html(classes='table table-striped table-bordered', index=False)
+    form_client = Form_Client()
+
+    if form_client.validate_on_submit():
+        url = 'http://127.0.0.1:8000/Client/'
+        headers = {'accept': 'application/json',
+                'Content-Type': 'application/json'}
+        data = {'Client_nom':request.form['Client_name'],
+                'Client_adresse':request.form['Client_adresse']}
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        return redirect(url_for('acceuil_clients'))
+
+    return render_template("acceuil_client.html",
+                           table_client = table_client,
+                           Form_Client = form_client)
+
+
+@app.route("/Commande",methods=["GET","POST"])
+def Add_commande():
+
+    form_envoi = Form_Envoi()
+    if request.method == 'POST':
+        # data = dict()
+        # for field in form_envoi:
+        #     if field.name == 'csrf_token' or field.name == 'Envoi_submit':
+        #         continue
+        #     elif 'date' in field.name or 'heure' in field.name:
+        #         data[field.name] = form_envoi[field.name].data.strftime('%Y-%m-%dT%H:%M:%S')
+        #     else:
+        #         data[field.name] = form_envoi[field.name].data
+
+        Envoi_date_commande = request.form['Envoi_date_commande']
+        Envoi_date_commande = datetime.datetime.strptime(Envoi_date_commande, '%d/%m/%y')
+
+        Envoi_date_prevu = request.form['Envoi_date_prevu']
+        Envoi_date_prevu = datetime.datetime.strptime(Envoi_date_prevu, '%d/%m/%y')
+
+
+        data = {"Envoi_date_commande":Envoi_date_commande.isoformat(),
+                "Envoi_client_name":request.form['Envoi_client_name'],
+                "Envoi_produit_name":request.form['Envoi_produit_name'],
+                "Envoi_produit_batch":None,
+                "Envoi_produit_Qte":request.form['Envoi_produit_Qte'],
+                "Envoi_produit_emballage":"",
+                "Envoi_date_prevu":Envoi_date_prevu.isoformat(),
+                "Envoi_date_effective":None,
+                "Envoi_code_coli":None,
+                "Envoi_retour_client":None,
+                }
+        print(data)
+        response = requests.post(f'http://127.0.0.1:8000/Envoi/',data=json.dumps(data))
+        flash(f'{response.status_code} Demande production {data['Envoi_client_name']} ({data['Envoi_produit_Qte']} kg) effectué')
+        return redirect(url_for('dash_commerce'))
+
+    today = datetime.datetime.now()
+    form_envoi.Envoi_date_commande.data = today
+    response = requests.get(f'http://127.0.0.1:8000/Client/')
+    form_envoi.Envoi_client_name.choices = np.unique(np.array([a['Client_nom'] for a in response.json()])).tolist()
+    return render_template("Commande.html",
+                           Form_Envoi = form_envoi)
 
 
 
@@ -702,25 +770,83 @@ def dash_commerce():
 def Add_envoi():
 
     form_envoi = Form_Envoi()
-    if form_envoi.validate_on_submit():
-        data = {"Envoi_date_commande":request.form['Envoi_date_commande'],
-                "Envoi_client_name":request.form['Envoi_client_name'],
-                "Envoi_produit_name":request.form['Envoi_client_name'],
-                "Envoi_produit_batch":None,
-                "Envoi_produit_Qte":request.form['Envoi_produit_Qte'],
-                "Envoi_produit_emballage":request.form['Envoi_produit_emballage'],
-                "Envoi_date_prevu":request.form['Envoi_date_prevu'],
-                "Envoi_date_effective":None,
-                "Envoi_code_coli":None,
-                "Envoi_retour_client":None,
-                }
-        response = requests.post(f'http://127.0.0.1:8000/Envois/',data=json.dumps(data))
+    if request.method == 'POST':
+        data = dict()
+        for field in form_envoi:
+            if field.name == 'csrf_token' or field.name == 'Envoi_submit':
+                continue
+            elif 'date' in field.name or 'heure' in field.name:
+                data[field.name] = form_envoi[field.name].data.strftime('%Y-%m-%dT%H:%M:%S')
+            else:
+                data[field.name] = form_envoi[field.name].data
+
+        data['Envoi_produit_name']=data['Envoi_produit_batch'].split('-')[0]
+        data["Envoi_retour_client"]=None
+                
+        response = requests.post(f'http://127.0.0.1:8000/Envoi/',data=json.dumps(data))
         flash(f'{response.status_code} Demande production {data['Envoi_client_name']} ({data['Envoi_produit_Qte']} kg) effectué')
         return redirect(url_for('dash_commerce'))
 
-    
+    today = datetime.datetime.now()
+    form_envoi.Envoi_date_commande.data = today
+    response = requests.get(f'http://127.0.0.1:8000/Client/')
+    form_envoi.Envoi_client_name.choices = np.unique(np.array([a['Client_nom'] for a in response.json()])).tolist()
+
+    response = requests.get(f'http://127.0.0.1:8000/Produit/')
+    list_produits = np.array([a['Batch_Produit_ref_CW'] for a in response.json() if float(a['Batch_Produit_OGD_Qte']) > 0]).tolist()
+    form_envoi.Envoi_produit_batch.choices = list_produits
+
+
+    today = datetime.datetime.now()
+    form_envoi.Envoi_date_prevu.data = today
+    form_envoi.Envoi_date_effective.data = today
+
+
     return render_template("Envois.html",
                            Form_Envoi = form_envoi)
+
+
+@app.route("/Suivi_envois",methods=["GET","POST"])
+def Suivi_envoi():
+
+    form_envoi = Form_Envoi()
+    if form_envoi.validate_on_submit():
+        #change attribute retour client in form and submit to update to database
+
+        response = requests.post(f'http://127.0.0.1:8000/Envois/update/{id}',data=json.dumps(data))
+        flash(f'{response.status_code} Mise a jour envoi de {data['Envoi_produit_name']} à {data['Envoi_client_name']} effectué')
+        return redirect(url_for('dash_commerce'))
+
+    response = requests.get(f'http://127.0.0.1:8000/Envoi/')
+    Envois_all = pd.DataFrame(response.json())
+    Envois_all = Envois_all.loc[Envois_all.Envoi_retour_client.isnull()]
+
+    return render_template("Suivi_envois.html",
+                           Envois_all = [b for b in Envois_all.values])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @app.route("/Produits",methods=["GET","POST"])

@@ -57,13 +57,13 @@ def get_last_10_batch():
     # get last matieres premieres
     url = 'http://127.0.0.1:8000/matieres_premieres/'
     data = pd.DataFrame(requests.get(url).json())
-    last_10_K=data.loc[data.MP_nom == 'Potassium'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:]
-    last_10_C=data.loc[data.MP_nom == 'Carbone'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:]
-    last_10_THF=data.loc[data.MP_nom == 'THF'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:]
+    last_10_K=data.loc[data.MP_nom == 'Potassium'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:][::-1]
+    last_10_C=data.loc[data.MP_nom == 'Carbone'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:][::-1]
+    last_10_THF=data.loc[data.MP_nom == 'THF'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:][::-1]
     # get last KC8
     url = 'http://127.0.0.1:8000/KC8/'
     data = pd.DataFrame(requests.get(url).json()) 
-    last_10_KC8=data.sort_values('Batch_KC8_id')['Batch_KC8_name'].values[-10:]
+    last_10_KC8=data.sort_values('Batch_KC8_id')['Batch_KC8_name'].values[-10:][::-1]
     
     return last_10_K, last_10_C, last_10_THF, last_10_KC8
 

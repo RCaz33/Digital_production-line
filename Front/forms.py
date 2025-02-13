@@ -91,16 +91,16 @@ class Form_Produit(FlaskForm):
 
 class Form_Envoi(FlaskForm):
     Envoi_date_commande = DateTimeField('Date commande', format='%d/%m/%y')
-    Envoi_client_name = StringField('Nom Client', [Length(max=10)])
+    Envoi_client_name = SelectField('Nom Client', choices=[])
     Envoi_produit_name = SelectField('Type', choices=config.Produits_CW)
-    Envoi_produit_batch = StringField('Reference Batch', [Length(max=10)])
+    Envoi_produit_batch = SelectField('Reference Batch', choices=[]) 
     Envoi_produit_Qte = FloatField('Qte produit', default=50)
     Envoi_produit_emballage =  StringField('Conditionnement', [Length(max=10)])
     Envoi_date_prevu = DateTimeField('Date envoi prevu', format='%d/%m/%y')
     Envoi_date_effective = DateTimeField('Date envoi effective', format='%d/%m/%y')
     Envoi_code_coli = StringField('Reference coli', [Length(max=50)])
     Envoi_retour_client = TextAreaField('Metadata')
-    Envoi_submit = SubmitField('Nouvelle demande')
+    Envoi_submit = SubmitField('Valider')
 
 class Confirm_delete(FlaskForm):
     submit = SubmitField('Confirm Delete')
@@ -109,3 +109,6 @@ class Confirm_delete(FlaskForm):
 class Form_calculate_K_C(FlaskForm):
     submit = SubmitField('Calculate')
     
+class Form_Client(FlaskForm):
+    Client_name = StringField('Nom client')
+    Client_adresse = StringField('Adresse client')

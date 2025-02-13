@@ -89,7 +89,7 @@ class DB_Batch_Produit(Base):
     Batch_Produit_Technicien = Column(String(10), nullable=False)
     Batch_Produit_OGD_batch = Column(String(10), nullable=False, unique=True)
     Batch_Produit_OGD_Qte = Column(Float, default=20.0, nullable=False)
-    Batch_Produit_stabilisant_bacth = Column(String(10), nullable=False, unique=True)  # can be EPO ou viscosant
+    Batch_Produit_stabilisant_bacth = Column(String(10), nullable=False)  # can be EPO ou viscosant
     Batch_Produit_stabilisant_Qte = Column(Float, default=20.0, nullable=False)
     Batch_Produit_Analyses = Column(String(50), nullable=False)
 
@@ -111,9 +111,9 @@ class DB_Envoi(Base):
     
 class DB_Client(Base):
     __tablename__ = 'Clients'
-    CLient_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Client_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     Client_nom = Column(String(50), nullable=False)
-    CLient_adresse = Column(String(50), nullable=False)
+    Client_adresse = Column(String(50), nullable=False)
 
 # class DbForm_S0(Base):
 #     __tablename__ = 'Batch_OGD'

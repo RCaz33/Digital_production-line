@@ -60,7 +60,7 @@ class Batch_KC8_Base(BaseModel):
     Batch_KC8_Technicien : str
     Batch_KC8_K_batch : str
     Batch_KC8_C_batch : str 
-    Batch_KC8_masse : int
+    Batch_KC8_masse : float
     Batch_KC8_Temperature : float
     Batch_KC8_Agitation : int 
     Batch_KC8_heure_debut : datetime
@@ -75,7 +75,7 @@ class Batch_KC8_Add(BaseModel):
     Batch_KC8_Technicien : str
     Batch_KC8_K_batch : str
     Batch_KC8_C_batch : str 
-    Batch_KC8_masse : int
+    Batch_KC8_masse : float
     Batch_KC8_Temperature : float
     Batch_KC8_Agitation : int 
     Batch_KC8_heure_debut : datetime
@@ -120,7 +120,7 @@ class Batch_OGD_Add(BaseModel):
 
 class Batch_Produit_Base(BaseModel):
     Batch_Produit_id : int 
-    Batch_Produit_name : str
+    Batch_Produit_ref_CW : str
     Batch_Produit_date : datetime
     Batch_Produit_Technicien : str
     Batch_Produit_OGD_batch : str
@@ -131,14 +131,13 @@ class Batch_Produit_Base(BaseModel):
 
 
 class Batch_Produit_Add(BaseModel):
-    Batch_Produit_name : str
+    Batch_Produit_ref_CW : str
     Batch_Produit_date : datetime
     Batch_Produit_Technicien : str
     Batch_Produit_OGD_batch : str
     Batch_Produit_OGD_Qte : float
     Batch_Produit_stabilisant_bacth : str
     Batch_Produit_stabilisant_Qte : float
-    Batch_Produit_Agitation : int 
     Batch_Produit_Analyses : str 
 
 class Envoi_Base(BaseModel):
