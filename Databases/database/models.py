@@ -6,20 +6,14 @@ from sqlalchemy import Column, JSON
 
 
 
+
 class DB_Analyses(Base):
     __tablename__ = 'Analyses'
     Analyses_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    Analyse_path_to_raw = Column(String(50), nullable=False)
-    Analyse_code = Column(String(50), nullable=False) # 'CodeEchantillon_date_type_details'
-# every folder create create a new analyse
-
-class DB_Analyses_UV(Base):
-    __tablename__ = 'Analyses_UV'
-    Analyses_UV_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    Analyse_UV_name = Column(String(50), nullable=False)
-    Analyse_UV_subname = Column(String(50), nullable=True) 
-    Analyse_UV_details = Column(JSON, nullable=True)
-    Analyses_UV_data = Column(JSON, nullable=True) # 'CodeEchantillon_date_type_details'
+    Analyse_name = Column(String(50), nullable=False)
+    Analyse_subname = Column(String(50), nullable=True) 
+    Analyse_details = Column(JSON, nullable=True)
+    Analyses_data = Column(JSON, nullable=True) # 'CodeEchantillon_date_type_details'
 
 
 class DB_Matieres_premieres(Base):
@@ -50,6 +44,7 @@ class DB_Batch_KC8(Base):
     Batch_KC8_heure_fin = Column(DateTime, nullable=True)
     Batch_KC8_room_HR = Column(Float, default=20.0, nullable=False)
     Batch_KC8_room_T = Column(Float, default=20.0, nullable=False)
+    Batch_KC8_Stock = Column(Float, default=0.0, nullable=False)
     Batch_KC8_Analyses = Column(String(50), nullable=True)
 
 
@@ -71,6 +66,7 @@ class DB_Batch_OGD(Base):
     Batch_OGD_heure_fin = Column(DateTime, nullable=True)
     Batch_OGD_room_HR = Column(Float, default=20.0, nullable=False)
     Batch_OGD_room_T = Column(Float, default=20.0, nullable=False)
+    Batch_OGD_Stock = Column(Float, default=20.0, nullable=False)
     Batch_OGD_Analyses = Column(String(50), nullable=False)
 
 
@@ -91,6 +87,7 @@ class DB_Batch_Produit(Base):
     Batch_Produit_OGD_Qte = Column(Float, default=20.0, nullable=False)
     Batch_Produit_stabilisant_bacth = Column(String(10), nullable=False)  # can be EPO ou viscosant
     Batch_Produit_stabilisant_Qte = Column(Float, default=20.0, nullable=False)
+    Batch_produit_stock = Column(Float, default=0.0, nullable=False)
     Batch_Produit_Analyses = Column(String(50), nullable=False)
 
 

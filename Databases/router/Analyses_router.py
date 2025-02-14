@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from schemas import Analyses_Base, Analyses_Base_Add
+from schemas import Analyses_Base, Analyses_Add
 from database.db_connect import get_db
 from database import db_Analyses
 from typing import List
@@ -16,7 +16,7 @@ router = APIRouter(
 
 # Create batch
 @router.post('/', response_model=Analyses_Base)
-def create_analyse(request: Analyses_Base_Add,
+def create_analyse(request: Analyses_Add,
                     db: Session = Depends(get_db)):
   return db_Analyses.create_analyse(db, request)
 
@@ -29,13 +29,13 @@ def get_all_analyses(db: Session = Depends(get_db)):
 @router.get('/id/{id}', response_model=Analyses_Base)
 def get_analyses_id(id: int,
              db: Session = Depends(get_db)):
-  return db_Analyses.get_analyses(db, id)
+  return db_Analyses.get_analyse_id(db, id)
 
 # Read one batch BY NAME
 @router.get('/name/{name}', response_model=Analyses_Base)
-def get_analyses_code(name: str,
+def get_analyse_by_name(name: str,
              db: Session = Depends(get_db)):
-  return db_Analyses.get_analyses_by_code(db, name)
+  return db_Analyses.get_analyse_by_name(db, name)
 
 
 # Update user

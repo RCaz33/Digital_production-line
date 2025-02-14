@@ -28,6 +28,7 @@ def create_batch_OGD(db: Session, request: Batch_OGD_Add):  # uses schema
     Batch_OGD_heure_fin = request.Batch_OGD_heure_fin,
     Batch_OGD_room_HR = request.Batch_OGD_room_HR,
     Batch_OGD_room_T = request.Batch_OGD_room_T,
+    Batch_OGD_Stock = request.Batch_OGD_Stock,
     Batch_OGD_Analyses = request.Batch_OGD_Analyses)
 
   try:
@@ -84,6 +85,7 @@ def update_batch_OGD(db: Session, id: int, request: Batch_OGD_Base):
     DB_Batch_OGD.Batch_OGD_heure_fin : request.Batch_OGD_heure_fin,
     DB_Batch_OGD.Batch_OGD_room_HR : request.Batch_OGD_room_HR,
     DB_Batch_OGD.Batch_OGD_room_T : request.Batch_OGD_room_T,
+    DB_Batch_OGD.Batch_OGD_Stock : request.Batch_OGD_Stock,
     DB_Batch_OGD.Batch_OGD_Analyses : request.Batch_OGD_Analyses})
   
   db.commit()

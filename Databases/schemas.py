@@ -7,31 +7,21 @@ from datetime import datetime
 ## MUST HAVE THE SAME NAME AS IN MODELS.PY 
 
 
-class Analyses_UV_Base(BaseModel):
-    Analyses_UV_id : int
-    Analyse_UV_name : str
-    Analyse_UV_subname : str
-    Analyse_UV_details :  Dict[str,Any]
-    Analyses_UV_data : Dict[str,Any]
-
-
-class Analyses_UV_Add(BaseModel):
-    Analyse_UV_name : str
-    Analyse_UV_subname : str
-    Analyse_UV_details :  Dict[str,Any]
-    Analyses_UV_data : Dict[str,Any]
-
-
 class Analyses_Base(BaseModel):
-    Analyses_id : int 
-    Analyse_path_to_raw : str
-    Analyse_code : str 
-    
+    Analyses_id : int
+    Analyse_name : str
+    Analyse_subname : str
+    Analyse_details :  Dict[str,Any]
+    Analyses_data : Dict[str,Any]
 
-class Analyses_Base_Add(BaseModel):
-    Analyse_path_to_raw : str
-    Analyse_code : str 
-    
+
+class Analyses_Add(BaseModel):
+    Analyse_name : str
+    Analyse_subname : str
+    Analyse_details :  Dict[str,Any]
+    Analyses_data : Dict[str,Any]
+
+
 # name of batch + date of analysis + type of analysis + details analysis
                       # "nom_250129_Raman / nom_250202_DLS / .."
 class Matieres_premieres_Base(BaseModel):
@@ -67,6 +57,7 @@ class Batch_KC8_Base(BaseModel):
     Batch_KC8_heure_fin : Optional[datetime] = None  
     Batch_KC8_room_HR : float
     Batch_KC8_room_T : float
+    Batch_KC8_Stock : float
     Batch_KC8_Analyses : str 
 
 class Batch_KC8_Add(BaseModel):
@@ -82,6 +73,7 @@ class Batch_KC8_Add(BaseModel):
     Batch_KC8_heure_fin : Optional[datetime] = None  
     Batch_KC8_room_HR : float
     Batch_KC8_room_T : float
+    Batch_KC8_Stock : float
     Batch_KC8_Analyses : str 
 
 class Batch_OGD_Base(BaseModel):
@@ -98,6 +90,7 @@ class Batch_OGD_Base(BaseModel):
     Batch_OGD_heure_fin : Optional[datetime] = None  
     Batch_OGD_room_HR : float
     Batch_OGD_room_T : float
+    Batch_OGD_Stock : float
     Batch_OGD_Analyses : str 
 
 
@@ -114,6 +107,7 @@ class Batch_OGD_Add(BaseModel):
     Batch_OGD_heure_fin : Optional[datetime] = None  
     Batch_OGD_room_HR : float
     Batch_OGD_room_T : float
+    Batch_OGD_Stock : float
     Batch_OGD_Analyses : str 
 
 
@@ -127,6 +121,7 @@ class Batch_Produit_Base(BaseModel):
     Batch_Produit_OGD_Qte : float
     Batch_Produit_stabilisant_bacth : str
     Batch_Produit_stabilisant_Qte : float
+    Batch_produit_stock : float
     Batch_Produit_Analyses : str 
 
 
@@ -138,6 +133,7 @@ class Batch_Produit_Add(BaseModel):
     Batch_Produit_OGD_Qte : float
     Batch_Produit_stabilisant_bacth : str
     Batch_Produit_stabilisant_Qte : float
+    Batch_produit_stock : float
     Batch_Produit_Analyses : str 
 
 class Envoi_Base(BaseModel):

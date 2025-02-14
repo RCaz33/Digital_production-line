@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from router import Clients_router, Envoi_router, Produit_router, OGD_router, KC8_router, Matieres_premieres_router,Analyses_router, Techniciens_router, Analyses_UV_router
+from router import Clients_router, Envoi_router, Produit_router, OGD_router, KC8_router, Matieres_premieres_router,Analyses_router, Techniciens_router
 
 from database import models
 from database.db_connect import engine
@@ -14,7 +14,6 @@ app = FastAPI()
 
 app.include_router(Clients_router.router)
 app.include_router(Analyses_router.router)
-app.include_router(Analyses_UV_router.router)
 app.include_router(Matieres_premieres_router.router)
 app.include_router(KC8_router.router)
 app.include_router(OGD_router.router)

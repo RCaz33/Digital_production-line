@@ -30,7 +30,7 @@
 <!-- Get informations -->
 <h1> Nouveau Produit</h1>
 <div class="container shadow border border-danger-subtle border-1">
-    <form action="{{ url_for('Add_produit') }}" method="POST">
+    <form action="{{ url_for('Add_Produit') }}" method="POST">
         {{ Form_Produit.csrf_token }}
         <br/>
         <div class="row justify-content-start">
@@ -76,8 +76,11 @@
             {{ Form_Produit.Batch_Produit_Analyses(class="form-control") }}
         </div>
 
-        <button type="submit" class="btn btn-primary">Validate</button>
-
+        <div class="col-2">
+            </br>
+                <button type="submit" class="btn btn-primary align-right">Démarrer production </button>
+            </br>
+        </div>
     </form>
 
 

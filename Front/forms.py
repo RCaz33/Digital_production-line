@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import TextAreaField, SelectField, StringField, SubmitField, DateTimeField, FloatField, IntegerField, TimeField, BooleanField, PasswordField
-from wtforms.validators import DataRequired, Length, NumberRange, AnyOf, ValidationError, Email
+from wtforms.validators import DataRequired, Length, NumberRange, NoneOf, AnyOf, ValidationError, Email
 
 import datetime
 import re
@@ -49,7 +49,7 @@ class Form_analyses(FlaskForm):
 
 
 class Form_Batch_KC8(FlaskForm):
-    Batch_KC8_name = StringField('Nom Batch', [Length(max=10)])
+    Batch_KC8_name = StringField('Nom Batch', validators=[NoneOf([],message='Ce batch existe déjà'),Length(max=10)])
     Batch_KC8_date = DateTimeField('Date début production', format='%d/%m/%y')
     Batch_KC8_Technicien = SelectField('Technicien', choices=config.Techniciens_CW)
     Batch_KC8_K_batch =  StringField('Batch_K_name')
@@ -62,14 +62,16 @@ class Form_Batch_KC8(FlaskForm):
     Batch_KC8_room_HR = FloatField('Humidité (ppm)', default=0.09)
     Batch_KC8_room_T = FloatField('Temperature (°C)', default=25)
     Batch_KC8_Analyses = StringField('reference_analyses', [Length(max=60)])
+    # def validate_unique_batch(self, field):
+
 
 class Form_Batch_OGD(FlaskForm):
-    Batch_OGD_name = StringField('Nom Batch', [Length(max=10)])
+    Batch_OGD_name = StringField('Nom Batch', validators=[NoneOf([],message='Ce batch existe déjà'),Length(max=10)])
     Batch_OGD_date = DateTimeField('Date début production', format='%d/%m/%y')
     Batch_OGD_Technicien = SelectField('Technicien', choices=config.Techniciens_CW)
-    Batch_OGD_KC8_batch =  StringField('Batch_KC8_name')
+    Batch_OGD_KC8_batch =  SelectField('Batch_KC8_name',choices=[])
     Batch_OGD_KC8_masse = FloatField('Masse KC8 utliisé', default=50)
-    Batch_OGD_THF_batch = StringField('Batch_THF_name')
+    Batch_OGD_THF_batch = SelectField('Batch_THF_name',choices=[])
     Batch_OGD_THF_Volume = IntegerField('Volume (mL)',default=250)
     Batch_OGD_Temperature = FloatField('Température agitation', default=50)
     Batch_OGD_Agitation = IntegerField('Vitesse agitation',default=250)

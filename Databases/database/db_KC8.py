@@ -27,6 +27,7 @@ def create_batch_KC8(db: Session, request: Batch_KC8_Add):  # uses schema
     Batch_KC8_heure_fin = request.Batch_KC8_heure_fin,
     Batch_KC8_room_HR = request.Batch_KC8_room_HR,
     Batch_KC8_room_T = request.Batch_KC8_room_T,
+    Batch_KC8_Stock = request.Batch_KC8_Stock,
     Batch_KC8_Analyses = request.Batch_KC8_Analyses)
 
   try:
@@ -86,6 +87,7 @@ def update_batch_KC8(db: Session, id: int, request: Batch_KC8_Base):
     DB_Batch_KC8.Batch_KC8_heure_fin : request.Batch_KC8_heure_fin,
     DB_Batch_KC8.Batch_KC8_room_HR : request.Batch_KC8_room_HR,
     DB_Batch_KC8.Batch_KC8_room_T : request.Batch_KC8_room_T,
+    DB_Batch_KC8.Batch_KC8_Stock : request.Batch_KC8_Stock,
     DB_Batch_KC8.Batch_KC8_Analyses : request.Batch_KC8_Analyses})
   
   db.commit()

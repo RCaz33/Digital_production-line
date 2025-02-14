@@ -55,9 +55,9 @@
             <div class="card">
                 <div class="card-body">
                     {% for produit in produits_en_attente %}
-                        <div class="alert alert-primary d-flex align-items-center" role="alert">
+                        <div class="alert alert-primary alert-dismissible fade show" role="alert">
                         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
-                        Type : {{ produit[0] }}, quantite : {{ produit[1] }}    &emsp;&emsp;  <a href="{{ url_for('Add_Produit', produit_name=produit[0]) }}" class="alert-link">Lancer production</a>.
+                        {{produit[2]}} ({{ produit[0] }}, {{ produit[1] }} Kg)   &emsp;&emsp;  <a href="{{ url_for('Add_Produit', Envoi_id=produit[3]) }}" class="alert-link">Lancer production</a>.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}

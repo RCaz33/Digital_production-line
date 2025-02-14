@@ -1,5 +1,5 @@
 from sqlalchemy.orm.session import Session
-from schemas import Analyses_Base, Analyses_Base_Add
+from schemas import Analyses_Base, Analyses_Add
 from database.models import DB_Analyses
 from fastapi import HTTPException, status
 
@@ -7,13 +7,15 @@ from database import db_techniciens, db_Analyses
 
 # CREATE
 
-def create_analyse(db: Session, request: Analyses_Base_Add):  # uses schema 
+def create_analyse(db: Session, request: Analyses_Add):  # uses schema 
 
   new_analyse = DB_Analyses(   # uses database
     # Analyses_id = request.Analyses_id, # AUTO-INCREMENT
-    Analyse_path_to_raw = request.Analyse_path_to_raw,
-    Analyse_code = request.Analyse_code,
-)
+    Analyse_name = request.Analyse_name,
+    Analyse_subname = request.Analyse_subname,
+    Analyse_details = request.Analyse_details,
+    Analyses_data = request.Analyses_data
+    )
 
   try:
     db.add(new_analyse)
@@ -31,18 +33,18 @@ def create_analyse(db: Session, request: Analyses_Base_Add):  # uses schema
 def get_all_analyses(db: Session):
   return db.query(DB_Analyses).all()
 
-def get_analyse(db: Session, id: int):
+def get_analyse_id(db: Session, id: int):
   Analyses = db.query(DB_Analyses).filter(DB_Analyses.Analyses_id == id).first()
   if not Analyses:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
       detail=f'Analyse with id {id} not found')
   return Analyses
 
-def get_analyse_by_code(db: Session, code_analyse: str):
-  Analyses = db.query(DB_Analyses).filter(DB_Analyses.Analyse_code == code_analyse).first()
+def get_analyse_by_name(db: Session, name: str):
+  Analyses = db.query(DB_Analyses).filter(DB_Analyses.Analyse_name == name).first()
   if not Analyses:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-      detail=f'Analyse with code {code_analyse} not found')
+      detail=f'Analyse with code {name} not found')
   return Analyses
 
 
@@ -57,8 +59,10 @@ def update_analyse(db: Session, id: int, request: Analyses_Base):
       detail=f'User with id {id} not found')
   Analyses.update({  # uses database
     DB_Analyses.Analyses_id : request.Analyses_id,
-    DB_Analyses.Analyse_path_to_raw : request.Analyse_path_to_raw,
-    DB_Analyses.Analyse_code : request.Analyse_code})
+    DB_Analyses.Analyse_name : request.Analyse_name,
+    DB_Analyses.Analyse_subname : request.Analyse_subname,
+    DB_Analyses.Analyse_details : request.Analyse_details,
+    DB_Analyses.Analyses_data : request.Analyses_data})
   db.commit()
   return 'ok'
 
