@@ -22,7 +22,7 @@ from flask import Flask, jsonify, render_template, flash, redirect, url_for, req
 from flask_login import login_user, logout_user, login_required
 
 # import pour le back
-from utils import update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
+from utils import make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
 from forms import *
 # Instanciate app
 app = Flask(__name__)
@@ -140,7 +140,7 @@ default_batch['KC8'] = KC8_batch
 
 
 
-# @app.route("/")
+@app.route("/")
 @app.route("/Materiaux", methods=["GET","POST"])
 # @login_required
 def acceuil_materiaux():
@@ -255,6 +255,9 @@ def Inspect_MP(MP_ref_fournisseur):
 
 
 
+#################################################################
+####################### Nouveau Batch ###########################
+#################################################################
 
 
 
@@ -290,24 +293,26 @@ def Add_KC8():
             "Batch_KC8_heure_fin": None,
             "Batch_KC8_room_HR": request.form['Batch_KC8_room_HR'],
             "Batch_KC8_room_T": request.form['Batch_KC8_room_T'],
+            "Batch_KC8_Stock" : request.form['Batch_KC8_masse'],
             "Batch_KC8_Analyses": "None"}
 
         print(data)
         response = requests.post(url, headers=headers, data=json.dumps(data))
         if response.status_code != 200:
+            print('sucessssss')
             flash(json.dumps({'Problem connecting to the database': response.json()}))
         else:
             flash(json.dumps({'status': 'OK'}))
 
         # Update Matieres premieres
-        update_stocks_K_C(data) ### REMAKE CALCULATION WITH FABIEN !!!
-        data = request.get_json()
-        result_K = data.get('result_K')
-        result_C = data.get('result_C')
-        print(result_K,result_C)
+        print(update_stocks_K_C(data)) ### REMAKE CALCULATION WITH FABIEN !!!
+        # data = request.get_json()
+        # result_K = data.get('result_K')
+        # result_C = data.get('result_C')
+        # print(result_K,result_C)
 
 
-        return redirect(url_for('index'))
+        return redirect(url_for('acceuil_materiaux'))
     else:
         for field,errors in form_KC8.errors.items():
             for error in errors:
@@ -424,7 +429,7 @@ def Add_OGD():
 
 
 @app.route("/Nouveau_batch_produit/<produit>", methods=['GET','POST'])
-def Add_Produit():
+def Add_Produit(produit):
     headers = {'accept': 'application/json','Content-Type': 'application/json'}
     form_produit = Form_Produit()
     
@@ -474,21 +479,23 @@ def Add_Produit():
     today = datetime.datetime.now()
     form_produit.Batch_Produit_date.data = today
 
-    try:     # test if the making the batch is coming from a request for a client
-        Envoi_id = request.args.get('Envoi_id')
-        response = requests.get(url=f'http://127.0.0.1:8000/Envoi/id/{Envoi_id}',headers=headers)
-        envoi_ref = pd.DataFrame(response.json())
-        print(envoi_ref)
-        # ecrit le nom de batch
-        form_produit.Batch_OGD_name.data = f"OGD{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
-        # calulate mass of OGD for given amount of product
-        form_produit.Batch_Produit_OGD_Qte.data = 2
-        # calulate mass of additif for given amount of product
-        form_produit.Batch_Produit_additif_Qte.data = 3
-        # print(produit_desc.replace("'", '"'))
-        # flash(f'Produit pour {client.split("'")[3]}')
-    except:
-        flash('Produit pour étagère')
+    # try:     # test if the making the batch is coming from a request for a client
+    #     Envoi_id = request.args.get('envoie')
+    #     print(50*"\n")
+    #     print("envoi",Envoi_id)
+    #     response = requests.get(url=f'http://127.0.0.1:8000/Envoi/id/{Envoi_id}',headers=headers)
+    #     envoi_ref = pd.DataFrame(response.json())
+    #     print(envoi_ref)
+    #     # ecrit le nom de batch
+    #     form_produit.Batch_OGD_name.data = f"OGD{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
+    #     # calulate mass of OGD for given amount of product
+    #     form_produit.Batch_Produit_OGD_Qte.data = 2
+    #     # calulate mass of additif for given amount of product
+    #     form_produit.Batch_Produit_additif_Qte.data = 3
+    #     # print(produit_desc.replace("'", '"'))
+    #     # flash(f'Produit pour {client.split("'")[3]}')
+    # except:
+    #     flash('Produit pour étagère')
  
     # formate le nom de batch produit avec la semaine (today.isocalendar()[1]:02)
     # form_produit.Batch_Produit_date.data = today
@@ -496,6 +503,7 @@ def Add_Produit():
     # Batch_Produit_OGD_batch
     # form_produit.Batch_Produit_OGD_batch.data = 
     # form_produit.Batch_OGD_THF_batch.data = default_batch['THF']
+
     # CALCULATE FOR A GIVEN PRODUCT THE QUANTITIES OF ADDITIVE BASE ON OGD
     type_product=None
     if type_product == 'W':
@@ -507,8 +515,15 @@ def Add_Produit():
 
     form_produit.Batch_Produit_OGD_batch.choices = 'request on OGD'
 
+
+    Envoi_id = request.args.get('envoie')
+    print(5*"\n")
+    print("envoi",Envoi_id)
+
+
     return render_template("Add_batch_produit.html",
-                           Form_Produit=form_produit)
+                           Form_Produit=form_produit,
+                           produit=produit)
 
 
 @app.route("/Update_default_batch", methods=['GET','POST'])
@@ -527,7 +542,7 @@ def Update_default_batch():
         default_batch['C']= request.form.get('n_batch_C')
         default_batch['THF']= request.form.get('n_batch_THF')
         default_batch['KC8']= request.form.get('n_batch_KC8')
-        return redirect(url_for('index')) 
+        return redirect(url_for('acceuil_materiaux')) 
 
     csrf_token = generate_csrf()
     return render_template("Update_default_batch.html",
@@ -687,10 +702,16 @@ def dash_prod():
     Epo_en_cours = Produits_all.loc[Produits_all.Batch_Produit_ref_CW.apply(lambda x : ('Epo' in x.split('-')[0]) ),
                                     ['Batch_Produit_ref_CW','Batch_Produit_date']].values
 
+
+    # get the latest 5 OGD
+    img_UV, img_RAMAN = make_chart_for_dash_produits(last_n = 5)
+
     return render_template("acceuil_production.html",
                            WNC_en_cours=WNC_en_cours,
                            W_en_cours=W_en_cours,
-                           Epo_en_cours=Epo_en_cours)
+                           Epo_en_cours=Epo_en_cours,
+                           img_UV=img_UV,
+                           img_RAMAN=img_RAMAN)
 
 
 
@@ -703,8 +724,8 @@ def dash_commerce():
     # demande batch produit 
     response = requests.get(f'http://127.0.0.1:8000/Envoi/')
     Envois_all = pd.DataFrame(response.json())
-    Envois_en_cours = Envois_all.loc[Envois_all.Envoi_produit_batch.isnull(),['Envoi_produit_name','Envoi_produit_Qte','Envoi_client_name','Envoi_id']][::-1].values
-    print(Envois_en_cours)
+    Envois_en_attente = Envois_all.loc[Envois_all.Envoi_produit_batch.isnull(),['Envoi_produit_name','Envoi_produit_Qte','Envoi_client_name','Envoi_id']][::-1].values
+
     response = requests.get(f'http://127.0.0.1:8000/Produit/')
     array = np.array([(a['Batch_Produit_ref_CW'],a['Batch_Produit_OGD_Qte']) for a in response.json()])
     df = pd.DataFrame(array, columns=['produit','Qté'])
@@ -716,8 +737,12 @@ def dash_commerce():
 
     return render_template("acceuil_commerce.html",
                            graphJSON=graphJSON,
-                           produits_en_attente=Envois_en_cours)
+                           Envois_en_attente=Envois_en_attente)
 
+
+#################################################################
+########################## CLIENTS - COMMANDES ##################
+#################################################################
 
 @app.route("/Clients", methods=['GET','POST'])
 def acceuil_clients():

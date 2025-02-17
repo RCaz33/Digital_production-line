@@ -30,7 +30,7 @@
 <!-- Get informations -->
 <h1> Nouveau Produit</h1>
 <div class="container shadow border border-danger-subtle border-1">
-    <form action="{{ url_for('Add_Produit') }}" method="POST">
+    <form action="{{ url_for('Add_Produit', produit=produit)}}" method="POST">
         {{ Form_Produit.csrf_token }}
         <br/>
         <div class="row justify-content-start">

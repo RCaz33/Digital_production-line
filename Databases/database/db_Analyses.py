@@ -41,7 +41,7 @@ def get_analyse_id(db: Session, id: int):
   return Analyses
 
 def get_analyse_by_name(db: Session, name: str):
-  Analyses = db.query(DB_Analyses).filter(DB_Analyses.Analyse_name == name).first()
+  Analyses = db.query(DB_Analyses).filter(DB_Analyses.Analyse_name == name)
   if not Analyses:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
       detail=f'Analyse with code {name} not found')

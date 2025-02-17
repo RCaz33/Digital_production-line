@@ -20,28 +20,12 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <!-- <div class="d-flex justify-content-between align-items-center mb-3">
-                        <p class="card-text mb-0">Batch Potassium : {{n_batch_K}}</p>
-                        <p class="card-text mb-0">Stock : {{stock_K}} Kg</p>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <p class="card-text mb-0">Batch Carbone : {{n_batch_C}}</p>
-                        <p class="card-text mb-0">Stock : {{stock_C}} Kg</p>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <p class="card-text mb-0">Batch THF : {{n_batch_THF}}</p>
-                        <p class="card-text mb-0">Stock : {{stock_THF}} L</p>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <p class="card-text mb-0">Batch KC8 : {{n_batch_KC8}}</p>
-                        <p class="card-text mb-0">Stock : {{stock_KC8}} Kg</p>
-                    </div> -->
-                </div>
+            <div class="container">
+                    <img src="data:image/png;base64,{{img_UV}}"  class='img-fluid' alt="fig1">
+                    <img src="data:image/png;base64,{{img_RAMAN}}" class='img-fluid' alt="fig2">     
             </div>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-3">
@@ -56,11 +40,17 @@
                         <a href="{{ url_for('Add_Produit', produit = 'EpoR') }}" class="btn btn-primary">Nouveau batch EpoR</a>
                         <a href="{{ url_for('Add_Produit', produit = 'EpoC') }}" class="btn btn-primary">Nouveau batch EpoC</a>
                     </div>
-                </br>
-                    <div class="d-flex justify-content-between">
-                        
+                    </br>
+                    <div class="d-flex justify-content-between">  
                         <p class="card-text mb-0">Pour tout nouvel ajout, vérifier que les batch de matières premieres par défaut sont corrects</p>
                     </div>
+                    </br>
+                    <div class="d-flex justify-content-between mb-3">
+                        <br/>
+                        <a href="{{ url_for('dash_commerce') }}" class="btn btn-warning">Aller à Commerce</a>
+                        <a href="{{ url_for('acceuil_materiaux') }}" class="btn btn-warning">Aller à Matériaux</a>
+                    </div>
+
                 </div>
             </div>
         </div>

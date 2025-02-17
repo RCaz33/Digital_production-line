@@ -32,7 +32,7 @@ def get_analyses_id(id: int,
   return db_Analyses.get_analyse_id(db, id)
 
 # Read one batch BY NAME
-@router.get('/name/{name}', response_model=Analyses_Base)
+@router.get('/name/{name}', response_model=List[Analyses_Base])
 def get_analyse_by_name(name: str,
              db: Session = Depends(get_db)):
   return db_Analyses.get_analyse_by_name(db, name)
