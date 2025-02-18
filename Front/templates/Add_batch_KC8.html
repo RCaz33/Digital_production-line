@@ -25,11 +25,11 @@
 
         if (!isNaN(number)) {
             // Perform the mathematical operation (e.g., squaring the number)
-            const result_K = number * 0.33 *1000;
-            const result_C = number * 0.66 *1000;
+            const result_K = number * 0.33 ;
+            const result_C = number * 0.66 ;
             // Update the result in the HTML
-            document.getElementById('result_K').innerText = `m(K) :\n ${result_K} g`;
-            document.getElementById('result_C').innerText = `m(C) :\n ${result_C} g`;
+            document.getElementById('result_K').innerText = `m(K) :\n ${result_K} kg`;
+            document.getElementById('result_C').innerText = `m(C) :\n ${result_C} kg`;
 
         } else {
             // Handle invalid input

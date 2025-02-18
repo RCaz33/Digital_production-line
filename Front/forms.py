@@ -61,6 +61,7 @@ class Form_Batch_KC8(FlaskForm):
     Batch_KC8_heure_fin = TimeField('Heure de fin', format='%H:%M')
     Batch_KC8_room_HR = FloatField('Humidité (ppm)', default=0.09)
     Batch_KC8_room_T = FloatField('Temperature (°C)', default=25)
+    Batch_KC8_Stock = FloatField('Temperature (°C)', default=0)
     Batch_KC8_Analyses = StringField('reference_analyses', [Length(max=60)])
     # def validate_unique_batch(self, field):
 

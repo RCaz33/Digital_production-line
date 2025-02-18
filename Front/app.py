@@ -11,8 +11,7 @@ import json
 import plotly
 import plotly.express as px
 import config
-
-
+import requests
 
 # import for bdd - mysql
 import mysql.connector as bdd_connect
@@ -22,8 +21,10 @@ from flask import Flask, jsonify, render_template, flash, redirect, url_for, req
 from flask_login import login_user, logout_user, login_required
 
 # import pour le back
-from utils import make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
+from utils import fetch_MP, make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
 from forms import *
+
+
 # Instanciate app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "somesecretkey" # secret key stored in app == env variable to hide
@@ -49,11 +50,14 @@ except:
     print("Can't connect to BDD")
 
 
-
+########################################################################################
+############################### LOGIN #######################################
+########################################################################################
 
 # import for managing users
 from models import User
-from flask_login import LoginManager
+from flask import request, redirect, url_for
+from flask_login import LoginManager, login_user, logout_user, login_required
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -63,22 +67,13 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.get(user_id)
 
-########################################################################################
-############################### LOGIN #######################################
-########################################################################################
-from flask import request, redirect, url_for
-from flask_login import login_user, logout_user, login_required
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm() # Create the form instance
     if form.validate_on_submit(): 
-
-
         email = form.email.data
         password = form.password.data
         name = form.name.data
-        
         
         if User.find_by_email(email):
             flash('Cet email est déjà utilisé, choisir un email différent')
@@ -99,7 +94,7 @@ def login():
         user = User.find_by_email(email)
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('index'))  # Redirect to a success page
+            return redirect(url_for('acceuil_materiaux'))  # Redirect to a success page
     
         else:
             if not user:
@@ -118,25 +113,12 @@ def logout():
 
 
 ########################################################################################
+############################## Page d'acceuil / Dashboard ##############################
 ########################################################################################
-########################################################################################
-
-
-import requests
-####################### Page d'acceuil / Dashboard #######################
-
 
 # configure default batch
-global default_batch
-response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
-
-K_name,C_name,THF_name = get_matieres_premieres(response)
-default_batch = dict({'K':K_name,'C':C_name,'THF':THF_name})
-
-response = requests.get(f'http://127.0.0.1:8000/KC8/')
-KC8_all = pd.DataFrame(response.json())
-KC8_batch = KC8_all.loc[KC8_all.Batch_KC8_id==np.max(KC8_all.Batch_KC8_id),'Batch_KC8_name'].values[0]
-default_batch['KC8'] = KC8_batch
+# global default_batch
+default_batch = fetch_MP()
 
 
 
@@ -145,7 +127,7 @@ default_batch['KC8'] = KC8_batch
 # @login_required
 def acceuil_materiaux():
 
-    global default_batch
+    default_batch = fetch_MP()
 
     # batch without ending time
     response = requests.get(f'http://127.0.0.1:8000/OGD/')
@@ -156,7 +138,6 @@ def acceuil_materiaux():
     KC8_all = pd.DataFrame(response.json())
     KC8_en_cours = KC8_all.loc[KC8_all.Batch_KC8_heure_fin.isnull(),['Batch_KC8_name','Batch_KC8_heure_debut']].values
 
-
     # get stock matieres premieres
     stock_MP = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
     stock_MP = pd.DataFrame(stock_MP.json())[['MP_ref_fournisseur','MP_quantite']]
@@ -165,7 +146,6 @@ def acceuil_materiaux():
     stock_MP = stock_MP.T.to_dict()
     Stock_KC8 = requests.get(f'http://127.0.0.1:8000/KC8/name/{default_batch["KC8"]}')
 
-    print(Stock_KC8)
     return render_template("acceuil_materiaux.html",
                         n_batch_K = default_batch['K'],
                         stock_K = stock_MP[default_batch['K']]['MP_quantite'],
@@ -305,6 +285,7 @@ def Add_KC8():
             flash(json.dumps({'status': 'OK'}))
 
         # Update Matieres premieres
+        print(10*"\n")
         print(update_stocks_K_C(data)) ### REMAKE CALCULATION WITH FABIEN !!!
         # data = request.get_json()
         # result_K = data.get('result_K')
@@ -343,7 +324,9 @@ def Add_KC8():
 
 @app.route("/Nouveau_batch_OGD", methods=['GET','POST'])
 def Add_OGD():
-    global default_batch
+    # global default_batch
+    default_batch = fetch_MP()
+
     form_OGD = Form_Batch_OGD()
     if form_OGD.validate_on_submit():
 
@@ -397,7 +380,7 @@ def Add_OGD():
         except:
             flash("Problème lors de la mise à jour des stocks de la base de données",response.status_code)
 
-        return redirect(url_for('index'))
+        return redirect(url_for('acceuil_materiaux'))
     else:
         print(10*"\n ELSE NOT VALIDATE ON SUBMIT")
         for field,errors in form_OGD.errors.items():
@@ -469,7 +452,7 @@ def Add_Produit(produit):
         if Envoi_id:
             requests.get()
 
-        return redirect(url_for('index'))
+        return redirect(url_for('acceuil_materiaux'))
     else:
         for field,errors in form_produit.errors.items():
             for error in errors:
@@ -528,7 +511,8 @@ def Add_Produit(produit):
 
 @app.route("/Update_default_batch", methods=['GET','POST'])
 def Update_default_batch():
-    global default_batch
+    # global default_batch
+    default_batch = fetch_MP()
 
     last_10_K, last_10_C, last_10_THF, last_10_KC8 = get_last_10_batch()
 
@@ -586,7 +570,7 @@ def update_batch_OGD(batch_name):
 
         response = requests.post(url+f'update/{id_batch}', headers=headers, data=json.dumps(data))
         flash(json.dumps({'status': response.status_code}), 200)
-        return redirect(url_for('index')) 
+        return redirect(url_for('acceuil_materiaux')) 
     
     # reformater les datetime pour affichage correct dans le form
     form_OGD['Batch_OGD_date'].data = form_OGD['Batch_OGD_date'].data.strftime(format='%d/%m/%y')
@@ -598,18 +582,20 @@ def update_batch_OGD(batch_name):
 @app.route("/MaJ_batch_KC8/<batch_name>",methods=["GET","POST"])
 # @login_required
 def update_batch_KC8(batch_name):
+    print('--> update KC8 Batch : Add termination time')
     # get Batch info
-    url = 'http://127.0.0.1:8000/KC8/'
     headers = {
     'accept': 'application/json',
     'Content-Type': 'application/json'}
-    response = requests.get(url+f'name/{batch_name}',headers=headers)
+    response = requests.get(f'http://127.0.0.1:8000/KC8/name/{batch_name}',headers=headers)
+    
+    
     id_batch = response.json()['Batch_KC8_id']    
 
     # fill-in value with data from db
     form_KC8 = Form_Batch_KC8()
     form_KC8 = populate_form(form_KC8, response)
-    
+
     if request.method == 'POST':
         data = dict()
         data['Batch_KC8_id'] = id_batch
@@ -621,9 +607,9 @@ def update_batch_KC8(batch_name):
             else:
                 data[field.name] = form_KC8[field.name].data
 
-        response = requests.post(url+f'update/{id_batch}', headers=headers, data=json.dumps(data))
+        response = requests.post(f'http://127.0.0.1:8000/KC8/update/{id_batch}', headers=headers, data=json.dumps(data))
         flash(json.dumps({'status': response.status_code}), 200)
-        return redirect(url_for('index')) 
+        return redirect(url_for('acceuil_materiaux')) 
     
     # reformater les datetime pour afficahge correct dans le form
     form_KC8['Batch_KC8_date'].data = form_KC8['Batch_KC8_date'].data.strftime(format='%d/%m/%y')
@@ -643,7 +629,7 @@ def supprimer_KC8(batch_name):
     batch_id = response.json()['Batch_KC8_id']
     response = requests.get(f'http://127.0.0.1:8000/KC8/delete/{batch_id}')
     flash(f'{response.status_code} :Batch {batch_name} supprimé')
-    return redirect(url_for('index'))
+    return redirect(url_for('acceuil_materiaux'))
 
 @app.route('/del_OGD/<batch_name>', methods=['GET','POST'])
 def supprimer_OGD(batch_name):
@@ -659,7 +645,7 @@ def supprimer_OGD(batch_name):
     if request.method == 'POST':
         response = requests.get(f'http://127.0.0.1:8000/OGD/delete/{(batch_id)}')
         flash(f'{response.status_code} Batch {batch_name} supprimé')
-        return redirect(url_for('index'))
+        return redirect(url_for('acceuil_materiaux'))
     form = Confirm_delete()
     return render_template('confirm_delete.html', batch_data=data, form=form)
 

@@ -2,11 +2,28 @@ import datetime
 from flask import flash
 import requests
 import pandas as pd
+import numpy as np
 import json
 import matplotlib.pyplot as plt
 import joblib
 import io
 import base64
+
+def fetch_MP():
+    try:
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
+        K_name,C_name,THF_name = get_matieres_premieres(response)
+        default_batch = dict({'K':K_name,'C':C_name,'THF':THF_name})
+
+        response = requests.get(f'http://127.0.0.1:8000/KC8/')
+        KC8_all = pd.DataFrame(response.json())
+        KC8_batch = KC8_all.loc[KC8_all.Batch_KC8_id==np.max(KC8_all.Batch_KC8_id),'Batch_KC8_name'].values[0]
+        default_batch['KC8'] = KC8_batch
+        print('--> fetch_MP OK')
+    except:
+        print('==> Traceback : problem with utils.update_MP')
+
+    return default_batch
 
 
 def update_stocks_K_C(data):
