@@ -66,7 +66,7 @@ class DB_Batch_OGD(Base):
     Batch_OGD_heure_fin = Column(DateTime, nullable=True)
     Batch_OGD_room_HR = Column(Float, default=20.0, nullable=False)
     Batch_OGD_room_T = Column(Float, default=20.0, nullable=False)
-    Batch_OGD_Stock = Column(Float, default=20.0, nullable=False)
+    Batch_OGD_Stock = Column(Float, default=20.0, nullable=True)
     Batch_OGD_Analyses = Column(String(50), nullable=False)
 
 

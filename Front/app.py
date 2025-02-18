@@ -21,7 +21,7 @@ from flask import Flask, jsonify, render_template, flash, redirect, url_for, req
 from flask_login import login_user, logout_user, login_required
 
 # import pour le back
-from utils import fetch_MP, make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
+from utils import update_stocks_KC8_THF, fetch_MP, make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
 from forms import *
 
 
@@ -117,7 +117,7 @@ def logout():
 ########################################################################################
 
 # configure default batch
-# global default_batch
+global default_batch
 default_batch = fetch_MP()
 
 
@@ -127,7 +127,8 @@ default_batch = fetch_MP()
 # @login_required
 def acceuil_materiaux():
 
-    default_batch = fetch_MP()
+    global default_batch
+    # default_batch = fetch_MP()
 
     # batch without ending time
     response = requests.get(f'http://127.0.0.1:8000/OGD/')
@@ -276,24 +277,22 @@ def Add_KC8():
             "Batch_KC8_Stock" : request.form['Batch_KC8_masse'],
             "Batch_KC8_Analyses": "None"}
 
-        print(data)
+        # Update matiere premiere and check if new mass >= 0
+        a = update_stocks_K_C(data) 
+        if not a['post_K'] or not a['post_C']:
+            flash("Impossible d'utiliser ce batch pour cette quantité de KC8")
+            return redirect(url_for('Add_KC8'))
+
+        # Post new batch for KC8
         response = requests.post(url, headers=headers, data=json.dumps(data))
         if response.status_code != 200:
-            print('sucessssss')
             flash(json.dumps({'Problem connecting to the database': response.json()}))
         else:
             flash(json.dumps({'status': 'OK'}))
 
-        # Update Matieres premieres
-        print(10*"\n")
-        print(update_stocks_K_C(data)) ### REMAKE CALCULATION WITH FABIEN !!!
-        # data = request.get_json()
-        # result_K = data.get('result_K')
-        # result_C = data.get('result_C')
-        # print(result_K,result_C)
-
-
         return redirect(url_for('acceuil_materiaux'))
+    
+
     else:
         for field,errors in form_KC8.errors.items():
             for error in errors:
@@ -316,21 +315,28 @@ def Add_KC8():
     response = requests.get(url='http://127.0.0.1:8000/KC8/',headers=headers)
     form_KC8.Batch_KC8_name.validators[0].values = [a['Batch_KC8_name'] for a in response.json()]
     
-    # calculate K et C
-    # form_calculate_K_C = Form_calculate_K_C()
-
+    
     return render_template("Add_batch_KC8.html",
                            Form_KC8=form_KC8)
 
 @app.route("/Nouveau_batch_OGD", methods=['GET','POST'])
 def Add_OGD():
-    # global default_batch
-    default_batch = fetch_MP()
+    global default_batch
 
     form_OGD = Form_Batch_OGD()
+
+    # Setting up headers
+    headers = {'accept': 'application/json','Content-Type': 'application/json'}
+    # MaJ batch KC8 disponibles
+    response = requests.get(url='http://127.0.0.1:8000/KC8/',headers=headers)
+    form_OGD.Batch_OGD_KC8_batch.choices = [a['Batch_KC8_name'] for a in response.json() if a['Batch_KC8_masse'] > 0][:-10:-1]
+    # MaJ batch THF disponibles
+    response = requests.get(url='http://127.0.0.1:8000/matieres_premieres/',headers=headers)
+    form_OGD.Batch_OGD_THF_batch.choices = [a['MP_ref_fournisseur'] for a in response.json() if (a['MP_quantite'] >= 0) and (a['MP_nom'] == 'THF')][:-10:-1]    
+
+
     if form_OGD.validate_on_submit():
 
-        print(10*"\n ENTER VALIDATE ON SUBMIT")
         url = 'http://127.0.0.1:8000/OGD/'
         headers = {
             'accept': 'application/json',
@@ -357,55 +363,56 @@ def Add_OGD():
             "Batch_OGD_heure_fin": None,
             "Batch_OGD_room_HR": request.form['Batch_OGD_room_HR'],
             "Batch_OGD_room_T": request.form['Batch_OGD_room_T'],
+            "Batch_OGD_Stock" : None,
             "Batch_OGD_Analyses": "None"}
-        print(data)
+
+
+        
+        # Update matiere premiere and check if new mass >= 0
+        a = update_stocks_KC8_THF(data) 
+        if not a['post_KC8'] or not a['post_THF']:
+            flash("Impossible d'utiliser ce(s) batch(s) pour cette quantité de OGD")
+            return redirect(url_for('Add_OGD'))
+
+
+        print("DATA to submit")
+        print("\n".join([f'{(k,v)}' for k,v in data.items()]))
+        print("data dumps json")
+        print(json.dumps(data))
+        # post new batch OGD
         response = requests.post(url, headers=headers, data=json.dumps(data))
+        print(5*"\n")
+        print(response.status_code)
+        print(response.content)
         if response.status_code != 200:
             flash(json.dumps('Probleme de connection à la base de donnée'))
         else:
             flash(json.dumps({'status': 'OK'}))
 
-        try:
-            # update stock of KC8 
-            response = requests.get(f'http://127.0.0.1:8000/KC8/name/{data["Batch_OGD_KC8_batch"]}')
-            updated_batch = response.json()
-            updated_batch['Batch_KC8_masse'] = int(updated_batch['Batch_KC8_masse'] - int(data['Batch_OGD_KC8_masse']))
-            response2 = requests.post(f'http://127.0.0.1:8000/KC8/update/{updated_batch["Batch_KC8_id"]}', headers=headers, data=json.dumps(updated_batch))
-
-            # update stock of THF
-            response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_OGD_THF_batch"]}')
-            updated_batch = response.json()
-            updated_batch['MP_quantite'] = updated_batch['MP_quantite'] - int(data['Batch_OGD_THF_Volume'])
-            response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
-        except:
-            flash("Problème lors de la mise à jour des stocks de la base de données",response.status_code)
-
         return redirect(url_for('acceuil_materiaux'))
+    
+
     else:
-        print(10*"\n ELSE NOT VALIDATE ON SUBMIT")
         for field,errors in form_OGD.errors.items():
             for error in errors:
                 flash(f"Erreur pour le champ '{getattr(form_OGD, field).label.text}' : {error}")
-            return render_template("Add_batch_OGD.html",
-                           Form_OGD=form_OGD)
-        
+
+       
     # formate le nom de batch OGD avec la semaine (today.isocalendar()[1]:02)
     today = datetime.datetime.now()
     form_OGD.Batch_OGD_name.data = f"OGD{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
     form_OGD.Batch_OGD_date.data = today
-
     form_OGD.Batch_OGD_heure_debut.data = today
     form_OGD.Batch_OGD_KC8_batch.data = default_batch['KC8']
     form_OGD.Batch_OGD_THF_batch.data = default_batch['THF']
 
-    # Get the data
-    headers = {'accept': 'application/json','Content-Type': 'application/json'}
-    # Batch OGD existants
+    # Display batch OGD existants
     response = requests.get(url='http://127.0.0.1:8000/OGD/',headers=headers)
     form_OGD.Batch_OGD_name.validators[0].values = [a['Batch_OGD_name'] for a in response.json()]
-    # Batch KC8 existants
-    response = requests.get(url='http://127.0.0.1:8000/KC8/',headers=headers)
-    form_OGD.Batch_OGD_KC8_batch.choices = [a['Batch_KC8_name'] for a in response.json() if a['Batch_KC8_masse'] > 0][:-10:-1]
+
+
+    print("form before rendering html")
+    print("\n".join([f'{(a.name,a.data)}' for a in form_OGD]))
     return render_template("Add_batch_OGD.html",
                            Form_OGD=form_OGD)
 
@@ -511,18 +518,13 @@ def Add_Produit(produit):
 
 @app.route("/Update_default_batch", methods=['GET','POST'])
 def Update_default_batch():
-    # global default_batch
-    default_batch = fetch_MP()
+    global default_batch
+    # default_batch = fetch_MP()
 
     last_10_K, last_10_C, last_10_THF, last_10_KC8 = get_last_10_batch()
 
     if request.method == 'POST':
-
-        print(10*"vv\n")
-        print(request.form.get('n_batch_K'))
-
         default_batch['K']= request.form.get('n_batch_K')
-        print(default_batch['K'])
         default_batch['C']= request.form.get('n_batch_C')
         default_batch['THF']= request.form.get('n_batch_THF')
         default_batch['KC8']= request.form.get('n_batch_KC8')
@@ -555,26 +557,39 @@ def update_batch_OGD(batch_name):
 
     # fill-in value with data from db
     form_OGD = Form_Batch_OGD()
+
     form_OGD = populate_form(form_OGD, response)
+    # MaJ batch KC8 disponibles
+    response = requests.get(url='http://127.0.0.1:8000/KC8/',headers=headers)
+    form_OGD.Batch_OGD_KC8_batch.choices = [a['Batch_KC8_name'] for a in response.json() if a['Batch_KC8_masse'] > 0][:-10:-1]
+    # MaJ batch THF disponibles
+    response = requests.get(url='http://127.0.0.1:8000/matieres_premieres/',headers=headers)
+    form_OGD.Batch_OGD_THF_batch.choices = [a['MP_ref_fournisseur'] for a in response.json() if (a['MP_quantite'] >= 0) and (a['MP_nom'] == 'THF')][:-10:-1]    
+    
     
     if request.method == 'POST': 
         data = dict()
         data['Batch_OGD_id'] = id_batch
         for field in form_OGD:
+            print(field.name,form_OGD[field.name].data)
+
             if field.name == 'csrf_token':
                 continue
             elif 'date' in field.name or 'heure' in field.name:
                 data[field.name] = form_OGD[field.name].data.strftime('%Y-%m-%dT%H:%M:%S')
             else:
                 data[field.name] = form_OGD[field.name].data
-
         response = requests.post(url+f'update/{id_batch}', headers=headers, data=json.dumps(data))
         flash(json.dumps({'status': response.status_code}), 200)
         return redirect(url_for('acceuil_materiaux')) 
     
     # reformater les datetime pour affichage correct dans le form
-    form_OGD['Batch_OGD_date'].data = form_OGD['Batch_OGD_date'].data.strftime(format='%d/%m/%y')
-    form_OGD['Batch_OGD_heure_debut'].data = form_OGD['Batch_OGD_heure_debut'].data.strftime(format='%H:%M')
+    # form_OGD['Batch_OGD_date'].data = form_OGD['Batch_OGD_date'].data.strftime(format='%d/%m/%y')
+    # form_OGD['Batch_OGD_heure_debut'].data = form_OGD['Batch_OGD_heure_debut'].data.strftime(format='%H:%M')
+    
+    print(5*"\n")
+    print("\n".join([f'{(a.name,a.data)}' for a in form_OGD]))
+    
     return render_template("MaJ_batch_OGD.html",
                            Form_OGD = form_OGD)
 
@@ -582,14 +597,11 @@ def update_batch_OGD(batch_name):
 @app.route("/MaJ_batch_KC8/<batch_name>",methods=["GET","POST"])
 # @login_required
 def update_batch_KC8(batch_name):
-    print('--> update KC8 Batch : Add termination time')
     # get Batch info
     headers = {
     'accept': 'application/json',
     'Content-Type': 'application/json'}
     response = requests.get(f'http://127.0.0.1:8000/KC8/name/{batch_name}',headers=headers)
-    
-    
     id_batch = response.json()['Batch_KC8_id']    
 
     # fill-in value with data from db

@@ -84,13 +84,14 @@ class Batch_OGD_Base(BaseModel):
     Batch_OGD_KC8_batch : str
     Batch_OGD_KC8_masse : float
     Batch_OGD_THF_batch : str
+    Batch_OGD_THF_Volume : int
     Batch_OGD_Temperature : float
     Batch_OGD_Agitation : int 
     Batch_OGD_heure_debut : datetime
     Batch_OGD_heure_fin : Optional[datetime] = None  
     Batch_OGD_room_HR : float
     Batch_OGD_room_T : float
-    Batch_OGD_Stock : float
+    Batch_OGD_Stock : Optional[float] = None
     Batch_OGD_Analyses : str 
 
 
@@ -101,13 +102,14 @@ class Batch_OGD_Add(BaseModel):
     Batch_OGD_KC8_batch : str
     Batch_OGD_KC8_masse : float
     Batch_OGD_THF_batch : str
+    Batch_OGD_THF_Volume : int
     Batch_OGD_Temperature : float
     Batch_OGD_Agitation : int 
     Batch_OGD_heure_debut : datetime
     Batch_OGD_heure_fin : Optional[datetime] = None  
     Batch_OGD_room_HR : float
     Batch_OGD_room_T : float
-    Batch_OGD_Stock : float
+    Batch_OGD_Stock : Optional[float] = None
     Batch_OGD_Analyses : str 
 
 

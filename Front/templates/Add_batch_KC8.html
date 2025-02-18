@@ -25,11 +25,12 @@
 
         if (!isNaN(number)) {
             // Perform the mathematical operation (e.g., squaring the number)
-            const result_K = number * 0.33 ;
-            const result_C = number * 0.66 ;
+            const result_K = number * (39/(39+(8*12))) ;
+            const result_C = number * ((8*12)/(39+(8*12))) ;
+            
             // Update the result in the HTML
-            document.getElementById('result_K').innerText = `m(K) :\n ${result_K} kg`;
-            document.getElementById('result_C').innerText = `m(C) :\n ${result_C} kg`;
+            document.getElementById('result_K').innerText = `m(K) :\n ${result_K.toFixed(2)} kg`;
+            document.getElementById('result_C').innerText = `m(C) :\n ${result_C.toFixed(2)} kg`;
 
         } else {
             // Handle invalid input

@@ -35,21 +35,59 @@ def update_stocks_K_C(data):
         response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_K_batch"]}')
         status['get_K'] = response.status_code
         updated_batch = response.json()
-        updated_batch['MP_quantite'] = int(updated_batch['MP_quantite'] - (39/(39+(8*12))*float(data['Batch_KC8_masse'])))
-        response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
-        status['post_K'] = response.status_code
-        
+        new_value = int(updated_batch['MP_quantite'] - (39/(39+(8*12))*float(data['Batch_KC8_masse'])))
+        if new_value >= 0:
+            updated_batch['MP_quantite'] = new_value
+            response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
+            status['post_K'] = response.status_code
+        else :
+            status['post_K'] = None
         # update stock of C
         response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_C_batch"]}')
         updated_batch = response.json()
         status['get_C'] = response.status_code
-        updated_batch['MP_quantite'] = updated_batch['MP_quantite'] - ((8*12)/(39+(8*12))*float(data['Batch_KC8_masse']))
-        response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
-        status['post_C'] = response.status_code
-
+        new_value = updated_batch['MP_quantite'] - ((8*12)/(39+(8*12))*float(data['Batch_KC8_masse']))
+        if new_value >= 0:
+            updated_batch['MP_quantite'] = new_value
+            response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
+            status['post_C'] = response.status_code
+        else :
+            status['post_C'] = None
         return status
 
+def update_stocks_KC8_THF(data):
+        headers = {
+        'accept': 'application/json',
+        'Content-Type': 'application/json'}
+        status=dict()
 
+        # update stock of KC8 
+        response = requests.get(f'http://127.0.0.1:8000/KC8/name/{data["Batch_OGD_KC8_batch"]}')
+        status['get_KC8'] = response.status_code
+        updated_batch = response.json()
+        new_value = float(updated_batch['Batch_KC8_masse'] - float(data['Batch_OGD_KC8_masse']))
+        
+        if new_value >= 0:
+            updated_batch['Batch_KC8_masse'] = new_value
+            response2 = requests.post(f'http://127.0.0.1:8000/KC8/update/{updated_batch["Batch_KC8_id"]}', headers=headers, data=json.dumps(updated_batch))
+            status['post_KC8'] = response2.status_code
+        else :
+            status['post_KC8'] = None        
+        
+        # update stock of THF
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_OGD_THF_batch"]}')
+        status['get_THF'] = response.status_code
+        updated_batch = response.json()
+        new_value = updated_batch['MP_quantite'] - int(data['Batch_OGD_THF_Volume'])
+
+        if new_value >= 0:
+            updated_batch['MP_quantite'] = new_value
+            response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
+            status['post_THF'] = response.status_code
+        else :
+            status['post_THF'] = None  
+
+        return status
 
 
 def populate_form(form,response):
@@ -83,6 +121,7 @@ def get_last_10_batch():
     # get last KC8
     url = 'http://127.0.0.1:8000/KC8/'
     data = pd.DataFrame(requests.get(url).json()) 
+    data = data.loc[~data.Batch_KC8_heure_fin.isnull()]
     last_10_KC8=data.sort_values('Batch_KC8_id')['Batch_KC8_name'].values[-10:][::-1]
     
     return last_10_K, last_10_C, last_10_THF, last_10_KC8
