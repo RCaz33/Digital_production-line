@@ -149,7 +149,7 @@ class Envoi_Base(BaseModel):
     Envoi_date_prevu : datetime
     Envoi_date_effective : Optional[datetime] = None
     Envoi_code_coli : Optional[str] = None
-    Envoi_delivered : Optional[bool] = False
+    Envoi_delivered : Optional[datetime] = None
     Envoi_retour_client : Optional[Dict[str,Any]] = None
 
 class Envoi_Add(BaseModel):
@@ -162,7 +162,7 @@ class Envoi_Add(BaseModel):
     Envoi_date_prevu : datetime
     Envoi_date_effective : Optional[datetime] = None
     Envoi_code_coli : Optional[str] = None
-    Envoi_delivered : Optional[bool] = False
+    Envoi_delivered : Optional[datetime] = None
     Envoi_retour_client : Optional[Dict[str,Any]] = None
 
 

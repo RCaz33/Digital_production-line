@@ -95,7 +95,12 @@ def populate_form(form,response):
     for field in form:
         for k,v in data.items():
             if field.name == k:
-                if  '_date' in field.name :
+                if field.name == 'Envoi_date_effective':
+                    try:
+                        form[field.name].data = datetime.datetime.strptime(data[k], '%Y-%m-%dT%H:%M:%S')#.strftime(format='%d/%m/%y')
+                    except:
+                        continue
+                elif  '_date' in field.name :
                     form[field.name].data = datetime.datetime.strptime(data[k], '%Y-%m-%dT%H:%M:%S')#.strftime(format='%d/%m/%y')
                 elif '_heure_debut' in field.name:
                     form[field.name].data = datetime.datetime.strptime(data[k], '%Y-%m-%dT%H:%M:%S')#.strftime(format='%H:%M')
@@ -430,7 +435,7 @@ def make_chart_for_dash_produits(last_n = 5):
 
     # prepare UV with dillution
     UV_spectra = pd.DataFrame(UV_data['Analyses_data'].tolist()).astype(float)
-    dillution_factor = pd.Series(UV_data['Analyse_details'].apply(lambda x : int(x['dillution'].split(":")[1])),name='dillution_factor')
+    dillution_factor = pd.Series(UV_data['Analyse_details'].apply(lambda x : int(x['dilution'].split(":")[1])),name='dillution_factor')
     UV_spectra_dill = UV_spectra.mul(dillution_factor.reset_index(drop=True),axis=0)
 
     # generate indicators
@@ -474,3 +479,59 @@ def make_chart_for_dash_produits(last_n = 5):
 
     return img_UV, img_RAMAN
 
+def get_ref_CW_produit(name):
+    if name == 'W1':
+        return 'CW-GL-A-01-A1-T1'
+    elif name == 'W2':
+        return 'CW-GL-B-02-A1'
+    elif name == 'W3':
+        return 'CW-GL-D-02-A1'
+    elif name == 'W3NC':
+        return 'CW-GL-DX-02-A1'
+    elif name == 'W10':
+        return 'CW-GL-E-02-A1'
+    elif name == 'W10NC':
+        return 'CW-GL-EX-02-A1'
+    elif name == 'W20':
+         return 'CW-GL-F-02-A1'
+    elif name == 'W20NC':
+         return 'CW-GL-FX-02-A1'
+    elif name == 'EpoR':
+        return 'CW-EPO3-D-01-A1'
+    elif name == 'EpoF':
+        return 'CW-EPO3-F-01-A1'
+    elif name == 'EpoC':
+        return 'CW-EPO1-D-01-A1'
+    else:
+        return 'non-reference'
+
+
+def get_ref_CW_matiere_premiere(name):
+    if name == 'Epikote1001X75':
+        return 'EPO1'
+    elif name == 'Epikote827':
+        return 'EPO3'
+    elif name == 'RTM6-2':
+        return 'EPO5'
+    elif name == 'SikaBiresinCR87':
+        return 'EPO6'
+    elif name == 'ELIUM150':
+        return 'EPO7'
+    elif name == 'LY564':
+        return 'EPO8'
+    elif name == 'PY306':
+        return 'EPO9'
+    elif name == 'LY3508':
+        return 'EPO10'
+    elif name == 'Resoltechnon-CMR':
+        return 'EPO11'
+    elif name == 'ResoltechCMR':
+        return 'EPO12'
+    elif name == 'Thermoplastique':
+        return 'TP'
+    elif name == 'PLA':
+        return 'TP1'
+    elif name == 'PET':
+        return 'TP2'
+    elif name == 'PP':
+        return 'TP3'

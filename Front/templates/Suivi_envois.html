@@ -24,7 +24,7 @@
           {% for envoi in Envois_all: %}
             <div class="alert alert-primary d-flex align-items-center" role="alert">
                 {{envoi[2]}} : {{envoi[5]}} Kg de {{envoi[3]}} le {{envoi[1][:10]}} => Mettre à jour le
-                 <a href="{{ url_for('Suivi_envoi', envoi_id=envoi[0]) }}" >retour client</a>.
+                 <a href="{{ url_for('Envoi_retour_client', ref_envoi=envoi[0]) }}" >retour client</a>.
                 <br/>
             </div>
           {% endfor %}

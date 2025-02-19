@@ -100,10 +100,10 @@ class DB_Envoi(Base):
     Envoi_produit_batch = Column(String(10), nullable=True)
     Envoi_produit_Qte = Column(Float, nullable=False)
     Envoi_produit_emballage = Column(String(10), nullable=False)
-    Envoi_date_prevu = Column(DateTime, nullable=False)
+    Envoi_date_prevu = Column(DateTime, nullable=True)
     Envoi_date_effective = Column(DateTime, nullable=True)
     Envoi_code_coli = Column(String(50), nullable=True, unique=True)
-    Envoi_delivered = Column(Boolean)
+    Envoi_delivered = Column(DateTime, nullable=True)
     Envoi_retour_client = Column(JSON, nullable=True)
     
 class DB_Client(Base):

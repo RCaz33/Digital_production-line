@@ -21,7 +21,7 @@ from flask import Flask, jsonify, render_template, flash, redirect, url_for, req
 from flask_login import login_user, logout_user, login_required
 
 # import pour le back
-from utils import update_stocks_KC8_THF, fetch_MP, make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
+from utils import get_ref_CW_matiere_premiere, get_ref_CW_produit, update_stocks_KC8_THF, fetch_MP, make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
 from forms import *
 
 
@@ -176,7 +176,7 @@ def Add_MP():
         MP_date_reception = datetime.datetime.strptime(MP_date_reception_str, '%d/%m/%y')
         data = {
             "MP_nom": request.form['MP_nom'],
-            "MP_codeCW": config.codes_MP_CW[request.form['MP_nom']],
+            "MP_codeCW": get_ref_CW_matiere_premiere(request.form['MP_nom']),
             "MP_ref_fournisseur": request.form['MP_ref_fournisseur'],
             "MP_quantite": request.form['MP_quantite'],
             "MP_date_reception": MP_date_reception.isoformat(),
@@ -374,16 +374,9 @@ def Add_OGD():
             flash("Impossible d'utiliser ce(s) batch(s) pour cette quantité de OGD")
             return redirect(url_for('Add_OGD'))
 
-
-        print("DATA to submit")
-        print("\n".join([f'{(k,v)}' for k,v in data.items()]))
-        print("data dumps json")
-        print(json.dumps(data))
         # post new batch OGD
         response = requests.post(url, headers=headers, data=json.dumps(data))
-        print(5*"\n")
-        print(response.status_code)
-        print(response.content)
+
         if response.status_code != 200:
             flash(json.dumps('Probleme de connection à la base de donnée'))
         else:
@@ -422,7 +415,23 @@ def Add_OGD():
 def Add_Produit(produit):
     headers = {'accept': 'application/json','Content-Type': 'application/json'}
     form_produit = Form_Produit()
+    # MaJ choix batch OGD
+    response = requests.get(url='http://127.0.0.1:8000/OGD/',headers=headers)
+    form_produit.Batch_Produit_OGD_batch.choices = [a['Batch_OGD_name'] for a in response.json() if a['Batch_OGD_Stock'] > 0]
+    print(form_produit.Batch_Produit_OGD_batch.choices)
+    response = requests.get(url='http://127.0.0.1:8000/matieres_premieres/',headers=headers)
     
+    if ('W' in produit) and not (produit =='W1'):
+        form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'Viscosant'][:-10:-1]
+    elif 'Epo' in produit and not produit == 'EpoC':
+        form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'ResineEpikote827'][:-10:-1]
+    elif produit in ['EpoF, EpoR']:
+        form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'ResineEpikote1001'][:-10:-1]
+    else:
+        flash("produit n'est ni un W ni un Epo")
+
+
+
     if form_produit.validate_on_submit():
         url = 'http://127.0.0.1:8000/Produit/'
         Produit_date = request.form['Batch_Produit_date']
@@ -433,7 +442,7 @@ def Add_Produit(produit):
             "Batch_Produit_Technicien": request.form['Batch_Produit_Technicien'],
             "Batch_Produit_OGD_batch": request.form['Batch_Produit_OGD_batch'],
             "Batch_Produit_OGD_Qte": request.form['Batch_Produit_OGD_Qte'],
-            "Batch_Produit_additif_bacth": request.form['Batch_Produit_additif_bacth'],
+            "Batch_Produit_additif_batch": request.form['Batch_Produit_additif_bacth'],
             "Batch_Produit_additif_Qte": request.form['Batch_Produit_additif_Qte'],
             "Batch_Produit_Analyses": "None",}
 
@@ -509,6 +518,12 @@ def Add_Produit(produit):
     Envoi_id = request.args.get('envoie')
     print(5*"\n")
     print("envoi",Envoi_id)
+
+    today = datetime.datetime.now()
+
+    name = get_ref_CW_produit(produit)
+    form_produit.Batch_Produit_ref_CW.data = f"{name}-{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
+    form_produit.Batch_Produit_date.data = today
 
 
     return render_template("Add_batch_produit.html",
@@ -641,9 +656,9 @@ def Add_analyse(batch_name):
     'accept': 'application/json',
     'Content-Type': 'application/json'}
     form_OGD = Form_Batch_OGD()
+    form_KC8 = Form_Batch_KC8()
     if request.method == 'POST':
-            
-
+        
 
         if 'OGD' in batch_name:
             # UV
@@ -687,19 +702,21 @@ def Add_analyse(batch_name):
 
 
 
-        return render_template("Ajout_analyse_UV.html",
+        return render_template("Ajout_analyse_OGD.html",
                                Form_OGD = form_OGD)
 
-    elif 'KC8' in batch_name:
-        form_KC8 = Form_Batch_KC8()
+    elif 'K' in batch_name:
+        # request info on batch
+        response = requests.get(f'http://127.0.0.1:8000/KC8/name/{batch_name}',headers=headers)
+        form_KC8 = populate_form(form_KC8, response)
 
 
-        return render_template("Ajout_analyse_Raman.html",
+        return render_template("Ajout_analyse_KC8.html",
                                Form_KC8 = form_KC8)
 
 
 
-    return render_template("Ajout_analyse")
+    return redirect(url_for('cahier_prod'))
 
 #################################################################
 ########################## Delete Batch #########################
@@ -883,6 +900,9 @@ def Add_commande():
 def Add_envoi():
 
     form_envoi = Form_Envoi()
+    response = requests.get(f'http://127.0.0.1:8000/Client/')
+    form_envoi.Envoi_client_name.choices = [a['Client_nom'] for a in response.json()]
+    
     if request.method == 'POST':
         data = dict()
         for field in form_envoi:
@@ -936,6 +956,29 @@ def Suivi_envoi():
 
     return render_template("Suivi_envois.html",
                            Envois_all = [b for b in Envois_all.values])
+
+@app.route("/MaJ_retour_Client/<ref_envoi>",methods=["GET","POST"])
+def Envoi_retour_client(ref_envoi):
+
+
+    form_envoi = Form_Envoi()
+    response = requests.get(f'http://127.0.0.1:8000/Envoi/id/{ref_envoi}')
+    form_envoi = populate_form(form_envoi, response)
+
+
+    if form_envoi.validate_on_submit():
+        #change attribute retour client in form and submit to update to database
+
+        response = requests.post(f'http://127.0.0.1:8000/Envois/update/{ref_envoi}',data=json.dumps(data))
+        flash(f'{response.status_code} Mise a jour envoi de {data['Envoi_produit_name']} à {data['Envoi_client_name']} effectué')
+        return redirect(url_for('dash_commerce'))
+
+    response = requests.get(f'http://127.0.0.1:8000/Envoi/')
+    Envois_all = pd.DataFrame(response.json())
+    Envois_all = Envois_all.loc[Envois_all.Envoi_retour_client.isnull()]
+
+    return render_template("MaJ_envoi.html",
+                            Form_envoi = form_envoi)
 
 
 

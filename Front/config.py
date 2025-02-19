@@ -16,3 +16,12 @@ codes_MP_CW = dict({'Carbone': 'CW_001',
 unitees = ['Kg','L']
 
 Produits_CW = ['W2','W2NC','W3','W3NC','W10','W10NC','EpoF','EpoC']
+
+
+clients = ['Client 1 ',
+          'Client 1 UK',
+          'Client 1 Italy',
+          'Client 2',
+          'Client 3',
+          'Client 4 Site 1',
+          'Client 4 Site 2']

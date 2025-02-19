@@ -87,9 +87,9 @@ class Form_Produit(FlaskForm):
     Batch_Produit_ref_CW = StringField('Nom Batch', [Length(max=10)])
     Batch_Produit_date = DateTimeField('Date début production', format='%d/%m/%y')
     Batch_Produit_Technicien = SelectField('Technicien', choices=config.Techniciens_CW)
-    Batch_Produit_OGD_batch =  StringField('Batch_OGD_name')
+    Batch_Produit_OGD_batch =  SelectField('Batch_OGD_name', choices=[])
     Batch_Produit_OGD_Qte = FloatField('Qte OGD utliisé', default=50)
-    Batch_Produit_additif_bacth = StringField('Batch_additif_name')
+    Batch_Produit_additif_batch = SelectField('Batch_additif_name',choices=[])
     Batch_Produit_additif_Qte = IntegerField('Additif Qte',default=250)
     Batch_Produit_Analyses = StringField('reference_analyses', [Length(max=60)])
 
@@ -103,6 +103,7 @@ class Form_Envoi(FlaskForm):
     Envoi_date_prevu = DateTimeField('Date envoi prevu', format='%d/%m/%y')
     Envoi_date_effective = DateTimeField('Date envoi effective', format='%d/%m/%y')
     Envoi_code_coli = StringField('Reference coli', [Length(max=50)])
+    Envoi_delivered = DateTimeField('Date reception', format='%d/%m/%y')
     Envoi_retour_client = TextAreaField('Metadata')
     Envoi_submit = SubmitField('Valider')
 
