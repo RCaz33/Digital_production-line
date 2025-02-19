@@ -19,14 +19,14 @@
 
 
 <!-- Get informations -->
-<h1> Ajout analyse UV</h1>
+<h1> Ajout analyses </h1>
 <div class="container shadow border border-danger-subtle border-1">
-    <form action="{{ url_for('update_batch_OGD', batch_name=Form_OGD.Batch_OGD_name.data) }}" method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {{ Form_OGD.csrf_token }}
         <br/>
         <div class="row justify-content-start">
         <div class="col-3">
-            <h5>Arret du batch {{ Form_OGD.Batch_OGD_name.data }}?</h5>
+            <h5> Propriété du batch {{ Form_OGD.Batch_OGD_name.data }}:</h5>
         </div>
         <div class="col-3">
             {{ Form_OGD.Batch_OGD_name.label }}
@@ -40,77 +40,79 @@
             {{ Form_OGD.Batch_OGD_Technicien.label }}
             {{ Form_OGD.Batch_OGD_Technicien(class="form-control", disabled='disabled') }}
         </div>
+        <div class="col-12">
+            <h5> Ajout de fichiers et détails: </h5>
+        </div>
+
+        <div class="col-4">
+            <label for="text_UV" class="form-label"> Télécharger une analyse UV</label>
+            <input class="form-control" type="file" name="file_UV" id="text_UV">
+        </div>
+
+
+
+
         <div class="col-3">
+            <label for="dilution" class="form-label">Dilution utilisé pour l'analyse</label>   
+        </br>    
+            <select class="form-select" id="dilution", name="dilution">
+                <!-- <option selected>Faire un choix</option> -->
+                <option selected value="10"> 1:10 </option>
+                <option value="20"> 1:20 </option>
+                <option value="50"> 1:50 </option>
+            </select>
+        </div>
+
+        <div class="col-2">
+            </br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="centrif" id="centrif_true" value="True" checked>
+                <label class="form-check-label" for="centrif_true">Centrifugé</label>
+            </div> 
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="centrif" id="centrif_false", value="False">
+                <label class="form-check-label" for="centrif_false">Non-centrifugé</label>
+            </div> 
         </div>
         <div class="col-3">
-            {{ Form_OGD.Batch_OGD_KC8_batch.label }}
-            {{ Form_OGD.Batch_OGD_KC8_batch(class="form-control", disabled='disabled') }}
+            <label for="detail" class="form-label"> Informations complémentaires UV</label>
+            <input type="text" class="form-control" id="detail" name="details_UV" placeholder="Ecrire détails">
         </div>
-        <div class="col-3">
-            {{ Form_OGD.Batch_OGD_KC8_masse.label }}
-            {{ Form_OGD.Batch_OGD_KC8_masse(class="form-control", disabled='disabled') }}
-        </div>
-        <div class="col-3">
-        </div>
-        <div class="col-3">
-        </div>
-        <div class="col-3">
-            {{ Form_OGD.Batch_OGD_THF_batch.label }}
-            {{ Form_OGD.Batch_OGD_THF_batch(class="form-control", disabled='disabled') }}
-        </div>
-        <div class="col-3">
-            {{ Form_OGD.Batch_OGD_THF_Volume.label }}
-            {{ Form_OGD.Batch_OGD_THF_Volume(class="form-control",disabled='disabled') }}
-        </div>
-        <div class="col-3">
-        </div>
-        <div class="col-3">
-        </div>
-        <div class="col-3">
-            {{ Form_OGD.Batch_OGD_Temperature.label }}
-            {{ Form_OGD.Batch_OGD_Temperature(class="form-control",disabled='disabled') }}
-        </div>
-        <div class="col-3">
-            {{ Form_OGD.Batch_OGD_Agitation.label }}
-            {{ Form_OGD.Batch_OGD_Agitation(class="form-control", disabled='disabled') }}
-        </div>
-        <div class="col-3">
-        </div>
-        <div class="col-3">
-        </div>
-        <div class="col-3">
-            {{ Form_OGD.Batch_OGD_heure_debut.label }}
-            {{ Form_OGD.Batch_OGD_heure_debut(class="form-control", disabled='disabled') }}
-        </div>
-        <div class="col-3">
-            {{ Form_OGD.Batch_OGD_room_HR.label }}
-            {{ Form_OGD.Batch_OGD_room_HR(class="form-control",disabled='disabled') }}
-        </div>
-        <div class="col-3">
-            {{ Form_OGD.Batch_OGD_room_T.label }}
-            {{ Form_OGD.Batch_OGD_room_T(class="form-control", disabled='disabled') }}
+        
+        <div class="col-4">
+            <label for="formFile" class="form-label"> Télécharger une analyse Raman</label>
+            <input class="form-control" type="file" name="file_Raman">
         </div>
         <div class="col-3">
         </div>
+        <div class="col-2">
+        </br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="type_raman" id="raman_dc" value="DC" checked>
+                <label class="form-check-label" for="raman_dc">DropCast</label>
+            </div> 
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="type_raman" id="raman_l" value="Liq">
+                <label class="form-check-label" for="raman_l">Liquide</label>
+            </div> 
+        </div>
+
+
         <div class="col-3">
-            {{ Form_OGD.Batch_OGD_heure_fin.label }}
-            {{ Form_OGD.Batch_OGD_heure_fin(class="form-control") }}
+            <label for="detail" class="form-label"> Informations complémentaires Raman</label>
+            <input type="text" class="form-control" id="detail" name="details_UV" placeholder="Ecrire détails">
         </div>
-        <div class="col-6">
-        </div>
-        <div class="col-3">
-        </div>
-        <!-- <button type="submit" class="btn btn-primary">Validate</button> -->
+
+
+
+
+
+    </div>
 
 
         <div class="col-3">
             <br/>
-            <button class="btn btn-primary" type="submit" name='submit' value="submit"> Enregistrer </button>
-        </div>
-
-        <div class="col-3">
-            <br/>
-            <a class="btn btn-primary" href="{{url_for('supprimer_OGD', batch_name=Form_OGD.Batch_OGD_name.data)}}"> Supprimer </a>        </div>
+            <button type="submit" class="btn btn-primary" href="{{url_for('Add_analyse', batch_name=Form_OGD.Batch_OGD_name.data)}}"> Ajouter </a>        </div>
         </div>
 
     </form>

@@ -635,23 +635,57 @@ def update_batch_KC8(batch_name):
 #################################################################
 
 
-@app.route('/ajouter_analyses/<batch_name>')
+@app.route('/Ajouter_analyses/<batch_name>', methods=['GET',"POST"])
 def Add_analyse(batch_name):
     headers = {
     'accept': 'application/json',
     'Content-Type': 'application/json'}
-    response =
-    id_batch = response.json()['Batch_KC8_id']    
+    form_OGD = Form_Batch_OGD()
+    if request.method == 'POST':
+            
 
 
+        if 'OGD' in batch_name:
+            # UV
+            data_UV = request.files['file_UV']
+            file_UV = pd.read_csv(data_UV,sep='\t')
+            file_UV=file_UV.to_dict()
+            analyse=dict()
+            analyse['Analyse_name'] = batch_name
+            analyse['Analyse_subname'] = 'UV'
+            analyse['Analyse_details'] = dict({'dilution':f'1:{request.form.get('dilution')}',
+                                        'centrifuge':request.form.get('centrif'),
+                                        'details':request.form.get('details_UV')})
+            analyse['Analyses_data'] = file_UV
+            response = requests.post('http://127.0.0.1:8000/analyses/', headers=headers, data=json.dumps(analyse))
+            print("centrif:",request.form.get('centrifuge'))
+            # RAMAN
+            data_Raman = request.files['file_Raman']
+            file_Raman = pd.read_csv(data_Raman,sep='\t')
+            file_Raman=file_Raman.to_dict()
+            analyse=dict()
+            analyse['Analyse_name'] = batch_name
+            analyse['Analyse_subname'] = 'RAMAN'
+            analyse['Analyse_details'] = dict({'methode':request.form.get('type_raman'),
+            'details':request.form.get('details_RAMAN')})
+            analyse['Analyses_data'] = file_Raman
+            response = requests.post('http://127.0.0.1:8000/analyses/', headers=headers, data=json.dumps(analyse))
+
+
+        elif 'KC8' in batch_name:
+            print('analyse KC8')
 
 
     if 'OGD' in batch_name:
-        form_OGD = Form_Batch_OGD()
+
+        print('IT IS OGD BATCH')
+        
 
         # request info on batch
         response = requests.get(f'http://127.0.0.1:8000/OGD/name/{batch_name}',headers=headers)
-        data = response.json()
+        form_OGD = populate_form(form_OGD, response)
+
+
 
         return render_template("Ajout_analyse_UV.html",
                                Form_OGD = form_OGD)
