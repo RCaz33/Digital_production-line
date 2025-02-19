@@ -24,6 +24,7 @@
         {% for batch_OGD in batch_OGDs: %}
             {{ batch_OGD }}
             <a href="{{ url_for('update_batch_OGD', batch_name=batch_OGD) }}" >Mettre à jour</a>.
+            <a href="{{ url_for('Add_analyse', batch_name=batch_OGD) }}" >Ajouter Analyses</a>.
             <br/>
         {% endfor %}
     </div>
@@ -33,6 +34,7 @@
           {% for batch_KC8 in batch_KC8s: %}
               {{ batch_KC8 }}
               <a href="{{ url_for('update_batch_KC8', batch_name=batch_KC8) }}" >Mettre à jour</a>.
+              <a href="{{ url_for('Add_analyse', batch_name=batch_KC8) }}" >Ajouter Analyses</a>.
               <br/>
           {% endfor %}
       </div>

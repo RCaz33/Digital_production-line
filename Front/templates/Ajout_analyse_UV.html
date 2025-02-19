@@ -2,7 +2,7 @@
 
 {% block title %}
 <title>
-    MaJ OGD
+    Ajout analyse
 </title>
 {% endblock %}
 
@@ -19,7 +19,7 @@
 
 
 <!-- Get informations -->
-<h1> Mise à jour batch OGD</h1>
+<h1> Ajout analyse UV</h1>
 <div class="container shadow border border-danger-subtle border-1">
     <form action="{{ url_for('update_batch_OGD', batch_name=Form_OGD.Batch_OGD_name.data) }}" method="POST">
         {{ Form_OGD.csrf_token }}

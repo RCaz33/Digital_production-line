@@ -411,25 +411,29 @@ def make_chart_for_dash_produits(last_n = 5):
     # make the API CALL
     response = requests.get('http://127.0.0.1:8000/OGD/')
     OGD_all = pd.DataFrame(response.json())
-    last_5 = OGD_all['Batch_OGD_name'][-last_n:]
+    last_5 = OGD_all['Batch_OGD_name'][-last_n:].values
 
     # fetch analysis
     UV_data=pd.DataFrame()
     RAMAN_data=pd.DataFrame()
     for OGD_n in last_5:
-        response = requests.get(f'http://127.0.0.1:8000/analyses/name/{OGD_n}')
-        analyses = pd.DataFrame(response.json())
-        analyse_UV = analyses.loc[analyses.Analyse_subname == 'UV']
-        analyse_RAMAN = analyses.loc[analyses.Analyse_subname == 'RAMAN']   
-        UV_data = pd.concat([UV_data,analyse_UV])
-        RAMAN_data = pd.concat([RAMAN_data,analyse_RAMAN])
+        try:
+            response = requests.get(f'http://127.0.0.1:8000/analyses/name/{OGD_n}')
+            analyses = pd.DataFrame(response.json())
+            analyse_UV = analyses.loc[analyses.Analyse_subname == 'UV']
+            analyse_RAMAN = analyses.loc[analyses.Analyse_subname == 'RAMAN']   
+            UV_data = pd.concat([UV_data,analyse_UV])
+            RAMAN_data = pd.concat([RAMAN_data,analyse_RAMAN])
+        except:
+            last_5 = last_5[~np.isin(last_5,[OGD_n])]
+            last_n -= 1
 
     # prepare UV with dillution
     UV_spectra = pd.DataFrame(UV_data['Analyses_data'].tolist()).astype(float)
     dillution_factor = pd.Series(UV_data['Analyse_details'].apply(lambda x : int(x['dillution'].split(":")[1])),name='dillution_factor')
     UV_spectra_dill = UV_spectra.mul(dillution_factor.reset_index(drop=True),axis=0)
 
-    # geenrate indicators
+    # generate indicators
     indic_UV = (UV_spectra_dill['200'] / UV_spectra_dill['490'])[-last_n:]
     indic_UV.index=last_5
     indic_RAMAN = RAMAN_data['Analyse_details'].apply(lambda x : x['group1_indic1-ex D/G'])[-last_n:]

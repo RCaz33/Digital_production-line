@@ -630,6 +630,42 @@ def update_batch_KC8(batch_name):
                            Form_KC8 = form_KC8)
 
 
+#################################################################
+####################### Ajouter analyses ########################
+#################################################################
+
+
+@app.route('/ajouter_analyses/<batch_name>')
+def Add_analyse(batch_name):
+    headers = {
+    'accept': 'application/json',
+    'Content-Type': 'application/json'}
+    response =
+    id_batch = response.json()['Batch_KC8_id']    
+
+
+
+
+    if 'OGD' in batch_name:
+        form_OGD = Form_Batch_OGD()
+
+        # request info on batch
+        response = requests.get(f'http://127.0.0.1:8000/OGD/name/{batch_name}',headers=headers)
+        data = response.json()
+
+        return render_template("Ajout_analyse_UV.html",
+                               Form_OGD = form_OGD)
+
+    elif 'KC8' in batch_name:
+        form_KC8 = Form_Batch_KC8()
+
+
+        return render_template("Ajout_analyse_Raman.html",
+                               Form_KC8 = form_KC8)
+
+
+
+    return render_template("Ajout_analyse")
 
 #################################################################
 ########################## Delete Batch #########################
