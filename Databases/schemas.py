@@ -121,8 +121,8 @@ class Batch_Produit_Base(BaseModel):
     Batch_Produit_Technicien : str
     Batch_Produit_OGD_batch : str
     Batch_Produit_OGD_Qte : float
-    Batch_Produit_stabilisant_bacth : str
-    Batch_Produit_stabilisant_Qte : float
+    Batch_Produit_additif_batch : str
+    Batch_Produit_additif_Qte : float
     Batch_produit_stock : float
     Batch_Produit_Analyses : str 
 
@@ -133,8 +133,8 @@ class Batch_Produit_Add(BaseModel):
     Batch_Produit_Technicien : str
     Batch_Produit_OGD_batch : str
     Batch_Produit_OGD_Qte : float
-    Batch_Produit_stabilisant_bacth : str
-    Batch_Produit_stabilisant_Qte : float
+    Batch_Produit_additif_batch : str
+    Batch_Produit_additif_Qte : float
     Batch_produit_stock : float
     Batch_Produit_Analyses : str 
 

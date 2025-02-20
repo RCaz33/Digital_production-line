@@ -25,3 +25,35 @@ clients = ['Client 1 ',
           'Client 3',
           'Client 4 Site 1',
           'Client 4 Site 2']
+
+
+ref_CW_matiere_premiere=dict({'Epikote1001X75':'EPO1',
+                              'Epikote827':'EPO3',
+                              'RTM6-2':'EPO5',
+                              'SikaBiresinCR87':'EPO6',
+                              'ELIUM150':'EPO7',
+                              'LY564':'EPO8',
+                              'PY306':'EPO9',
+                              'LY3508':'EPO10',
+                              'Resoltechnon-CMR':'EPO11',
+                              'ResoltechCMR':'EPO12',
+                              'Thermoplastique':'TP',
+                              'PLA':'TP1',
+                              'PET':'TP2',
+                              'PP':'TP3',
+                              'THF':'code_THF',
+                              'Potassium':'code_K',
+                              'Carbone':'code_C'})
+    
+ref_CW_produit=dict({'W1':'CW-GL-A-01-A1-T1',
+                     'W2':'CW-GL-B-02-A1',
+                     'W3':'CW-GL-D-02-A1',
+                     'W3NC':'CW-GL-DX-02-A1',
+                     'W10':'CW-GL-E-02-A1',
+                     'W10NC':'CW-GL-EX-02-A1',
+                     'W20':'CW-GL-F-02-A1',
+                     'W20NC':'CW-GL-FX-02-A1',
+                     'EpoR':'CW-EPO3-D-01-A1',
+                     'EpoF':'CW-EPO3-F-01-A1',
+                     'EpoC':'CW-EPO1-D-01-A1'})
+    

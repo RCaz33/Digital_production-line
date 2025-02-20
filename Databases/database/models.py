@@ -85,8 +85,8 @@ class DB_Batch_Produit(Base):
     Batch_Produit_Technicien = Column(String(10), nullable=False)
     Batch_Produit_OGD_batch = Column(String(10), nullable=False, unique=True)
     Batch_Produit_OGD_Qte = Column(Float, default=20.0, nullable=False)
-    Batch_Produit_stabilisant_bacth = Column(String(10), nullable=False)  # can be EPO ou viscosant
-    Batch_Produit_stabilisant_Qte = Column(Float, default=20.0, nullable=False)
+    Batch_Produit_additif_batch = Column(String(10), nullable=False)  # can be EPO ou viscosant
+    Batch_Produit_additif_Qte = Column(Float, default=20.0, nullable=False)
     Batch_produit_stock = Column(Float, default=0.0, nullable=False)
     Batch_Produit_Analyses = Column(String(50), nullable=False)
 

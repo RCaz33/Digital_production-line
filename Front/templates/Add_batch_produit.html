@@ -27,6 +27,70 @@
   </div>
 {% endfor %}
 
+
+<!-- Script pour calculer la qté de OGD / additif en fonction de la qe de produit voulue -->
+
+<script>
+    function Calculate() {
+        const produit_qte = document.getElementById('produit_qte').value;
+        const number = parseFloat(produit_qte);
+
+        const produit_nom = document.getElementById('produit_nom').value;
+        const produitType = produit_nom.split('-')[0];
+        let result;
+        let additif_type;
+        let OGD_qte;
+
+        if (produitType.includes('W2')) {
+            result = number * 0.005;
+            additif_type = 'Viscosant';
+            OGD_qte = number*0.5;
+        } else if (produitType.includes('W3')) {
+            result = number * 0.005;
+            additif_type = 'Viscosant';
+            OGD_qte = number*2.4;
+        } else if (produitType.includes('W3NC')) {
+            result = number * 0.006;
+            additif_type = 'Viscosant';
+            OGD_qte = number*2.4;
+        } else if (produitType.includes('W10NC')) {
+            result = number * 0.006;
+            additif_type = 'Viscosant';
+            OGD_qte = number*4.9;
+        } else if (produitType.includes('W10'))  {
+            result = number * 0.008;
+            additif_type = 'Viscosant';
+            OGD_qte = number*4.9;
+        } else if (produitType.includes('W20NC')) {
+            result = number * 0.001;
+            additif_type = 'Viscosant';
+            OGD_qte = number*9.4;
+        } else if (produitType.includes('EpoC')) {
+            result = number * 1.2;
+            additif_type = 'Epikote1001';
+            OGD_qte = number*3.6;
+        } else if (produitType.includes('EpoF')) {
+            result = number * 1.2;
+            additif_type = 'Epikote827';
+            OGD_qte = number*13.2;
+        } else if (produitType.includes('EpoR')) {
+            result = number * 1.2;
+            additif_type = 'Epikote827';
+            OGD_qte = number*3.6;
+        } else {
+            result = number; 
+        }
+
+        document.getElementById('additif_qte').data = `${result.toFixed(2)}`;
+        document.getElementById('additif_type').data = additif_type;
+        document.getElementById('OGD_qte').data = OGD_qte;
+
+        // console.log("Quantity:", number);
+        // console.log("Product Type:", produit_type);
+        // console.log("Additif Type", additif_type);
+    }
+</script>
+
 <!-- Get informations -->
 <h1> Nouveau Produit</h1>
 <div class="container shadow border border-danger-subtle border-1">
@@ -35,11 +99,13 @@
         <br/>
         <div class="row justify-content-start">
         <div class="col-3">
-            <h5>Ajout d'un nouveau OGD</h5>
+            <h5>Ajout d'un nouveau produit </h5>
+            <h6>  Code ISO : {{ name }} </h6>     
         </div>
+
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_ref_CW.label }}
-            {{ Form_Produit.Batch_Produit_ref_CW(class="form-control") }}
+            {{ Form_Produit.Batch_Produit_ref_CW(class="form-control", id='produit_nom') }}
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_date.label }}
@@ -57,24 +123,31 @@
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_OGD_Qte.label }}
-            {{ Form_Produit.Batch_Produit_OGD_Qte(class="form-control") }}
+            {{ Form_Produit.Batch_Produit_OGD_Qte(class="form-control", disabled='disabled', id='OGD_qte') }}
         </div>
-        <div class="col-3">
+        <div class="col-2">
+            {{ Form_Produit.Batch_produit_stock.label }}
+            {{ Form_Produit.Batch_produit_stock(class="form-control", id='produit_qte') }}
+        </div>
+        <div class="col-1">
+            </br>
+            <button type="button" class="btn btn-light" onclick="performOperation()">Calculate</button>
         </div>
         <div class="col-3">
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_additif_batch.label }}
-            {{ Form_Produit.Batch_Produit_additif_batch(class="form-control") }}
+            {{ Form_Produit.Batch_Produit_additif_batch(class="form-control", disabled='disabled', id='additif_type') }}
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_additif_Qte.label }}
-            {{ Form_Produit.Batch_Produit_additif_Qte(class="form-control") }}
+            {{ Form_Produit.Batch_Produit_additif_Qte(class="form-control", disabled='disabled', id='additif_qte') }}
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_Analyses.label }}
             {{ Form_Produit.Batch_Produit_Analyses(class="form-control") }}
         </div>
+    </div>
 
         <div class="col-2">
             </br>
@@ -82,6 +155,7 @@
             </br>
         </div>
     </form>
+
 
 
 

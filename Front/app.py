@@ -1,4 +1,64 @@
 
+
+
+    # Products Table: Store information about each product.
+    #     product_id (Primary Key)
+    #     product_name
+    #     description
+    #     category
+    #     unit_price
+    #     supplier_id
+    #     Other relevant attributes
+
+    # Stock Table: Track the current quantity of each product.
+    #     stock_id (Primary Key)
+    #     product_id (Foreign Key referencing Products Table)
+    #     quantity
+    #     location (e.g., warehouse, store)
+    #     last_updated (Timestamp)
+
+    # Stock Transactions Table: Record every change in stock levels.
+    #     transaction_id (Primary Key)
+    #     product_id (Foreign Key referencing Products Table)
+    #     transaction_type (e.g., 'in', 'out', 'adjustment')
+    #     quantity
+    #     transaction_date (Timestamp)
+    #     related_document (e.g., purchase order ID, sales order ID)
+    #     notes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Import general
 import os
 import io
@@ -21,7 +81,7 @@ from flask import Flask, jsonify, render_template, flash, redirect, url_for, req
 from flask_login import login_user, logout_user, login_required
 
 # import pour le back
-from utils import get_ref_CW_matiere_premiere, get_ref_CW_produit, update_stocks_KC8_THF, fetch_MP, make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
+from utils import update_stock_product, update_stock_OGD_additif, get_material_composition_for_product, update_stocks_KC8_THF, fetch_MP, make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
 from forms import *
 
 
@@ -176,7 +236,7 @@ def Add_MP():
         MP_date_reception = datetime.datetime.strptime(MP_date_reception_str, '%d/%m/%y')
         data = {
             "MP_nom": request.form['MP_nom'],
-            "MP_codeCW": get_ref_CW_matiere_premiere(request.form['MP_nom']),
+            "MP_codeCW": config.ref_CW_matiere_premiere[request.form['MP_nom']],
             "MP_ref_fournisseur": request.form['MP_ref_fournisseur'],
             "MP_quantite": request.form['MP_quantite'],
             "MP_date_reception": MP_date_reception.isoformat(),
@@ -413,14 +473,19 @@ def Add_OGD():
 
 @app.route("/Nouveau_batch_produit/<produit>", methods=['GET','POST'])
 def Add_Produit(produit):
+
+    print(5*"\n PRODUIT")
+    print(produit)
+
     headers = {'accept': 'application/json','Content-Type': 'application/json'}
     form_produit = Form_Produit()
     # MaJ choix batch OGD
     response = requests.get(url='http://127.0.0.1:8000/OGD/',headers=headers)
-    form_produit.Batch_Produit_OGD_batch.choices = [a['Batch_OGD_name'] for a in response.json() if a['Batch_OGD_Stock'] > 0]
-    print(form_produit.Batch_Produit_OGD_batch.choices)
+    form_produit.Batch_Produit_OGD_batch.choices = [a['Batch_OGD_name'] for a in response.json() if a['Batch_OGD_Stock'] > 0][::-1]
+
+
+    # FillIn fom from  #### UPDATE BY SHOWINF ONLY BACTH WHERE THERE IS STILL STOCK
     response = requests.get(url='http://127.0.0.1:8000/matieres_premieres/',headers=headers)
-    
     if ('W' in produit) and not (produit =='W1'):
         form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'Viscosant'][:-10:-1]
     elif 'Epo' in produit and not produit == 'EpoC':
@@ -428,12 +493,12 @@ def Add_Produit(produit):
     elif produit in ['EpoF, EpoR']:
         form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'ResineEpikote1001'][:-10:-1]
     else:
-        flash("produit n'est ni un W ni un Epo")
+        flash("produit n'a pas d'additifs")
 
 
 
     if form_produit.validate_on_submit():
-        url = 'http://127.0.0.1:8000/Produit/'
+        
         Produit_date = request.form['Batch_Produit_date']
         Produit_date = datetime.datetime.strptime(Produit_date, '%d/%m/%y')
         data = {
@@ -442,27 +507,33 @@ def Add_Produit(produit):
             "Batch_Produit_Technicien": request.form['Batch_Produit_Technicien'],
             "Batch_Produit_OGD_batch": request.form['Batch_Produit_OGD_batch'],
             "Batch_Produit_OGD_Qte": request.form['Batch_Produit_OGD_Qte'],
-            "Batch_Produit_additif_batch": request.form['Batch_Produit_additif_bacth'],
+            "Batch_Produit_additif_batch": request.form['Batch_Produit_additif_batch'],
             "Batch_Produit_additif_Qte": request.form['Batch_Produit_additif_Qte'],
             "Batch_Produit_Analyses": "None",}
+        
 
-        response = requests.post(url, headers=headers, data=json.dumps(data))
+    ################################################################################################
+    ################################################################################################
+    ######### UPDATE CODE : FUNCTION MUST UPDATE --ALL-- THE MP USED FOR THE BATCH  ################    ########################
+    ################################################################################################
+    ################################################################################################
+    ################################################################################################
+        
+        # Update OGD and viscosant and check if new mass >= 0
+        a = update_stock_OGD_additif(data) 
+        if not a['post_OGD'] or not a['post_additif']:
+            flash("Impossible d'utiliser ce(s) batch(s) pour cette quantité de OGD")
+            return redirect(url_for('Add_OGD'))
+        elif not a['get_OGD'] or not a['get_additif']:
+            flash('Probleme acces à database (table OGD)')
+            return redirect(url_for('Add_OGD'))
+
+        # update product table
+        response = requests.post(url = 'http://127.0.0.1:8000/Produit/', headers=headers, data=json.dumps(data))
         if response.status_code != 200:
             flash(json.dumps({'Problem connecting to the database': response.json()}))
         else:
-            flash(json.dumps({'status': 'OK'}))
-
-        # update stock of OGD 
-        response = requests.get(f'http://127.0.0.1:8000/OGD/name/{data["Batch_Produit_OGD_batch"]}')
-        updated_batch = response.json()
-        updated_batch['Batch_Produit_OGD_Qte'] = int(updated_batch['Batch_Produit_OGD_Qte'] - int(data['Batch_Produit_OGD_Qte']))
-        response2 = requests.post(f'http://127.0.0.1:8000/Produit/update/{updated_batch["Batch_Produit_id"]}', headers=headers, data=json.dumps(updated_batch))
-
-        # update stock of stabilisant
-        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_Produit_stabilisant_bacth"]}')
-        updated_batch = response.json()
-        updated_batch['MP_quantite'] = updated_batch['MP_quantite'] - int(data['Batch_Produit_stabilisant_Qte'])
-        response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
+            flash(json.dumps({'Ajout nouveaux batch produit': 'OK'}))
 
         # UPDATE ENVOI IF produit_desc with ref from produit
         if Envoi_id:
@@ -478,57 +549,47 @@ def Add_Produit(produit):
     today = datetime.datetime.now()
     form_produit.Batch_Produit_date.data = today
 
-    # try:     # test if the making the batch is coming from a request for a client
-    #     Envoi_id = request.args.get('envoie')
-    #     print(50*"\n")
-    #     print("envoi",Envoi_id)
-    #     response = requests.get(url=f'http://127.0.0.1:8000/Envoi/id/{Envoi_id}',headers=headers)
-    #     envoi_ref = pd.DataFrame(response.json())
-    #     print(envoi_ref)
-    #     # ecrit le nom de batch
-    #     form_produit.Batch_OGD_name.data = f"OGD{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
-    #     # calulate mass of OGD for given amount of product
-    #     form_produit.Batch_Produit_OGD_Qte.data = 2
-    #     # calulate mass of additif for given amount of product
-    #     form_produit.Batch_Produit_additif_Qte.data = 3
-    #     # print(produit_desc.replace("'", '"'))
-    #     # flash(f'Produit pour {client.split("'")[3]}')
-    # except:
-    #     flash('Produit pour étagère')
- 
-    # formate le nom de batch produit avec la semaine (today.isocalendar()[1]:02)
-    # form_produit.Batch_Produit_date.data = today
-    # response = requests.get(url='OGD')
-    # Batch_Produit_OGD_batch
-    # form_produit.Batch_Produit_OGD_batch.data = 
-    # form_produit.Batch_OGD_THF_batch.data = default_batch['THF']
 
-    # CALCULATE FOR A GIVEN PRODUCT THE QUANTITIES OF ADDITIVE BASE ON OGD
-    type_product=None
-    if type_product == 'W':
-        form_produit.Batch_Produit_stabilisant_bacth.data = 'W'
-        form_produit.Batch_Produit_stabilisant_Qte.data = 1
-    elif type_product == '...':
-        form_produit.Batch_Produit_stabilisant_bacth.data = '...'
-        form_produit.Batch_Produit_stabilisant_Qte.data = 1
-
-    form_produit.Batch_Produit_OGD_batch.choices = 'request on OGD'
-
-
+    # check if production comes from client demand -> fill in form with mass
     Envoi_id = request.args.get('envoie')
-    print(5*"\n")
-    print("envoi",Envoi_id)
+    if Envoi_id:
+        response = requests.get(url=f'http://127.0.0.1:8000/Envoi/id/{Envoi_id}',headers=headers)
+        produit_qte = response.json()['Envoi_produit_Qte']
+        form_produit.Batch_produit_stock.data = produit_qte
+        print(produit_qte)
+
+        # iterate over all methods to get all quantities
+        list_of_material = get_material_composition_for_product(produit,float(produit_qte))
+        Qte_materiaux = dict()
+        for method_name in dir(list_of_material):
+            if not method_name.startswith("__"):  
+                method = getattr(list_of_material, method_name)
+                if callable(method):
+                    Qte_materiaux.update(method())
+                    # print(f"{method_name}: {method()}")
+        print(Qte_materiaux)
+
+        form_produit.Batch_Produit_OGD_Qte.data = Qte_materiaux['OGD']
+
+        if 'W' in produit:
+            form_produit.Batch_Produit_additif_Qte.data = Qte_materiaux['viscosant']
+        elif 'EpoC' in produit:
+            form_produit.Batch_Produit_additif_Qte.data = Qte_materiaux['Epikote1001']
+        else:
+            form_produit.Batch_Produit_additif_Qte.data = Qte_materiaux['Epikote827']
+            
+
 
     today = datetime.datetime.now()
-
-    name = get_ref_CW_produit(produit)
-    form_produit.Batch_Produit_ref_CW.data = f"{name}-{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
+    name = config.ref_CW_produit[produit]
+    form_produit.Batch_Produit_ref_CW.data = f"{produit}-{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
     form_produit.Batch_Produit_date.data = today
 
 
     return render_template("Add_batch_produit.html",
                            Form_Produit=form_produit,
-                           produit=produit)
+                           produit=produit,
+                           name=name)
 
 
 @app.route("/Update_default_batch", methods=['GET','POST'])
@@ -658,11 +719,16 @@ def Add_analyse(batch_name):
     form_OGD = Form_Batch_OGD()
     form_KC8 = Form_Batch_KC8()
     if request.method == 'POST':
+            
+        # Check if data was added
+        data_UV = request.files['file_UV']
+        data_Raman = request.files['file_Raman']
+        if not data_UV and not data_Raman:
+            flash("Pas d'analyses ajoutées")
+            return redirect(url_for('Add_analyse',batch_name=batch_name))
         
-
         if 'OGD' in batch_name:
             # UV
-            data_UV = request.files['file_UV']
             file_UV = pd.read_csv(data_UV,sep='\t')
             file_UV=file_UV.to_dict()
             analyse=dict()
@@ -673,7 +739,7 @@ def Add_analyse(batch_name):
                                         'details':request.form.get('details_UV')})
             analyse['Analyses_data'] = file_UV
             response = requests.post('http://127.0.0.1:8000/analyses/', headers=headers, data=json.dumps(analyse))
-            print("centrif:",request.form.get('centrifuge'))
+
             # RAMAN
             data_Raman = request.files['file_Raman']
             file_Raman = pd.read_csv(data_Raman,sep='\t')
@@ -688,7 +754,20 @@ def Add_analyse(batch_name):
 
 
         elif 'KC8' in batch_name:
-            print('analyse KC8')
+            # RAMAN
+            data_Raman = request.files['file_Raman']
+            file_Raman = pd.read_csv(data_Raman,sep='\t')
+            file_Raman=file_Raman.to_dict()
+            analyse=dict()
+            analyse['Analyse_name'] = batch_name
+            analyse['Analyse_subname'] = 'RAMAN'
+            analyse['Analyse_details'] = dict({'methode':request.form.get('type_raman'),
+            'details':request.form.get('details_RAMAN')})
+            analyse['Analyses_data'] = file_Raman
+            response = requests.post('http://127.0.0.1:8000/analyses/', headers=headers, data=json.dumps(analyse))
+
+        flash(f"Analyse ajoutée avec succés pour {batch_name}")
+        return redirect(url_for('Add_analyse',batch_name=batch_name))
 
 
     if 'OGD' in batch_name:
@@ -778,14 +857,17 @@ def cahier_prod():
 def dash_prod():
 
     # request the products available
-    response = requests.get('http://127.0.0.1:8000/Produit/')
-    Produits_all = pd.DataFrame(response.json())
-    WNC_en_cours = Produits_all.loc[Produits_all.Batch_Produit_ref_CW.apply(lambda x : ('W' in x.split('-')[0]) & ('NC' not in x.split('-')[0])),
+    try:
+        response = requests.get('http://127.0.0.1:8000/Produit/')
+        Produits_all = pd.DataFrame(response.json())
+        WNC_en_cours = Produits_all.loc[Produits_all.Batch_Produit_ref_CW.apply(lambda x : ('W' in x.split('-')[0]) & ('NC' not in x.split('-')[0])),
+                                        ['Batch_Produit_ref_CW','Batch_Produit_date']].values
+        W_en_cours = Produits_all.loc[Produits_all.Batch_Produit_ref_CW.apply(lambda x : ('W' in x.split('-')[0]) & ('NC' in x.split('-')[0])),
                                     ['Batch_Produit_ref_CW','Batch_Produit_date']].values
-    W_en_cours = Produits_all.loc[Produits_all.Batch_Produit_ref_CW.apply(lambda x : ('W' in x.split('-')[0]) & ('NC' in x.split('-')[0])),
-                                  ['Batch_Produit_ref_CW','Batch_Produit_date']].values
-    Epo_en_cours = Produits_all.loc[Produits_all.Batch_Produit_ref_CW.apply(lambda x : ('Epo' in x.split('-')[0]) ),
-                                    ['Batch_Produit_ref_CW','Batch_Produit_date']].values
+        Epo_en_cours = Produits_all.loc[Produits_all.Batch_Produit_ref_CW.apply(lambda x : ('Epo' in x.split('-')[0]) ),
+                                        ['Batch_Produit_ref_CW','Batch_Produit_date']].values
+    except:
+        WNC_en_cours = W_en_cours = Epo_en_cours = []
 
 
     # get the latest 5 OGD
@@ -812,12 +894,16 @@ def dash_commerce():
     Envois_en_attente = Envois_all.loc[Envois_all.Envoi_produit_batch.isnull(),['Envoi_produit_name','Envoi_produit_Qte','Envoi_client_name','Envoi_id']][::-1].values
 
     response = requests.get(f'http://127.0.0.1:8000/Produit/')
-    array = np.array([(a['Batch_Produit_ref_CW'],a['Batch_Produit_OGD_Qte']) for a in response.json()])
-    df = pd.DataFrame(array, columns=['produit','Qté'])
-    df['Categorie'] = df.produit.apply(lambda x :x.split("-")[0])
-    df['Qté'] = df['Qté'].astype(float)
-    fig = px.bar(df,x='Categorie',y='Qté',color='produit',title='Stocks des produits sur étagère')
-    graphJSON = json.dumps(fig,cls=plotly.utils.PlotlyJSONEncoder)
+    if response.status_code == 200:
+        array = np.array([(a['Batch_Produit_ref_CW'],a['Batch_produit_stock']) for a in response.json() if a['Batch_produit_stock']>0])
+        df = pd.DataFrame(array, columns=['produit','Qté'])
+        df['Categorie'] = df.produit.apply(lambda x :x.split("-")[0])
+        df['Qté'] = df['Qté'].astype(float)
+        fig = px.bar(df,x='Categorie',y='Qté',color='produit',title='Stocks des produits sur étagère')
+        graphJSON = json.dumps(fig,cls=plotly.utils.PlotlyJSONEncoder)
+    else :
+        graphJSON=json.dumps({})
+
 
 
     return render_template("acceuil_commerce.html",
@@ -913,11 +999,23 @@ def Add_envoi():
             else:
                 data[field.name] = form_envoi[field.name].data
 
+        #### UPDATE HERE TO PUT ISO CODE??
         data['Envoi_produit_name']=data['Envoi_produit_batch'].split('-')[0]
         data["Envoi_retour_client"]=None
-                
+
+
+        # Update products and check if new mass >= 0
+        a = update_stock_product(data) #### ATTENTION HERE POSSIBLE TO CONTROL COLIS NUMBER THAT MUST BE UNIQUE --> SEND 409
+        if not a['post_product'] :
+            flash("Impossible d'utiliser ce batch, quantité de stock insufisante")
+            return redirect(url_for('Add_envoi'))
+
+
+        print('DATA',data)
+
+        # update envoie        
         response = requests.post(f'http://127.0.0.1:8000/Envoi/',data=json.dumps(data))
-        flash(f'{response.status_code} Demande production {data['Envoi_client_name']} ({data['Envoi_produit_Qte']} kg) effectué')
+        flash(f'{response.status_code} : Envoi confirmé ({data['Envoi_client_name']} - {data['Envoi_produit_Qte']} kg)  stock de produit mis a jour')
         return redirect(url_for('dash_commerce'))
 
     today = datetime.datetime.now()

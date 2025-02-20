@@ -20,8 +20,8 @@ def create_batch_Produit(db: Session, request: Batch_Produit_Add):  # uses schem
     Batch_Produit_Technicien = request.Batch_Produit_Technicien,
     Batch_Produit_OGD_batch = request.Batch_Produit_OGD_batch,
     Batch_Produit_OGD_Qte = request.Batch_Produit_OGD_Qte,
-    Batch_Produit_stabilisant_bacth = request.Batch_Produit_stabilisant_bacth,
-    Batch_Produit_stabilisant_Qte = request.Batch_Produit_stabilisant_Qte,
+    Batch_Produit_additif_batch = request.Batch_Produit_additif_batch,
+    Batch_Produit_additif_Qte = request.Batch_Produit_additif_Qte,
     Batch_produit_stock = request.Batch_produit_stock,
     Batch_Produit_Analyses = request.Batch_Produit_Analyses)
 
@@ -72,8 +72,8 @@ def update_batch_Produit(db: Session, id: int, request: Batch_Produit_Base):
     DB_Batch_Produit.Batch_Produit_Technicien : request.Batch_Produit_Technicien,
     DB_Batch_Produit.Batch_Produit_OGD_batch : request.Batch_Produit_OGD_batch,
     DB_Batch_Produit.Batch_Produit_OGD_Qte : request.Batch_Produit_OGD_Qte,
-    DB_Batch_Produit.Batch_Produit_stabilisant_bacth : request.Batch_Produit_stabilisant_bacth,
-    DB_Batch_Produit.Batch_Produit_stabilisant_Qte : request.Batch_Produit_stabilisant_Qte,
+    DB_Batch_Produit.Batch_Produit_additif_batch : request.Batch_Produit_additif_batch,
+    DB_Batch_Produit.Batch_Produit_additif_Qte : request.Batch_Produit_additif_Qte,
     DB_Batch_Produit.Batch_produit_stock : request.Batch_produit_stock,
     DB_Batch_Produit.Batch_Produit_Analyses : request.Batch_Produit_Analyses})
   

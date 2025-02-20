@@ -57,7 +57,8 @@
                     {% for envoie in Envois_en_attente %}
                         <div class="alert alert-primary alert-dismissible fade show" role="alert">
                         <!-- <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg> -->
-                        {{envoie[2]}} ({{ envoie[0] }}, {{ envoie[1] }} Kg)   &emsp;&emsp;  <a href="{{ url_for('Add_Produit', produit = envoie[0], envoi='jhvcdljhvdqsjvc' )}}" class="alert-link">Lancer production</a>.
+                        {{envoie[2]}} ({{ envoie[0] }}, {{ envoie[1] }}  Kg)   &emsp;&emsp;  <a href="{{ url_for('Add_Produit', produit = envoie[0], envoie=envoie[3] )}}" class="alert-link">Lancer production</a>.
+                        <form></form>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}

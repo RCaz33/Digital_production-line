@@ -26,6 +26,58 @@ def fetch_MP():
     return default_batch
 
 
+def update_stock_product(data):
+        headers = {
+        'accept': 'application/json',
+        'Content-Type': 'application/json'}
+        status=dict()
+        response = requests.get(f'http://127.0.0.1:8000/Produit/name/{data["Envoi_produit_batch"]}')
+        status['get_product'] = response.status_code
+        updated_batch = response.json()
+        new_value = int(updated_batch['Batch_produit_stock'] - float(data['Envoi_produit_Qte']))
+        if new_value >= 0:
+            updated_batch['Batch_produit_stock'] = new_value
+            response = requests.post(f'http://127.0.0.1:8000/Produit/update/{updated_batch["Batch_Produit_id"]}', headers=headers, data=json.dumps(updated_batch))
+            status['post_product'] = response.status_code
+        else :
+            status['post_product'] = None
+        return status
+
+
+def update_stock_OGD_additif(data):
+        headers = {
+        'accept': 'application/json',
+        'Content-Type': 'application/json'}
+        status=dict()
+
+        response = requests.get(f'http://127.0.0.1:8000/OGD/name/{data["Batch_Produit_OGD_batch"]}')
+        status['get_OGD'] = response.status_code
+        updated_batch = response.json()
+        new_value = int(updated_batch['Batch_OGD_Stock'] - float(data['Batch_Produit_OGD_Qte']))
+        if new_value >= 0:
+            updated_batch['Batch_OGD_Stock'] = new_value
+            response = requests.post(f'http://127.0.0.1:8000/OGD/update/{updated_batch["Batch_OGD_id"]}', headers=headers, data=json.dumps(updated_batch))
+            status['post_OGD'] = response.status_code
+        else :
+            status['post_OGD'] = None
+        
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_Produit_additif_batch"]}')
+        status['get_additif'] = response.status_code
+        updated_batch = response.json()
+        new_value = int(updated_batch['Batch_Produit_additif_Qte'] - float(data['Batch_Produit_additif_Qte']))
+        if new_value >= 0:
+            updated_batch['Batch_Produit_additif_Qte'] = new_value
+            response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
+            status['post_additif'] = response.status_code
+        else :
+            status['post_additif'] = None
+
+        return status
+
+
+
+
+
 def update_stocks_K_C(data):
         headers = {
         'accept': 'application/json',
@@ -479,59 +531,117 @@ def make_chart_for_dash_produits(last_n = 5):
 
     return img_UV, img_RAMAN
 
-def get_ref_CW_produit(name):
-    if name == 'W1':
-        return 'CW-GL-A-01-A1-T1'
-    elif name == 'W2':
-        return 'CW-GL-B-02-A1'
-    elif name == 'W3':
-        return 'CW-GL-D-02-A1'
-    elif name == 'W3NC':
-        return 'CW-GL-DX-02-A1'
-    elif name == 'W10':
-        return 'CW-GL-E-02-A1'
-    elif name == 'W10NC':
-        return 'CW-GL-EX-02-A1'
-    elif name == 'W20':
-         return 'CW-GL-F-02-A1'
-    elif name == 'W20NC':
-         return 'CW-GL-FX-02-A1'
-    elif name == 'EpoR':
-        return 'CW-EPO3-D-01-A1'
-    elif name == 'EpoF':
-        return 'CW-EPO3-F-01-A1'
-    elif name == 'EpoC':
-        return 'CW-EPO1-D-01-A1'
-    else:
-        return 'non-reference'
+
+    
+class get_material_composition_for_product:
+    """ compute the qty of material needed as a function of product
+    ratio are base on 1L OGD at 2 g/L ==> 2 grams of OGD
 
 
-def get_ref_CW_matiere_premiere(name):
-    if name == 'Epikote1001X75':
-        return 'EPO1'
-    elif name == 'Epikote827':
-        return 'EPO3'
-    elif name == 'RTM6-2':
-        return 'EPO5'
-    elif name == 'SikaBiresinCR87':
-        return 'EPO6'
-    elif name == 'ELIUM150':
-        return 'EPO7'
-    elif name == 'LY564':
-        return 'EPO8'
-    elif name == 'PY306':
-        return 'EPO9'
-    elif name == 'LY3508':
-        return 'EPO10'
-    elif name == 'Resoltechnon-CMR':
-        return 'EPO11'
-    elif name == 'ResoltechCMR':
-        return 'EPO12'
-    elif name == 'Thermoplastique':
-        return 'TP'
-    elif name == 'PLA':
-        return 'TP1'
-    elif name == 'PET':
-        return 'TP2'
-    elif name == 'PP':
-        return 'TP3'
+    On multiplie le facteur par la quantité de produit fini voulue pour avoir la masse de produit utilise (cf mail Victor 18/02/25)
+
+
+    # UPDATE WITH CALCULATION DEPENDING ON QTY
+    """
+    def __init__(self, product: str, product_qty: float = 1):
+        self.product = product
+        self.product_qty = product_qty 
+
+
+    def OGD(self):
+        if self.product == 'W1':
+            return {'OGD':0.17*self.product_qty}
+        elif self.product == 'W2':
+            return {'OGD':0.5*self.product_qty}
+        elif self.product == 'W3':
+            return {'OGD':2.4*self.product_qty}
+        elif self.product == 'W10':
+            return {'OGD':4.9*self.product_qty}
+        elif self.product == 'W3NC':
+            return {'OGD':2.4*self.product_qty}
+        elif self.product == 'W10NC':
+            return {'OGD':4.9*self.product_qty}
+        elif self.product == 'W20NC':
+            return {'OGD':9.8*self.product_qty}
+        elif self.product == 'EpoC':
+            return {'OGD':3.6*self.product_qty}
+        elif self.product == 'EpoF':
+            return {'OGD':13.2*self.product_qty}
+        elif self.product == 'EpoR':
+            return {'OGD':3.6*self.product_qty}
+        
+
+
+
+    def water(self):
+        if self.product in ['W1','W2','W3','W10','W3NC','W10NC']:
+            return {'water':1*self.product_qty}
+        elif self.product == 'W20NC':
+            return {'water':2*self.product_qty}
+        elif self.product in ['EpoC','EpoF','EpoR']:
+            return {'water':0.08*self.product_qty}
+        else:
+            return {'water':0}
+        
+    def viscosant(self):
+
+        ##### IF Y_UPDATE HERE? UPDATE ALSO SCRIPT IN ADD_BATCH_PRODUIT
+        if self.product in ['W2','W3']:
+            return {'viscosant':0.005*self.product_qty}
+        elif self.product in ['W3NC','W10NC']:
+            return {'viscosant':0.006*self.product_qty}
+        elif self.product == 'W10':
+            return {'viscosant':0.008*self.product_qty}
+        elif self.product == 'W20NC':
+            return {'viscosant':0.001*self.product_qty}
+        else:
+            return {'viscosant':0}
+        
+    def KOH(self):
+        if self.product in ['W2','W3','W10']:
+            return {'KOH':0.015*self.product_qty}
+        elif self.product in ['W3NC','W10NC']:
+            return {'KOH':0.018*self.product_qty}
+        elif self.product == 'W20NC':
+            return {'KOH':0.036*self.product_qty}
+        else:
+            return {'KOH':0}
+        
+    def hexane(self):
+        if self.product in ['W2','W3','W10','W3NC','W10NC']:
+            return {'hexane':1*self.product_qty}
+        elif self.product == 'W20NC':
+            return {'hexane':2*self.product_qty}
+        else:
+            return {'hexane':0}
+        
+    def Epikote1001(self):
+        if self.product == 'EpoC':
+            return {'Epikote1001':1.2*self.product_qty}
+        else:
+            return {'Epikote1001':0}
+        
+    def Epikote827(self):
+        if self.product in ['EpoF','EpoR']:
+            return {'Epikote827':1.2*self.product_qty}
+        else:
+            return {'Epikote827':0}
+        
+    def acetone(self):
+        if self.product in ['EpoC','EpoF']:
+            return {'acetone':0.5*self.product_qty}
+        else:
+            return {'acetone':0}
+        
+    def xylene(self):
+        if self.product == 'EpoC':
+            return {'xylene':0.4*self.product_qty}
+        else:
+            return {'xylene':0}
+        
+    def NaTPB(self):
+        if self.product in ['EpoC','EpoF','EpoR']:
+            return {'NaTPB':0.01*self.product_qty}
+        else:
+            return {'NaTPB':0}
+        
