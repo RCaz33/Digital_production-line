@@ -19,8 +19,10 @@ def fetch_MP():
         KC8_all = pd.DataFrame(response.json())
         KC8_batch = KC8_all.loc[KC8_all.Batch_KC8_id==np.max(KC8_all.Batch_KC8_id),'Batch_KC8_name'].values[0]
         default_batch['KC8'] = KC8_batch
+        print(5*"\n{*} SUCESS")
         print('--> fetch_MP OK')
     except:
+        print(5*"\n{*} ERROR")
         print('==> Traceback : problem with utils.update_MP')
 
     return default_batch
@@ -87,9 +89,9 @@ def update_stocks_K_C(data):
         response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_K_batch"]}')
         status['get_K'] = response.status_code
         updated_batch = response.json()
-        new_value = int(updated_batch['MP_quantite'] - (39/(39+(8*12))*float(data['Batch_KC8_masse'])))
+        new_value = int(updated_batch['MP_stock'] - (39/(39+(8*12))*float(data['Batch_KC8_masse'])))
         if new_value >= 0:
-            updated_batch['MP_quantite'] = new_value
+            updated_batch['MP_stock'] = new_value
             response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
             status['post_K'] = response.status_code
         else :
@@ -98,9 +100,9 @@ def update_stocks_K_C(data):
         response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_C_batch"]}')
         updated_batch = response.json()
         status['get_C'] = response.status_code
-        new_value = updated_batch['MP_quantite'] - ((8*12)/(39+(8*12))*float(data['Batch_KC8_masse']))
+        new_value = updated_batch['MP_stock'] - ((8*12)/(39+(8*12))*float(data['Batch_KC8_masse']))
         if new_value >= 0:
-            updated_batch['MP_quantite'] = new_value
+            updated_batch['MP_stock'] = new_value
             response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
             status['post_C'] = response.status_code
         else :
@@ -130,10 +132,10 @@ def update_stocks_KC8_THF(data):
         response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_OGD_THF_batch"]}')
         status['get_THF'] = response.status_code
         updated_batch = response.json()
-        new_value = updated_batch['MP_quantite'] - int(data['Batch_OGD_THF_Volume'])
+        new_value = updated_batch['MP_stock'] - int(data['Batch_OGD_THF_Volume'])
 
         if new_value >= 0:
-            updated_batch['MP_quantite'] = new_value
+            updated_batch['MP_stock'] = new_value
             response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch["MP_id"]}', headers=headers, data=json.dumps(updated_batch))
             status['post_THF'] = response.status_code
         else :

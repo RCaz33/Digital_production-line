@@ -20,7 +20,7 @@
 <!-- Script pour calculer la qté de OGD / additif en fonction de la qe de produit voulue -->
 <script>
     function performOperation() {
-        const inputValue = document.getElementById('m').value;
+        const inputValue = document.getElementById('Batch_KC8_masse').value;
         const number = parseFloat(inputValue);
 
         if (!isNaN(number)) {
@@ -77,7 +77,7 @@
         </div>
         <div class="col-2">
             {{ Form_KC8.Batch_KC8_masse.label }}
-            {{ Form_KC8.Batch_KC8_masse(class="form-control", id='m') }}
+            {{ Form_KC8.Batch_KC8_masse(class="form-control") }}
         </div>
         <div class="col-1">
         </br>

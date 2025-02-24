@@ -201,7 +201,7 @@ def acceuil_materiaux():
 
     # get stock matieres premieres
     stock_MP = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
-    stock_MP = pd.DataFrame(stock_MP.json())[['MP_ref_fournisseur','MP_quantite']]
+    stock_MP = pd.DataFrame(stock_MP.json())[['MP_ref_fournisseur','MP_stock']]
     stock_MP.index = stock_MP['MP_ref_fournisseur']
     stock_MP.drop(columns='MP_ref_fournisseur',inplace=True)
     stock_MP = stock_MP.T.to_dict()
@@ -209,11 +209,11 @@ def acceuil_materiaux():
 
     return render_template("acceuil_materiaux.html",
                         n_batch_K = default_batch['K'],
-                        stock_K = stock_MP[default_batch['K']]['MP_quantite'],
+                        stock_K = stock_MP[default_batch['K']]['MP_stock'],
                         n_batch_C = default_batch['C'],
-                        stock_C = stock_MP[default_batch['C']]['MP_quantite'],
+                        stock_C = stock_MP[default_batch['C']]['MP_stock'],
                         n_batch_THF = default_batch['THF'],
-                        stock_THF = stock_MP[default_batch['THF']]['MP_quantite'],
+                        stock_THF = stock_MP[default_batch['THF']]['MP_stock'],
                         n_batch_KC8 = default_batch['KC8'],
                         stock_KC8 = Stock_KC8.json()['Batch_KC8_masse'],
                         OGD_en_cours = OGD_en_cours,
@@ -238,7 +238,8 @@ def Add_MP():
             "MP_nom": request.form['MP_nom'],
             "MP_codeCW": config.ref_CW_matiere_premiere[request.form['MP_nom']],
             "MP_ref_fournisseur": request.form['MP_ref_fournisseur'],
-            "MP_quantite": request.form['MP_quantite'],
+            "MP_quantite" : request.form["MP_stock"],
+            "MP_stock": request.form['MP_stock'],
             "MP_date_reception": MP_date_reception.isoformat(),
             "MP_unite": request.form['MP_unite'],
             "MP_Analyses": "None"}
@@ -257,9 +258,16 @@ def Add_MP():
     form_MP.MP_date_reception.data = datetime.datetime.now()
 
     MP = pd.DataFrame(requests.get(f'http://127.0.0.1:8000/matieres_premieres/').json())
-    batch_C = MP.loc[MP.MP_nom=='Carbone',['MP_ref_fournisseur','MP_quantite','MP_unite']].values
-    batch_K = MP.loc[MP.MP_nom=='Potassium',['MP_ref_fournisseur','MP_quantite','MP_unite']].values
-    batch_THF = MP.loc[MP.MP_nom=='THF',['MP_ref_fournisseur','MP_quantite','MP_unite']].values
+    batch_C = MP.loc[MP.MP_nom=='Carbone',['MP_ref_fournisseur','MP_stock','MP_unite']].values
+    batch_K = MP.loc[MP.MP_nom=='Potassium',['MP_ref_fournisseur','MP_stock','MP_unite']].values
+    batch_THF = MP.loc[MP.MP_nom=='THF',['MP_ref_fournisseur','MP_stock','MP_unite']].values
+
+
+    # visualistion baisse des stocks:
+
+
+
+
     return render_template("Add_matiere_premiere.html",
                            Form_Matieres_premieres=form_MP,
                            batch_C=batch_C[::-1],
@@ -392,7 +400,7 @@ def Add_OGD():
     form_OGD.Batch_OGD_KC8_batch.choices = [a['Batch_KC8_name'] for a in response.json() if a['Batch_KC8_masse'] > 0][:-10:-1]
     # MaJ batch THF disponibles
     response = requests.get(url='http://127.0.0.1:8000/matieres_premieres/',headers=headers)
-    form_OGD.Batch_OGD_THF_batch.choices = [a['MP_ref_fournisseur'] for a in response.json() if (a['MP_quantite'] >= 0) and (a['MP_nom'] == 'THF')][:-10:-1]    
+    form_OGD.Batch_OGD_THF_batch.choices = [a['MP_ref_fournisseur'] for a in response.json() if (a['MP_stock'] >= 0) and (a['MP_nom'] == 'THF')][:-10:-1]    
 
 
     if form_OGD.validate_on_submit():
@@ -487,13 +495,19 @@ def Add_Produit(produit):
     # FillIn fom from  #### UPDATE BY SHOWINF ONLY BACTH WHERE THERE IS STILL STOCK
     response = requests.get(url='http://127.0.0.1:8000/matieres_premieres/',headers=headers)
     if ('W' in produit) and not (produit =='W1'):
-        form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'Viscosant'][:-10:-1]
-    elif 'Epo' in produit and not produit == 'EpoC':
-        form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'ResineEpikote827'][:-10:-1]
+        # form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'Viscosant'][:-10:-1]
+        form_produit.Batch_Produit_additif_batch.choices = [a['MP_nom'] for a in response.json() if a['MP_nom'] == 'Viscosant'][:-10:-1]
+    elif ('Epo' in produit) and not (produit == 'EpoC'):
+        # form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'ResineEpikote827'][:-10:-1]
+        form_produit.Batch_Produit_additif_batch.choices = [a['MP_nom'] for a in response.json() if a['MP_nom'] == 'ResineEpikote827'][:-10:-1]
     elif produit in ['EpoF, EpoR']:
-        form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'ResineEpikote1001'][:-10:-1]
+        # form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'ResineEpikote1001'][:-10:-1]
+        form_produit.Batch_Produit_additif_batch.choices = [a['MP_nom'] for a in response.json() if a['MP_nom'] == 'ResineEpikote1001'][:-10:-1]
     else:
         flash("produit n'a pas d'additifs")
+
+    print(10*"\n")
+    print(form_produit.Batch_Produit_additif_batch.choices)
 
 
 
@@ -501,6 +515,8 @@ def Add_Produit(produit):
         
         Produit_date = request.form['Batch_Produit_date']
         Produit_date = datetime.datetime.strptime(Produit_date, '%d/%m/%y')
+        print("FORM",5*"\n")
+        print(request.form)
         data = {
             "Batch_Produit_ref_CW": request.form['Batch_Produit_ref_CW'],
             "Batch_Produit_date": Produit_date.isoformat(),
@@ -509,6 +525,7 @@ def Add_Produit(produit):
             "Batch_Produit_OGD_Qte": request.form['Batch_Produit_OGD_Qte'],
             "Batch_Produit_additif_batch": request.form['Batch_Produit_additif_batch'],
             "Batch_Produit_additif_Qte": request.form['Batch_Produit_additif_Qte'],
+            "Batch_Produit_stock": request.form['Batch_produit_stock'],
             "Batch_Produit_Analyses": "None",}
         
 
@@ -640,7 +657,7 @@ def update_batch_OGD(batch_name):
     form_OGD.Batch_OGD_KC8_batch.choices = [a['Batch_KC8_name'] for a in response.json() if a['Batch_KC8_masse'] > 0][:-10:-1]
     # MaJ batch THF disponibles
     response = requests.get(url='http://127.0.0.1:8000/matieres_premieres/',headers=headers)
-    form_OGD.Batch_OGD_THF_batch.choices = [a['MP_ref_fournisseur'] for a in response.json() if (a['MP_quantite'] >= 0) and (a['MP_nom'] == 'THF')][:-10:-1]    
+    form_OGD.Batch_OGD_THF_batch.choices = [a['MP_ref_fournisseur'] for a in response.json() if (a['MP_stock'] >= 0) and (a['MP_nom'] == 'THF')][:-10:-1]    
     
     
     if request.method == 'POST': 
@@ -1050,7 +1067,7 @@ def Suivi_envoi():
 
     response = requests.get(f'http://127.0.0.1:8000/Envoi/')
     Envois_all = pd.DataFrame(response.json())
-    Envois_all = Envois_all.loc[Envois_all.Envoi_retour_client.isnull()]
+    Envois_all = Envois_all.loc[Envois_all.Envoi_retour_client.isnull()][::-1]
 
     return render_template("Suivi_envois.html",
                            Envois_all = [b for b in Envois_all.values])

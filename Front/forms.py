@@ -39,6 +39,7 @@ class Form_Matieres_premieres(FlaskForm):
     MP_unite = SelectField('unite', choices=config.unitees)
  # name of batch + date of analysis + type of analysis + details analysis
                       # "nom_250129_Raman / nom_250202_DLS / .."
+    MP_stock = FloatField('Stock', default=20)
     submit = SubmitField('Submit New matiere premiere')
 
 
@@ -90,7 +91,7 @@ class Form_Produit(FlaskForm):
     Batch_Produit_OGD_batch =  SelectField('Batch_OGD_name', choices=[])
     Batch_Produit_OGD_Qte = FloatField('Qte OGD utitisé', default=50)
     Batch_Produit_additif_batch = SelectField('Batch_additif_name',choices=['Viscosant','Epikote1001','Epikote827'])
-    Batch_Produit_additif_Qte = IntegerField('Additif Qte',default=250)
+    Batch_Produit_additif_Qte = FloatField('Additif Qte',default=250)
     Batch_produit_stock = FloatField('Stock de produit (L)',default=0)
     Batch_Produit_Analyses = StringField('reference_analyses', [Length(max=60)])
 

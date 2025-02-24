@@ -26,6 +26,7 @@ class DB_Matieres_premieres(Base):
     MP_quantite = Column(Float, default=20.0, nullable=False)
     MP_unite = Column(String(10), nullable=False)
     MP_Analyses = Column(String(50), nullable=True)
+    MP_stock = Column(Float, default=0.0, nullable=False)
  # name of batch + date of analysis + type of analysis + details analysis
                       # "nom_250129_Raman / nom_250202_DLS / .."
  
@@ -111,6 +112,10 @@ class DB_Client(Base):
     Client_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     Client_nom = Column(String(50), nullable=False)
     Client_adresse = Column(String(50), nullable=False)
+
+
+
+
 
 # class DbForm_S0(Base):
 #     __tablename__ = 'Batch_OGD'

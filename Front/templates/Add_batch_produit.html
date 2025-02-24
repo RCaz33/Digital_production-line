@@ -32,10 +32,10 @@
 
 <script>
     function Calculate() {
-        const produit_qte = document.getElementById('produit_qte').value;
+        const produit_qte = document.getElementById('Batch_produit_stock').value;
         const number = parseFloat(produit_qte);
 
-        const produit_nom = document.getElementById('produit_nom').value;
+        const produit_nom = document.getElementById('Batch_Produit_ref_CW').value;
         const produitType = produit_nom.split('-')[0];
         let result;
         let additif_type;
@@ -78,12 +78,12 @@
             additif_type = 'Epikote827';
             OGD_qte = number*3.6;
         } else {
-            result = number; 
+            result = 0; 
         }
 
-        document.getElementById('additif_qte').data = `${result.toFixed(2)}`;
-        document.getElementById('additif_type').data = additif_type;
-        document.getElementById('OGD_qte').data = OGD_qte;
+        document.getElementById('Batch_Produit_additif_Qte').value = `${result.toFixed(2)}`;
+        document.getElementById('Batch_Produit_additif_batch').value = additif_type;
+        document.getElementById('Batch_Produit_OGD_Qte').value = parseFloat(OGD_qte);
 
         // console.log("Quantity:", number);
         // console.log("Product Type:", produit_type);
@@ -105,7 +105,7 @@
 
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_ref_CW.label }}
-            {{ Form_Produit.Batch_Produit_ref_CW(class="form-control", id='produit_nom') }}
+            {{ Form_Produit.Batch_Produit_ref_CW(class="form-control") }}
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_date.label }}
@@ -123,25 +123,25 @@
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_OGD_Qte.label }}
-            {{ Form_Produit.Batch_Produit_OGD_Qte(class="form-control", disabled='disabled', id='OGD_qte') }}
+            {{ Form_Produit.Batch_Produit_OGD_Qte(class="form-control", disabled='disabled', id='Batch_Produit_OGD_Qte') }}
         </div>
         <div class="col-2">
             {{ Form_Produit.Batch_produit_stock.label }}
-            {{ Form_Produit.Batch_produit_stock(class="form-control", id='produit_qte') }}
+            {{ Form_Produit.Batch_produit_stock(class="form-control") }}
         </div>
         <div class="col-1">
             </br>
-            <button type="button" class="btn btn-light" onclick="performOperation()">Calculate</button>
+            <button type="button" class="btn btn-light" onclick="Calculate()">Calculate</button>
         </div>
         <div class="col-3">
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_additif_batch.label }}
-            {{ Form_Produit.Batch_Produit_additif_batch(class="form-control", disabled='disabled', id='additif_type') }}
+            {{ Form_Produit.Batch_Produit_additif_batch(class="form-control") }}
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_additif_Qte.label }}
-            {{ Form_Produit.Batch_Produit_additif_Qte(class="form-control", disabled='disabled', id='additif_qte') }}
+            {{ Form_Produit.Batch_Produit_additif_Qte(class="form-control") }}
         </div>
         <div class="col-3">
             {{ Form_Produit.Batch_Produit_Analyses.label }}

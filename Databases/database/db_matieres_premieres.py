@@ -16,7 +16,8 @@ def create_matieres_premieres(db: Session, request: Matieres_premieres_Add):  # 
     MP_date_reception = request.MP_date_reception,
     MP_quantite = request.MP_quantite,
     MP_unite = request.MP_unite,
-    MP_Analyses = request.MP_Analyses
+    MP_Analyses = request.MP_Analyses,
+    MP_stock = request.MP_stock
 )
 
   try:
@@ -74,7 +75,8 @@ def update_matieres_premieres(db: Session, id: int, request: Matieres_premieres_
     DB_Matieres_premieres.MP_date_reception : request.MP_date_reception,
     DB_Matieres_premieres.MP_quantite : request.MP_quantite,
     DB_Matieres_premieres.MP_unite : request.MP_unite,
-    DB_Matieres_premieres.MP_Analyses : request.MP_Analyses})
+    DB_Matieres_premieres.MP_Analyses : request.MP_Analyses,
+    DB_Matieres_premieres.MP_stock : request.MP_stock})
   db.commit()
   return 'ok'
 

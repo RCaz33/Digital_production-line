@@ -33,6 +33,7 @@ class Matieres_premieres_Base(BaseModel):
     MP_quantite : float
     MP_unite : str
     MP_Analyses : str 
+    MP_stock : float
 
 class Matieres_premieres_Add(BaseModel):
     MP_nom : str 
@@ -42,6 +43,8 @@ class Matieres_premieres_Add(BaseModel):
     MP_quantite : float
     MP_unite : str
     MP_Analyses : str # name of batch + date of analysis + type of analysis + details analysis
+    MP_stock : float
+
    
 class Batch_KC8_Base(BaseModel):
     Batch_KC8_id : int 
