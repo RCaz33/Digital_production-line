@@ -1067,10 +1067,29 @@ def Suivi_envoi():
 
     response = requests.get(f'http://127.0.0.1:8000/Envoi/')
     Envois_all = pd.DataFrame(response.json())
-    Envois_all = Envois_all.loc[Envois_all.Envoi_retour_client.isnull()][::-1]
+    Envois_all = Envois_all.sort_values('Envoi_date_commande')
+    Envois_all_ = Envois_all.loc[Envois_all.Envoi_retour_client.isnull()][:-5:-1]
+
+    Envois_all = Envois_all.loc[:,['Envoi_produit_batch','Envoi_produit_Qte','Envoi_client_name','Envoi_date_commande','Envoi_date_effective','Envoi_retour_client']]
+    Envois_all.Envoi_produit_Qte = Envois_all.Envoi_produit_Qte.apply(lambda x : round(x))
+    Envois_all['Envoi_date_commande'] = pd.to_datetime(Envois_all['Envoi_date_commande'])
+    Envois_all['Envoi_date_effective'] = pd.to_datetime(Envois_all['Envoi_date_effective'])
+    Envois_all['Update'] = Envois_all['Envoi_retour_client'].apply(lambda x : '<a href='+'"{{'+ f"url_for('Envoi_retour_client', ref_envoie={x})" +'}}"'+f'>{'MaJ' if x == None else 'Ajouter'}</a>')
+
+    Envois_all = Envois_all.style.set_table_styles([
+        {'selector': 'table', 'props': [('class', 'table table-striped table-bordered')]},
+        {'selector': 'th', 'props': [('class', 'thead-dark')]},
+        {'selector': 'td', 'props': [('class', 'align-middle')]}
+    ]).format({
+    'Envoi_date_commande': lambda t: t.strftime('%Y-%m-%d') if not pd.isna(t) else 'NaT',
+    'Envoi_date_effective': lambda t: t.strftime('%Y-%m-%d') if not pd.isna(t) else 'NaT',})
+
+
+
 
     return render_template("Suivi_envois.html",
-                           Envois_all = [b for b in Envois_all.values])
+                           Envois_all = [b for b in Envois_all_.values],
+                           table=Envois_all.to_html(index=False,escape=False))
 
 @app.route("/MaJ_retour_Client/<ref_envoi>",methods=["GET","POST"])
 def Envoi_retour_client(ref_envoi):
