@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>
+    Nouveau batch de matiere
+</title>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Display flash messages -->
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }} <!-- Display batch that was submitted -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<!-- Script pour calculer la qté de OGD / additif en fonction de la qe de produit voulue -->
+<script>
+    function performOperation() {
+        const inputValue = document.getElementById('Batch_KC8_masse').value;
+        const number = parseFloat(inputValue);
+
+        if (!isNaN(number)) {
+            // Perform the mathematical operation (e.g., squaring the number)
+            const result_K = number * (39/(39+(8*12))) ;
+            const result_C = number * ((8*12)/(39+(8*12))) ;
+            
+            // Update the result in the HTML
+            document.getElementById('result_K').innerText = `m(K) :\n ${result_K.toFixed(2)} kg`;
+            document.getElementById('result_C').innerText = `m(C) :\n ${result_C.toFixed(2)} kg`;
+
+        } else {
+            // Handle invalid input
+            document.getElementById('result_display').innerText = 'Please enter a valid number';
+        }
+    }
+</script>
+
+
+
+<!-- Get informations -->
+
+
+<h1> Nouveau batch KC8</h1>
+<div class="container shadow border border-danger-subtle border-1">
+    <form action="{{ url_for('Add_KC8') }}" method="POST">
+        {{ Form_KC8.csrf_token }}
+        <br/>
+        <div class="row justify-content-start">
+        <div class="col-3">
+            <h5>Ajout d'un nouveau KC8</h5>
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_name.label }}
+            {{ Form_KC8.Batch_KC8_name(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_date.label }}
+            {{ Form_KC8.Batch_KC8_date(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_Technicien.label }}
+            {{ Form_KC8.Batch_KC8_Technicien(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_K_batch.label }}
+            {{ Form_KC8.Batch_KC8_K_batch(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_C_batch.label }}
+            {{ Form_KC8.Batch_KC8_C_batch(class="form-control") }}
+        </div>
+        <div class="col-2">
+            {{ Form_KC8.Batch_KC8_masse.label }}
+            {{ Form_KC8.Batch_KC8_masse(class="form-control") }}
+        </div>
+        <div class="col-1">
+        </br>
+            <button type="button" class="btn btn-light" onclick="performOperation()">Calculate</button>
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_Temperature.label }}
+            {{ Form_KC8.Batch_KC8_Temperature(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_Agitation.label }}
+            {{ Form_KC8.Batch_KC8_Agitation(class="form-control") }}
+        </div>
+        <div class="col-1">
+        </div>
+        <div class="col-1">
+            <p id="result_K">m(K) : </p>
+        </div>
+        <div class="col-1">
+            <p id="result_C">m(C) : </p>
+        </div>
+        <div class="col-3">
+        </div>
+
+
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_heure_debut.label }}
+            {{ Form_KC8.Batch_KC8_heure_debut(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_room_HR.label }}
+            {{ Form_KC8.Batch_KC8_room_HR(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_KC8.Batch_KC8_room_T.label }}
+            {{ Form_KC8.Batch_KC8_room_T(class="form-control") }}
+        </div>
+        <div class="col-1">
+        </div>
+        <div class="col-2">
+            </br>
+            <button type="submit" class="btn btn-primary align-right">Démarrer production </button>
+            </br>
+        </div>
+        </br>
+
+  
+        
+
+
+
+  
+
+    </form>
+</div>
+
+
+
+
+
+
+{% endblock %}
+ 
+
+
+
+    <body>
+      
+
+    </body>
+
+
+
+</html>

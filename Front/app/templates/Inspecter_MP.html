@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>
+    Nouveau batch de matiere
+</title>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Display flash messages -->
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }} <!-- Display batch that was submitted -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<!-- Get informations -->
+<h1> Inspection batch matiere</h1>
+<div class="container shadow border border-danger-subtle border-1">
+    <form action="{{ url_for('Add_MP') }}" method="POST">
+        {{ Form_Matieres_premieres.csrf_token }}
+        <br/>
+        <div class="row justify-content-start">
+        <div class="col-3">
+            <h5>Ajout de matière première</h5>
+        </div>
+        <div class="col-3">
+            {{ Form_Matieres_premieres.MP_nom.label }}
+            {{ Form_Matieres_premieres.MP_nom(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Matieres_premieres.MP_date_reception.label }}
+            {{ Form_Matieres_premieres.MP_date_reception(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_Matieres_premieres.MP_ref_fournisseur.label }}
+            {{ Form_Matieres_premieres.MP_ref_fournisseur(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            <br/>
+            <button class="btn btn-primary" type="submit" name='submit' value="submit"> Enregistrer </button>
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_Matieres_premieres.MP_stock.label }}
+            {{ Form_Matieres_premieres.MP_stock(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Matieres_premieres.MP_unite.label }}
+            {{ Form_Matieres_premieres.MP_unite(class="form-control") }}
+        </div>
+        </div>
+        <br/>
+    </form>
+</div>
+
+
+<div>
+
+
+</div>
+
+
+
+
+{% endblock %}
+ 

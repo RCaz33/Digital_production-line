@@ -1,42 +1,21 @@
-# prendre une image de base : https://hub.docker.com/_/python
-FROM python:3.10.12
+# Use a lightweight Python image without slim
+FROM python:3.9
 
+# Set the working directory
+WORKDIR /appUser
 
-# Variable env
-ARG arg_pwd
+# Copy requirements.txt and install dependencies
+COPY requirements.txt /appUser/requirements.txt
+RUN pip install --upgrade pip --no-cache-dir -r /appUser/requirements.txt
 
+# Copy application code
+COPY /app/ /appUser/app
 
-# Base de donnees
-ENV DB_HOST='CW_container_bdd'
-ENV DB_PORT='3306'
-ENV DB_USER='root'
-ENV DB_PASSWORD='pass'
-ENV DB='CW_BDD'
+# Set environment variable
+ENV FLASK_ENV=production
 
+# Expose the port that the app will run on
+EXPOSE 5000
 
-
-# Copier le dossier de votre projet vers un chemin dans l'image
-COPY . /src
-
-# se placer dans le bon chemin
-WORKDIR /src
-
-# éviter le timeout lors du lancement du serveur
-ENV TIMEOUT=60
-
-# mettre à jour les logiciels
-RUN apt-get update
-
-# installer les modules python
-RUN pip install -r requirements.txt
-
-# exposer le port du serveur web
-EXPOSE 8080
-
-# lancer le serveur web
-
-# version environnement de dev
-CMD ["python", "__init__.py"]
-
-# version environnement de prod
-# CMD ["gunicorn", "--config", "gunicorn_config.py", "app:app"]
+# Run the application using Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "app.app:app"]

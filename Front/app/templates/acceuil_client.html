@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+<!-- Display flash messages -->
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }} <!-- Display batch that was submitted -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<h1>
+    Clientele produits Graph'Up <i class="bi bi-hand-index" title="Click here to add new batch"></i>
+</h1>
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            {{ table_client | safe }}
+        </div>
+
+        <div class="col-md-6">
+            <h3>Ajout d'un nouveau client</h3>
+            <form action="{{ url_for('acceuil_clients') }}" method="POST">
+                {{ Form_Client.csrf_token }}
+                <br/>
+                <div class="row justify-content-start">
+                    <div class="col-12">
+                        {{ Form_Client.Client_name.label }}
+                        {{ Form_Client.Client_name(class="form-control") }}
+                    </div>
+                    <div class="col-12">
+                        {{ Form_Client.Client_adresse.label }}
+                        {{ Form_Client.Client_adresse(class="form-control") }}
+                    </div>
+                    <div class="col-3">
+                        <br/>
+                        <button class="btn btn-primary" type="submit" name='submit' value="submit"> Enregistrer </button>
+                    </div>
+                    <div class="col-6">
+                        <br/>
+                        <a href="{{ url_for('dash_commerce') }}" class="btn btn-warning">Retour Commerce</a>
+                    </div>
+                </div>
+                
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+        </div>
+    </div>    
+</div>
+
+{% endblock %}
