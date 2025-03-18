@@ -3,13 +3,14 @@ import numpy as np
 import joblib
 import json
 import requests
+from datetime import datetime
 #### schemas
 from typing import Dict, List, Any
 from pydantic import BaseModel
 
 class Data_In(BaseModel):
     Batch_OGD_name:str
-    Batch_OGD_date: str
+    Batch_OGD_date: datetime
     Batch_OGD_Technicien:str
     Batch_OGD_KC8_batch:str
     Batch_OGD_KC8_masse: float
@@ -17,8 +18,8 @@ class Data_In(BaseModel):
     Batch_OGD_THF_Volume: float
     Batch_OGD_Temperature: float
     Batch_OGD_Agitation:float
-    Batch_OGD_heure_debut: str
-    Batch_OGD_heure_fin: str
+    Batch_OGD_heure_debut: datetime
+    Batch_OGD_heure_fin: datetime
     Batch_OGD_room_HR:float
     Batch_OGD_room_T: float
     Batch_OGD_Stock: float
@@ -27,12 +28,15 @@ class Data_In(BaseModel):
 class Data_Out(BaseModel):
     pred:float
 
+class Data_group_out(BaseModel):
+    pred:float
+
     
 #### helper function
 def get_maree_data(years : list):
     """Cette fonction se connecte à une API externe pour récuperer des données si elle ne sont pas déja présentes"""
     try :
-        gde_marees = joblib.load("data/gde_maree.bin")
+        gde_marees = joblib.load("app/data/ML_sup/gde_maree.bin")
         print("Donées grandes marées disponibles")
         return gde_marees
 
@@ -44,7 +48,7 @@ def get_maree_data(years : list):
             gde_marees = pd.concat([gde_marees,pd.DataFrame(json.loads(requests.get(url).content)['results'])],axis=0)
         # gde_marees
         gde_marees["date"] = pd.to_datetime(gde_marees["date"])
-        joblib.dump(gde_marees,"data/gde_maree.bin")
+        joblib.dump(gde_marees,"app/data/ML_sup/gde_maree.bin")
         return gde_marees
     
 def check_if_within_range(row, check_times):
@@ -88,3 +92,6 @@ def clean_data(data):
     data.drop(index=datetime_to_remove, inplace=True)
 
     return data
+
+
+

@@ -1,44 +1,32 @@
 from fastapi import FastAPI,  Depends, HTTPException, status
 import pandas as pd
-from utils import *
+# from app.main import app
+from app.utils import *
 app = FastAPI()
 # import mlflow
 
 ##### Security token
 from fastapi.security import APIKeyHeader
-API_KEY_HEADER = APIKeyHeader(name="Supervized-API-Key")
-
-# Store valid API keys (in a real application, store these securely)
+import json
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
-valid_keys = os.getenv('API_SUPERVIZED_SECRET_KEY')
+API_KEY_HEADER = APIKeyHeader(name="Supervized-API-Key")
+valid_keys = os.getenv('API_SUPERVIZED_SECRET_KEYS')
 
 def verify_api_key(api_key: str = Depends(API_KEY_HEADER)):
-    if api_key not in valid_keys:
+    if api_key not in json.loads(valid_keys):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid API Key",)
 
 @app.get("/info")
 def info():
-    return {"name":"API pour prédictions","version":"1.0.0"}
+    return {"name":"API ML","version":"1.0.0"}
 
-@app.post("/predict/{model_type}", dependencies=[Depends(verify_api_key)],response_model=Data_Out)
+@app.post("/predict/{model_type}", dependencies=[Depends(verify_api_key)],response_model=Data_group_out)
 def predict(model_type:str,data:Data_In):
-
-    
-
-#    # connect to mlflow server
-#     mlflow.set_tracking_uri('http://127.0.0.1:8080')
-#     # load model and preprocessor
-#     model_uri = "runs:/b46da47cde0649ecb2bc43292d977b48/logged_model"
-#     model = mlflow.sklearn.load_model(model_uri)
-#     local_path = mlflow.artifacts.download_artifacts(artifact_uri="runs:/dc7ae6946b33437b98c38447bdd9d140/2025-03-15_preprocessor.pkl")
-#     import joblib
-#     preprocessor = joblib.load(local_path)
-
 
     if model_type == "sgdreg":
         from sklearn.linear_model import SGDRegressor
@@ -47,15 +35,26 @@ def predict(model_type:str,data:Data_In):
         from sklearn.linear_model import ElasticNet
 
     import joblib
-    preprocessor = joblib.load('data/2025-03-15_preprocessor.pkl')
-    model = joblib.load('data/model.pkl')
+
+    preprocessor = joblib.load('app/data/ML_sup/2025-03-17_preprocessor.pkl')
+    model = joblib.load('app/data/ML_sup/model.pkl')
     # prepare data
-    X_clean = clean_data(pd.Series(data.dict()))
+    X_clean = clean_data(pd.Series(data.model_dump()))
     X_transfo = preprocessor.transform(pd.DataFrame(X_clean).T)
-    # preidct
-    pred = model.predict(X_transfo)
+    col_names = [a.replace('__','_') for a in preprocessor.get_feature_names_out()]
+    # predict
+    pred = model.predict(pd.DataFrame(X_transfo, columns=col_names))
 
     return {"pred":pred}
+
+@app.get("/variable_importance", dependencies=[Depends(verify_api_key)])
+def variable_importance():
+
+    model = joblib.load('app/data/ML_sup/model.pkl')
+    variable_importance = ({a:b for a,b in zip(model.feature_names_in_[model.coef_>0],model.coef_[model.coef_>0])})
+    print(variable_importance)
+    return variable_importance
+
 
 
 if __name__ == '__main__':
