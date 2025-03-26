@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1742987063545
+current_stage: None
+description: ''
+last_updated_timestamp: 1742987063545
+name: best_elasticnet_model_on_2025-03-26
+run_id: 660e56d9fe1147a5bd8c206ac1ad74cb
+run_link: ''
+source: file:///Users/remicazelles/Documents/Travail/2023-SImplon_microsoft/PROJET_FINAL/ML_supervized/artifacts_RC/0/660e56d9fe1147a5bd8c206ac1ad74cb/artifacts/logged_model
+status: READY
+status_message: null
+storage_location: file:///Users/remicazelles/Documents/Travail/2023-SImplon_microsoft/PROJET_FINAL/ML_supervized/artifacts_RC/0/660e56d9fe1147a5bd8c206ac1ad74cb/artifacts/logged_model
+user_id: null
+version: 1

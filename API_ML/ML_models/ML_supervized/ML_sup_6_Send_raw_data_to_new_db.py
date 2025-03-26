@@ -12,12 +12,6 @@ import os
 load_dotenv()
 
 
-# helper fonctions
-def dump_pickle(obj, filename: str):
-    """Cette fonction sers à sauvegarder un fichier pickle"""
-    with open(filename, "wb") as f_out:
-        return pickle.dump(obj, f_out)
-
 
 def get_technician_dict():
     """Cette fonction sers à se connecter à une BDD pour récuperer les informations d'anonymisation de techniciens"""

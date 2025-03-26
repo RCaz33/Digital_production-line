@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/remicazelles/Documents/Travail/2023-SImplon_microsoft/PROJET_FINAL/API_ML/ML_models/ML_supervized/artifacts_RC/380618932535725939/24576fabafee43d0bfadc806dd3b4cc7/artifacts
+end_time: 1742980116635
+entry_point_name: ''
+experiment_id: '380618932535725939'
+lifecycle_stage: active
+run_id: 24576fabafee43d0bfadc806dd3b4cc7
+run_name: awesome-grouse-318
+run_uuid: 24576fabafee43d0bfadc806dd3b4cc7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1742980116565
+status: 3
+tags: []
+user_id: remicazelles

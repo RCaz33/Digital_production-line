@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/remicazelles/Documents/Travail/2023-SImplon_microsoft/PROJET_FINAL/API_ML/ML_models/ML_supervized/artifacts_RC/517828280626744178/4aa6276ada534e16a20cb8d80396033f/artifacts
+end_time: 1742388899526
+entry_point_name: ''
+experiment_id: '517828280626744178'
+lifecycle_stage: active
+run_id: 4aa6276ada534e16a20cb8d80396033f
+run_name: sedate-croc-149
+run_uuid: 4aa6276ada534e16a20cb8d80396033f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1742388899308
+status: 3
+tags: []
+user_id: remicazelles

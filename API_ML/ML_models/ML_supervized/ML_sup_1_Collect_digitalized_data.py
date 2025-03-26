@@ -4,12 +4,10 @@ import pandas as pd
 import click
 import mysql.connector as bdd_connect
 import datetime
-
+# acccéder aux variables d'environements
 from dotenv import load_dotenv
 import os
 load_dotenv()
-
-
 
 # point de lancement
 @click.command()
@@ -58,9 +56,12 @@ def collect_from_bdd(host : str ,
         today = datetime.datetime.now().strftime("%Y-%m-%d")
         os.makedirs("data", exist_ok=True)
         df.to_csv(f'data/{today}_data_production.csv', index=False)
+        print("Donnees exportees accessibles dans data/{today}_data_production.csv")
 
     except Exception as e:
         logging.error(f" Cannot connect to database\nRequest failed: {e}")
 
 if __name__ == '__main__':
     collect_from_bdd()
+
+

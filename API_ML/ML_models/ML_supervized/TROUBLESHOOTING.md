@@ -31,3 +31,4 @@ mlflow server
 copy paste this :
 mlflow server --host 127.0.0.1 --port 8080 --backend-store-uri file:store_RC --default-artifact-root file:artifacts_RC --serve-artifacts
 
+cd 

@@ -66,7 +66,7 @@ def get_best_params_elasticnet(X,y,tracking_uri,date):
     """this function instanciate and test a sklearn preprocessor"""
 
     # cherche les meilleurs hyperparametres
-    cv_model = ElasticNetCV(l1_ratio=[.1, .5, .9, .95, .995, 1], eps=0.001, n_alphas=5, fit_intercept=True, 
+    cv_model = ElasticNetCV(l1_ratio=[.1, .5, .9, .95, .995, 1], eps=0.001, n_alphas=50, fit_intercept=True, 
                             precompute=True, max_iter=10000, tol=0.0001, cv=ShuffleSplit(n_splits=10,test_size=0.2), 
                             copy_X=True, verbose=0, n_jobs=-1, positive=False, random_state=42, selection='cyclic')
     pipe = Pipeline([('preprocessor',set_preprocessor(X)),

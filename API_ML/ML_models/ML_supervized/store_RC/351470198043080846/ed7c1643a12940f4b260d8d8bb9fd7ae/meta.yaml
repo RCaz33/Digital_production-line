@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/remicazelles/Documents/Travail/2023-SImplon_microsoft/PROJET_FINAL/API_ML/ML_models/ML_supervized/artifacts_RC/351470198043080846/ed7c1643a12940f4b260d8d8bb9fd7ae/artifacts
+end_time: 1742389661774
+entry_point_name: ''
+experiment_id: '351470198043080846'
+lifecycle_stage: active
+run_id: ed7c1643a12940f4b260d8d8bb9fd7ae
+run_name: CV_elastincnet
+run_uuid: ed7c1643a12940f4b260d8d8bb9fd7ae
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1742389661754
+status: 3
+tags: []
+user_id: remicazelles

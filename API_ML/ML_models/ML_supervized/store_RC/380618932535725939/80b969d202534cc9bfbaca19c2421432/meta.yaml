@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/remicazelles/Documents/Travail/2023-SImplon_microsoft/PROJET_FINAL/API_ML/ML_models/ML_supervized/artifacts_RC/380618932535725939/80b969d202534cc9bfbaca19c2421432/artifacts
+end_time: 1742980115102
+entry_point_name: ''
+experiment_id: '380618932535725939'
+lifecycle_stage: active
+run_id: 80b969d202534cc9bfbaca19c2421432
+run_name: adaptable-goat-900
+run_uuid: 80b969d202534cc9bfbaca19c2421432
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1742980115023
+status: 3
+tags: []
+user_id: remicazelles
