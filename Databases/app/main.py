@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from app.router import Predictions_router, Clients_router, Envoi_router, Produit_router, OGD_router, KC8_router, Matieres_premieres_router,Analyses_router, Techniciens_router
+from app.router import Predictions_router, Clients_router, Envoi_router, Produit_router, XY_router, XX_router, Matieres_premieres_router,Analyses_router, Techniciens_router
 
 from app.database import models
 from app.database.db_connect import engine
@@ -23,7 +23,7 @@ tags_metadata = [
         "description": "Permet de renseigner les matières première utilisées",
     },
         {
-        "name": "KC8_router",
+        "name": "XX_router",
         "description": "Permet d'entrer les information de production de l'étape 1",
     },
 ]
@@ -37,8 +37,8 @@ app.include_router(Techniciens_router.router)
 app.include_router(Analyses_router.router)
 app.include_router(Predictions_router.router)
 app.include_router(Matieres_premieres_router.router)
-app.include_router(KC8_router.router)
-app.include_router(OGD_router.router)
+app.include_router(XX_router.router)
+app.include_router(XY_router.router)
 app.include_router(Produit_router.router)
 app.include_router(Clients_router.router)
 app.include_router(Envoi_router.router)

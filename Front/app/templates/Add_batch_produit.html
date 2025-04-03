@@ -28,7 +28,7 @@
 {% endfor %}
 
 
-<!-- Script pour calculer la qté de OGD / additif en fonction de la qe de produit voulue -->
+<!-- Script pour calculer la qté de XY / additif en fonction de la qe de produit voulue -->
 
 <script>
     function Calculate() {
@@ -39,55 +39,55 @@
         const produitType = produit_nom.split('-')[0];
         let result;
         let additif_type;
-        let OGD_qte;
+        let XY_qte;
 
 
         if (produitType.includes('W')) {
             result = 0 ;
-            OGD_qte = number;
+            XY_qte = number;
         } else if (produitType.includes('W2')) {
-            result = number * 0.005;
+            result = number * 0.001;
             additif_type = 'Viscosant';
-            OGD_qte = number*0.5;
+            XY_qte = number*1;
         } else if (produitType.includes('W3')) {
-            result = number * 0.005;
+            result = number * 0.001;
             additif_type = 'Viscosant';
-            OGD_qte = number*2.4;
+            XY_qte = number*2;
         } else if (produitType.includes('W3NC')) {
-            result = number * 0.006;
+            result = number * 0.001;
             additif_type = 'Viscosant';
-            OGD_qte = number*2.4;
-        } else if (produitType.includes('W10NC')) {
-            result = number * 0.006;
-            additif_type = 'Viscosant';
-            OGD_qte = number*4.9;
+            XY_qte = number*3;
         } else if (produitType.includes('W10'))  {
-            result = number * 0.008;
+            result = number * 0.001;
             additif_type = 'Viscosant';
-            OGD_qte = number*4.9;
+            XY_qte = number*4;
+        } else if (produitType.includes('W10NC')) {
+            result = number * 0.001;
+            additif_type = 'Viscosant';
+            XY_qte = number*5;
         } else if (produitType.includes('W20NC')) {
             result = number * 0.001;
             additif_type = 'Viscosant';
-            OGD_qte = number*9.4;
+            XY_qte = number*6;
         } else if (produitType.includes('EpoC')) {
             result = number * 1.2;
             additif_type = 'Epikote1001';
-            OGD_qte = number*3.6;
+            XY_qte = number*6;
         } else if (produitType.includes('EpoF')) {
             result = number * 1.2;
             additif_type = 'Epikote827';
-            OGD_qte = number*13.2;
+            XY_qte = number*6;
         } else if (produitType.includes('EpoR')) {
             result = number * 1.2;
             additif_type = 'Epikote827';
-            OGD_qte = number*3.6;
+            XY_qte = number*6;
         } else {
             result = 0; 
         }
 
         document.getElementById('Batch_Produit_additif_Qte').value = `${result.toFixed(2)}`;
         document.getElementById('Batch_Produit_additif_batch').value = additif_type;
-        document.getElementById('Batch_Produit_OGD_Qte').value = parseFloat(OGD_qte);
+        document.getElementById('Batch_Produit_XY_Qte').value = parseFloat(XY_qte);
 
         // console.log("Quantity:", number);
         // console.log("Product Type:", produit_type);
@@ -122,12 +122,12 @@
         <div class="col-3">
         </div>
         <div class="col-3">
-            {{ Form_Produit.Batch_Produit_OGD_batch.label }}
-            {{ Form_Produit.Batch_Produit_OGD_batch(class="form-control") }}
+            {{ Form_Produit.Batch_Produit_XY_batch.label }}
+            {{ Form_Produit.Batch_Produit_XY_batch(class="form-control") }}
         </div>
         <div class="col-3">
-            {{ Form_Produit.Batch_Produit_OGD_Qte.label }}
-            {{ Form_Produit.Batch_Produit_OGD_Qte(class="form-control", disabled='disabled', id='Batch_Produit_OGD_Qte') }}
+            {{ Form_Produit.Batch_Produit_XY_Qte.label }}
+            {{ Form_Produit.Batch_Produit_XY_Qte(class="form-control", disabled='disabled', id='Batch_Produit_XY_Qte') }}
         </div>
         <div class="col-2">
             {{ Form_Produit.Batch_produit_stock.label }}

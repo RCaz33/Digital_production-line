@@ -7,16 +7,6 @@
 {% endblock %}
 
 
-
-
-
-
-<!-- #######  A COMPLETER  -->
-
-
-
-
-
 {% block content %}
 
 <!-- Display flash messages -->
@@ -28,7 +18,7 @@
 {% endfor %}
 
 <!-- Get informations -->
-<h1> Nouveau Client</h1>
+<h1> Nouveau batch XY</h1>
 <div class="container shadow border border-danger-subtle border-1">
     <form action="{{ url_for('Add_XY') }}" method="POST">
         {{ Form_XY.csrf_token }}
@@ -49,7 +39,7 @@
             {{ Form_XY.Batch_XY_Technicien.label }}
             {{ Form_XY.Batch_XY_Technicien(class="form-control") }}
         </div>
-        <div class="col-3">
+        <div class="col-6">
         </div>
         <div class="col-3">
             {{ Form_XY.Batch_XY_XX_batch.label }}
@@ -59,11 +49,61 @@
             {{ Form_XY.Batch_XY_XX_masse.label }}
             {{ Form_XY.Batch_XY_XX_masse(class="form-control") }}
         </div>
+        <div class="col-6">
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_YY_batch.label }}
+            {{ Form_XY.Batch_XY_YY_batch(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_YY_Volume.label }}
+            {{ Form_XY.Batch_XY_YY_Volume(class="form-control") }}
+        </div>
+        <div class="col-6">
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_Temperature.label }}
+            {{ Form_XY.Batch_XY_Temperature(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_Agitation.label }}
+            {{ Form_XY.Batch_XY_Agitation(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_heure_debut.label }}
+            {{ Form_XY.Batch_XY_heure_debut(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_room_HR.label }}
+            {{ Form_XY.Batch_XY_room_HR(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_room_T.label }}
+            {{ Form_XY.Batch_XY_room_T(class="form-control") }}
+        </div>
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary">Valider et lancer Batch</button>
     </form>
+</div>
+
 
 
 
 
 
 {% endblock %}
+ 
 
+
+
+    <body>
+      
+
+    </body>
+
+
+
+</html>

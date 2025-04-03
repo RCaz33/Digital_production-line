@@ -5,7 +5,7 @@ from app.database.db_connect import get_db
 from app.database import db_Produit
 from typing import List
 
-# OGD_router.py
+# XY_router.py
 
 
 router = APIRouter(

@@ -66,7 +66,6 @@ def update_Client(db: Session, id: int, request: Client_Base):
 
 
 # DELETE
-
 def delete_Client(db: Session, id: int):
     Client = db.query(DB_Client).filter(DB_Client.Client_id == id).first()
     if not Client:

@@ -31,12 +31,12 @@
                         <p class="card-text mb-0">Stock : {{stock_C}} Kg</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <p class="card-text mb-0">Batch THF : {{n_batch_THF}}</p>
-                        <p class="card-text mb-0">Stock : {{stock_THF}} L</p>
+                        <p class="card-text mb-0">Batch YY : {{n_batch_YY}}</p>
+                        <p class="card-text mb-0">Stock : {{stock_YY}} L</p>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <p class="card-text mb-0">Batch KC8 : {{n_batch_KC8}}</p>
-                        <p class="card-text mb-0">Stock : {{stock_KC8}} Kg</p>
+                        <p class="card-text mb-0">Batch XX : {{n_batch_XX}}</p>
+                        <p class="card-text mb-0">Stock : {{stock_XX}} Kg</p>
                     </div>
                 </div>
             </div>
@@ -49,8 +49,8 @@
                         <a href="{{ url_for('Add_MP') }}" class="btn btn-primary">Nouvelle matière première</a>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a href="{{ url_for('Add_KC8') }}" class="btn btn-primary">Nouveau batch KC8</a>
-                        <a href="{{ url_for('Add_OGD') }}" class="btn btn-primary">Nouveau batch OGD</a>
+                        <a href="{{ url_for('Add_XX') }}" class="btn btn-primary">Nouveau batch XX</a>
+                        <a href="{{ url_for('Add_XY') }}" class="btn btn-primary">Nouveau batch XY</a>
                     </div>
                 </br>
                     <div class="d-flex justify-content-between">
@@ -80,14 +80,14 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <h3>Batch KC8 en cours</h3>
+            <h3>Batch XX en cours</h3>
             <div class="card">
                 <div class="card-body">
-                    {% for batch in KC8_en_cours %}
+                    {% for batch in XX_en_cours %}
                         <div class="alert alert-primary alert-dismissible fade show" role="alert">
                             <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
                             Nom : {{ batch[0] }}, date : {{ batch[1][:10] }} 
-                            <a href="{{ url_for('update_batch_KC8', batch_name=batch[0]) }}" class="alert-link"> Mettre à jour le statut </a>
+                            <a href="{{ url_for('update_batch_XX', batch_name=batch[0]) }}" class="alert-link"> Mettre à jour le statut </a>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
@@ -100,16 +100,16 @@
 
 
         <div class="col-md-6">
-            <h3>Batch OGD en cours</h3>
+            <h3>Batch XY en cours</h3>
             <div class="card">
                 <div class="card-body">
-                    {% for batch in OGD_en_cours %}
+                    {% for batch in XY_en_cours %}
                         <div class="alert alert-primary alert-dismissible fade show" role="alert">
                         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill"/></svg>
                         Nom : {{ batch[0] }}, 
                         date : {{ batch[1][:10] }} 
                         Qte prévue : {{ batch[2] }} g
-                        <a href="{{ url_for('update_batch_OGD', batch_name=batch[0]) }}" class="alert-link">Mettre à jour le statut</a><!-- Display batch that was submitted -->
+                        <a href="{{ url_for('update_batch_XY', batch_name=batch[0]) }}" class="alert-link">Mettre à jour le statut</a><!-- Display batch that was submitted -->
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}

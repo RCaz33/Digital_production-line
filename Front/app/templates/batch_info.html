@@ -28,8 +28,8 @@
         {{ form_S0.Step0_BatchName(class="form-control", value=form_S0.Step0_BatchName.data) }}
     </div>
     <div class="col-3">
-        {{ form_S0.Step0_BatchTHF.label }}
-        {{ form_S0.Step0_BatchTHF(class="form-control") }}
+        {{ form_S0.Step0_BatchYY.label }}
+        {{ form_S0.Step0_BatchYY(class="form-control") }}
     </div>
     </div>
     <br/>
@@ -75,28 +75,28 @@
         
             <div class="row g-2 align-items-center">
               <div class="col-sm">
-                {{ form_S1.Step1_KC8_Batch.label }}
+                {{ form_S1.Step1_XX_Batch.label }}
               </div>
               <div class="col-sm">
-                {{ form_S1.Step1_KC8_Batch(class="form-control", placeholder='ex. K12') }}
-              </div>
-            </div>
-        
-            <div class="row g-2 align-items-center">
-              <div class="col-sm">
-                {{ form_S1.Step1_KC8_Masse.label }}
-              </div>
-              <div class="col-sm">
-                {{ form_S1.Step1_KC8_Masse(class="form-control") }}
+                {{ form_S1.Step1_XX_Batch(class="form-control", placeholder='ex. K12') }}
               </div>
             </div>
         
             <div class="row g-2 align-items-center">
               <div class="col-sm">
-                {{ form_S1.Step1_KC8_VTHF.label }}
+                {{ form_S1.Step1_XX_Masse.label }}
               </div>
               <div class="col-sm">
-                {{ form_S1.Step1_KC8_VTHF(class="form-control", value="500") }}
+                {{ form_S1.Step1_XX_Masse(class="form-control") }}
+              </div>
+            </div>
+        
+            <div class="row g-2 align-items-center">
+              <div class="col-sm">
+                {{ form_S1.Step1_XX_VYY.label }}
+              </div>
+              <div class="col-sm">
+                {{ form_S1.Step1_XX_VYY(class="form-control", value="500") }}
               </div>
             </div>
             
@@ -205,7 +205,7 @@
   <div class="accordion-item">                              <!-- ################# ACCORDION ITEM 2 ######################""-->
     <h2 class="accordion-header">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-        Etape 2 : Ajout THF, Sédimentation, Centrifugation
+        Etape 2 : Ajout YY, Sédimentation, Centrifugation
       </button>
     </h2>
     <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
@@ -241,18 +241,18 @@
           </div> -->
           <div class="row g-2 align-items-center">
             <div class="col-sm">
-              {{ form_S2.Step2_AjoutTHF_Heure.label}}
+              {{ form_S2.Step2_AjoutYY_Heure.label}}
             </div>
             <div class="col-sm">
-              {{ form_S2.Step2_AjoutTHF_Heure(class="form-control") }}
+              {{ form_S2.Step2_AjoutYY_Heure(class="form-control") }}
             </div>
           </div>
           <div class="row g-2 align-items-center">
             <div class="col-sm">
-              {{ form_S2.Step2_AjoutTHF_VTHF.label}}
+              {{ form_S2.Step2_AjoutYY_VYY.label}}
             </div>
             <div class="col-sm">
-              {{ form_S2.Step2_AjoutTHF_VTHF(class="form-control",value="500") }}
+              {{ form_S2.Step2_AjoutYY_VYY(class="form-control",value="500") }}
             </div>
           </div>
           <div class="row g-2 align-items-center">
@@ -507,19 +507,19 @@
     
           <div class="row g-2 align-items-center">
             <div class="col-sm">
-              {{ form_S4.Step4_Analyse_mOGD.label}}
+              {{ form_S4.Step4_Analyse_mXY.label}}
             </div>
             <div class="col-sm">
-              {{ form_S4.Step4_Analyse_mOGD(class="form-control",placeholder='n/a') }}
+              {{ form_S4.Step4_Analyse_mXY(class="form-control",placeholder='n/a') }}
             </div>
           </div>
     
           <div class="row g-2 align-items-center">
             <div class="col-sm">
-              {{ form_S4.Step4_Analyse_mTHF.label}}
+              {{ form_S4.Step4_Analyse_mYY.label}}
             </div>
             <div class="col-sm">
-              {{ form_S4.Step4_Analyse_mTHF(class="form-control",placeholder='n/a') }}
+              {{ form_S4.Step4_Analyse_mYY(class="form-control",placeholder='n/a') }}
             </div>
           </div>
     

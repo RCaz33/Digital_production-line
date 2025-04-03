@@ -22,23 +22,23 @@
 <h1> Ajout analyses </h1>
 <div class="container shadow border border-danger-subtle border-1">
     <form method="POST" enctype="multipart/form-data">
-        {{ Form_OGD.csrf_token }}
+        {{ Form_XY.csrf_token }}
         <br/>
         <div class="row justify-content-start">
         <div class="col-3">
-            <h5> Propriété du batch {{ Form_OGD.Batch_OGD_name.data }}:</h5>
+            <h5> Propriété du batch {{ Form_XY.Batch_XY_name.data }}:</h5>
         </div>
         <div class="col-3">
-            {{ Form_OGD.Batch_OGD_name.label }}
-            {{ Form_OGD.Batch_OGD_name(class="form-control",disabled='disabled') }}
+            {{ Form_XY.Batch_XY_name.label }}
+            {{ Form_XY.Batch_XY_name(class="form-control",disabled='disabled') }}
         </div>
         <div class="col-3">
-            {{ Form_OGD.Batch_OGD_date.label }}
-            {{ Form_OGD.Batch_OGD_date(class="form-control", disabled='disabled') }}
+            {{ Form_XY.Batch_XY_date.label }}
+            {{ Form_XY.Batch_XY_date(class="form-control", disabled='disabled') }}
         </div>
         <div class="col-3">
-            {{ Form_OGD.Batch_OGD_Technicien.label }}
-            {{ Form_OGD.Batch_OGD_Technicien(class="form-control", disabled='disabled') }}
+            {{ Form_XY.Batch_XY_Technicien.label }}
+            {{ Form_XY.Batch_XY_Technicien(class="form-control", disabled='disabled') }}
         </div>
         <div class="col-12">
             <h5> Ajout de fichiers et détails: </h5>
@@ -112,7 +112,7 @@
 
         <div class="col-3">
             <br/>
-            <button type="submit" class="btn btn-primary" href="{{url_for('Add_analyse', batch_name=Form_OGD.Batch_OGD_name.data)}}"> Ajouter </a>        </div>
+            <button type="submit" class="btn btn-primary" href="{{url_for('Add_analyse', batch_name=Form_XY.Batch_XY_name.data)}}"> Ajouter </a>        </div>
         </div>
 
     </form>

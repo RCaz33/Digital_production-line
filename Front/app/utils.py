@@ -49,13 +49,13 @@ def update_MPs():
     return batch_C,batch_K,batch_THF
 
 
-def predict_OGD_concentration(data,heure_debut):
+def predict_XY_concentration(data,heure_debut):
     """ route protégée 
-    utilise API_ML pour prédire la concentration de graphene dans l'OGD"""
+    utilise API_ML pour prédire la concentration de graphene dans l'XY"""
     data_bis = data.copy()
-    data_bis["Batch_OGD_heure_fin"] = (heure_debut + pd.DateOffset(days=6)).isoformat()
-    data_bis["Batch_OGD_Analyses"] = "1"
-    data_bis["Batch_OGD_Stock"] = 0
+    data_bis["Batch_XY_heure_fin"] = (heure_debut + pd.DateOffset(days=6)).isoformat()
+    data_bis["Batch_XY_Analyses"] = "1"
+    data_bis["Batch_XY_Stock"] = 0
 
     response = requests.post(url = "http://127.0.0.1:8001/predict/elasticnet",
                                 headers = {'Supervized-API-Key': os.getenv('API_SUPERVIZED_SECRET_KEY'),
@@ -75,7 +75,7 @@ def format_datetime(date,heure):
 
 
 def fetch_MP():
-    """ fetch les derniers batch de matieres premieres et de KC8 """    
+    """ fetch les derniers batch de matieres premieres et de XX """    
 
     try:
         response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
@@ -83,15 +83,15 @@ def fetch_MP():
         default_batch = dict({'K':K_name,'C':C_name,'THF':THF_name})
 
         try:
-            response = requests.get(f'http://127.0.0.1:8000/KC8/')
-            KC8_all = pd.DataFrame(response.json())
+            response = requests.get(f'http://127.0.0.1:8000/XX/')
+            XX_all = pd.DataFrame(response.json())
             # on filtre pour n'avoir que les batch qui sont termines
-            KC8_all = KC8_all.loc[~KC8_all.Batch_KC8_heure_fin.isnull()]
+            XX_all = XX_all.loc[~XX_all.Batch_XX_heure_fin.isnull()]
             # on recupere le dernier batch ajoute
-            KC8_batch = KC8_all.loc[KC8_all.Batch_KC8_id==np.max(KC8_all.Batch_KC8_id),'Batch_KC8_name'].values[0]
-            default_batch['KC8'] = KC8_batch
+            XX_batch = XX_all.loc[XX_all.Batch_XX_id==np.max(XX_all.Batch_XX_id),'Batch_XX_name'].values[0]
+            default_batch['XX'] = XX_batch
         except:
-            default_batch['KC8'] = 'na'
+            default_batch['XX'] = 'na'
         print(5*"\n{*} SUCESS")
         print('--> fetch_MP OK')
 
@@ -123,24 +123,24 @@ def update_stock_product(data):
         return status
 
 
-def update_stock_OGD_additif(data):
-        """ met à jour le stock des OGD et des additifs après fabrication produit """
+def update_stock_XY_additif(data):
+        """ met à jour le stock des XY et des additifs après fabrication produit """
 
         headers = {
         'accept': 'application/json',
         'Content-Type': 'application/json'}
         status=dict()
 
-        response = requests.get(f'http://127.0.0.1:8000/OGD/name/{data["Batch_Produit_OGD_batch"]}')
-        status['get_OGD'] = response.status_code
+        response = requests.get(f'http://127.0.0.1:8000/XY/name/{data["Batch_Produit_XY_batch"]}')
+        status['get_XY'] = response.status_code
         updated_batch = response.json()
-        new_value = int(updated_batch['Batch_OGD_Stock'] - float(data['Batch_Produit_OGD_Qte']))
+        new_value = int(updated_batch['Batch_XY_Stock'] - float(data['Batch_Produit_XY_Qte']))
         if new_value >= 0:
-            updated_batch['Batch_OGD_Stock'] = new_value
-            response = requests.post(f'http://127.0.0.1:8000/OGD/update/{updated_batch["Batch_OGD_id"]}', headers=headers, data=json.dumps(updated_batch))
-            status['post_OGD'] = response.status_code
+            updated_batch['Batch_XY_Stock'] = new_value
+            response = requests.post(f'http://127.0.0.1:8000/XY/update/{updated_batch["Batch_XY_id"]}', headers=headers, data=json.dumps(updated_batch))
+            status['post_XY'] = response.status_code
         else :
-            status['post_OGD'] = None
+            status['post_XY'] = None
         
         response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_Produit_additif_batch"]}')
         status['get_additif'] = response.status_code
@@ -160,23 +160,23 @@ def update_stock_OGD_additif(data):
 
 
 def update_stocks_K_C(data):
-        """ met à jour le stock de K et C après fabrication de KC8 """
+        """ met à jour le stock de K et C après fabrication de XX """
 
         headers = {
         'accept': 'application/json',
         'Content-Type': 'application/json'}
         status=dict()
         # update stock of K 
-        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_K_batch"]}')
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_XX_K_batch"]}')
         status['get_K'] = response.status_code
         updated_batch_K = response.json()
-        new_value_K = int(updated_batch_K['MP_stock'] - (39/(39+(8*12))*float(data['Batch_KC8_masse'])))
+        new_value_K = int(updated_batch_K['MP_stock'] - (39/(39+(8*12))*float(data['Batch_XX_masse'])))
         print(updated_batch_K)
         # update stock of C
-        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_KC8_C_batch"]}')
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_XX_C_batch"]}')
         updated_batch_C = response.json()
         status['get_C'] = response.status_code
-        new_value_C = updated_batch_C['MP_stock'] - ((8*12)/(39+(8*12))*float(data['Batch_KC8_masse']))
+        new_value_C = updated_batch_C['MP_stock'] - ((8*12)/(39+(8*12))*float(data['Batch_XX_masse']))
         print(updated_batch_C)
         # mise a jour bdd
         if (new_value_K >= 0) and (new_value_C >= 0):
@@ -195,37 +195,37 @@ def update_stocks_K_C(data):
 
 
 
-def update_stocks_KC8_THF(data):
-        """ met à jour le stock de KC8 et THF après fabrication de OGD """
+def update_stocks_XX_YY(data):
+        """ met à jour le stock de XX et THF après fabrication de XY """
 
         headers = {
         'accept': 'application/json',
         'Content-Type': 'application/json'}
         status=dict()
 
-        # update stock of KC8 
-        response = requests.get(f'http://127.0.0.1:8000/KC8/name/{data["Batch_OGD_KC8_batch"]}')
-        status['get_KC8'] = response.status_code
-        updated_batch_KC8 = response.json()
-        new_value_KC8 = float(updated_batch_KC8['Batch_KC8_masse'] - float(data['Batch_OGD_KC8_masse']))
+        # update stock of XX 
+        response = requests.get(f'http://127.0.0.1:8000/XX/name/{data["Batch_XY_XX_batch"]}')
+        status['get_XX'] = response.status_code
+        updated_batch_XX = response.json()
+        new_value_XX = float(updated_batch_XX['Batch_XX_masse'] - float(data['Batch_XY_XX_masse']))
         
         # update stock of THF
-        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_OGD_THF_batch"]}')
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/name/{data["Batch_XY_THF_batch"]}')
         status['get_THF'] = response.status_code
         updated_batch_THF = response.json()
-        new_value_THF = updated_batch_THF['MP_stock'] - int(data['Batch_OGD_THF_Volume'])
+        new_value_THF = updated_batch_THF['MP_stock'] - int(data['Batch_XY_THF_Volume'])
 
-        if (new_value_KC8 >= 0) and (new_value_THF >= 0):
-            updated_batch_KC8['Batch_KC8_masse'] = new_value_KC8
-            response2 = requests.post(f'http://127.0.0.1:8000/KC8/update/{updated_batch_KC8["Batch_KC8_id"]}', headers=headers, data=json.dumps(updated_batch_KC8))
-            status['post_KC8'] = response2.status_code
+        if (new_value_XX >= 0) and (new_value_THF >= 0):
+            updated_batch_XX['Batch_XX_masse'] = new_value_XX
+            response2 = requests.post(f'http://127.0.0.1:8000/XX/update/{updated_batch_XX["Batch_XX_id"]}', headers=headers, data=json.dumps(updated_batch_XX))
+            status['post_XX'] = response2.status_code
 
             updated_batch_THF['MP_stock'] = new_value_THF
             response = requests.post(f'http://127.0.0.1:8000/matieres_premieres/update/{updated_batch_THF["MP_id"]}', headers=headers, data=json.dumps(updated_batch_THF))
             status['post_THF'] = response.status_code
 
         else :
-            status['post_KC8'] = None        
+            status['post_XX'] = None        
 
         return status
 
@@ -255,7 +255,7 @@ def populate_form(form,response):
 
 
 def get_last_10_batch():
-    """ recupere les 10 derniers batch de matieres premieres et de KC8 """
+    """ recupere les 10 derniers batch de matieres premieres et de XX """
 
     headers = {
         'accept': 'application/json',
@@ -267,13 +267,13 @@ def get_last_10_batch():
     last_10_K=data.loc[data.MP_nom == 'Potassium'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:][::-1]
     last_10_C=data.loc[data.MP_nom == 'Carbone'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:][::-1]
     last_10_THF=data.loc[data.MP_nom == 'THF'].sort_values('MP_id')['MP_ref_fournisseur'].values[-10:][::-1]
-    # get last KC8
-    url = 'http://127.0.0.1:8000/KC8/'
+    # get last XX
+    url = 'http://127.0.0.1:8000/XX/'
     data = pd.DataFrame(requests.get(url).json()) 
-    data = data.loc[~data.Batch_KC8_heure_fin.isnull()]
-    last_10_KC8=data.sort_values('Batch_KC8_id')['Batch_KC8_name'].values[-10:][::-1]
+    data = data.loc[~data.Batch_XX_heure_fin.isnull()]
+    last_10_XX=data.sort_values('Batch_XX_id')['Batch_XX_name'].values[-10:][::-1]
     
-    return last_10_K, last_10_C, last_10_THF, last_10_KC8
+    return last_10_K, last_10_C, last_10_THF, last_10_XX
 
 def get_matieres_premieres(response):
     """ recupere les dernieres matieres premieres """
@@ -290,7 +290,7 @@ def get_matieres_premieres(response):
     
 class get_material_composition_for_product:
     """ compute the qty of material needed as a function of product
-    ratio are base on 1L OGD at 2 g/L ==> 2 grams of OGD
+    ratio are base on 1L XY at 2 g/L ==> 2 grams of XY
     On multiplie le facteur par la quantité de produit fini voulue pour avoir la masse de produit utilise (cf mail Victor 18/02/25)
     # UPDATE WITH CALCULATION DEPENDING ON QTY
     """
@@ -299,27 +299,27 @@ class get_material_composition_for_product:
         self.product_qty = product_qty 
 
 
-    def OGD(self):
+    def XY(self):
         if self.product == 'W1':
-            return {'OGD':0.17*self.product_qty}
+            return {'XY':0.17*self.product_qty}
         elif self.product == 'W2':
-            return {'OGD':0.5*self.product_qty}
+            return {'XY':0.5*self.product_qty}
         elif self.product == 'W3':
-            return {'OGD':2.4*self.product_qty}
+            return {'XY':2.4*self.product_qty}
         elif self.product == 'W10':
-            return {'OGD':4.9*self.product_qty}
+            return {'XY':4.9*self.product_qty}
         elif self.product == 'W3NC':
-            return {'OGD':2.4*self.product_qty}
+            return {'XY':2.4*self.product_qty}
         elif self.product == 'W10NC':
-            return {'OGD':4.9*self.product_qty}
+            return {'XY':4.9*self.product_qty}
         elif self.product == 'W20NC':
-            return {'OGD':9.8*self.product_qty}
+            return {'XY':9.8*self.product_qty}
         elif self.product == 'EpoC':
-            return {'OGD':3.6*self.product_qty}
+            return {'XY':3.6*self.product_qty}
         elif self.product == 'EpoF':
-            return {'OGD':13.2*self.product_qty}
+            return {'XY':13.2*self.product_qty}
         elif self.product == 'EpoR':
-            return {'OGD':3.6*self.product_qty}
+            return {'XY':3.6*self.product_qty}
         
 
 

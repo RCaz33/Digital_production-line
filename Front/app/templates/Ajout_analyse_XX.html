@@ -22,23 +22,23 @@
 <h1> Ajout analyses </h1>
 <div class="container shadow border border-danger-subtle border-1">
     <form method="POST" enctype="multipart/form-data">
-        {{ Form_KC8.csrf_token }}
+        {{ Form_XX.csrf_token }}
         <br/>
         <div class="row justify-content-start">
         <div class="col-3">
-            <h5> Propriété du batch {{ Form_KC8.Batch_KC8_name.data }}:</h5>
+            <h5> Propriété du batch {{ Form_XX.Batch_XX_name.data }}:</h5>
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_name.label }}
-            {{ Form_KC8.Batch_KC8_name(class="form-control",disabled='disabled') }}
+            {{ Form_XX.Batch_XX_name.label }}
+            {{ Form_XX.Batch_XX_name(class="form-control",disabled='disabled') }}
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_date.label }}
-            {{ Form_KC8.Batch_KC8_date(class="form-control", disabled='disabled') }}
+            {{ Form_XX.Batch_XX_date.label }}
+            {{ Form_XX.Batch_XX_date(class="form-control", disabled='disabled') }}
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_Technicien.label }}
-            {{ Form_KC8.Batch_KC8_Technicien(class="form-control", disabled='disabled') }}
+            {{ Form_XX.Batch_XX_Technicien.label }}
+            {{ Form_XX.Batch_XX_Technicien(class="form-control", disabled='disabled') }}
         </div>
         <div class="col-12">
             <h5> Ajout de fichiers et détails: </h5>
@@ -77,7 +77,7 @@
 
         <div class="col-3">
             <br/>
-            <button type="submit" class="btn btn-primary" href="{{url_for('Add_analyse', batch_name=Form_KC8.Batch_KC8_name.data)}}"> Ajouter </a>        </div>
+            <button type="submit" class="btn btn-primary" href="{{url_for('Add_analyse', batch_name=Form_XX.Batch_XX_name.data)}}"> Ajouter </a>        </div>
         </div>
 
     </form>

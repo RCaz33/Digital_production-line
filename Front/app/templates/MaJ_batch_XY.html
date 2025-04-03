@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>
+    MaJ XY
+</title>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Display flash messages -->
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }} <!-- Display batch that was submitted -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+
+<!-- Get informations -->
+<h1> Mise à jour batch XY</h1>
+<div class="container shadow border border-danger-subtle border-1">
+    <form action="{{ url_for('update_batch_XY', batch_name=Form_XY.Batch_XY_name.data) }}" method="POST">
+        {{ Form_XY.csrf_token }}
+        <br/>
+        <div class="row justify-content-start">
+        <div class="col-3">
+            <h5>Arret du batch {{ Form_XY.Batch_XY_name.data }}?</h5>
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_name.label }}
+            {{ Form_XY.Batch_XY_name(class="form-control",disabled='disabled') }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_date.label }}
+            {{ Form_XY.Batch_XY_date(class="form-control", disabled='disabled') }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_Technicien.label }}
+            {{ Form_XY.Batch_XY_Technicien(class="form-control", disabled='disabled') }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_XX_batch.label }}
+            {{ Form_XY.Batch_XY_XX_batch(class="form-control", disabled='disabled') }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_XX_masse.label }}
+            {{ Form_XY.Batch_XY_XX_masse(class="form-control", disabled='disabled') }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_YY_batch.label }}
+            {{ Form_XY.Batch_XY_YY_batch(class="form-control", disabled='disabled') }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_YY_Volume.label }}
+            {{ Form_XY.Batch_XY_YY_Volume(class="form-control",disabled='disabled') }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_Temperature.label }}
+            {{ Form_XY.Batch_XY_Temperature(class="form-control",disabled='disabled') }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_Agitation.label }}
+            {{ Form_XY.Batch_XY_Agitation(class="form-control", disabled='disabled') }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_heure_debut.label }}
+            {{ Form_XY.Batch_XY_heure_debut(class="form-control", disabled='disabled') }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_room_HR.label }}
+            {{ Form_XY.Batch_XY_room_HR(class="form-control",disabled='disabled') }}
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_room_T.label }}
+            {{ Form_XY.Batch_XY_room_T(class="form-control", disabled='disabled') }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_XY.Batch_XY_heure_fin.label }}
+            {{ Form_XY.Batch_XY_heure_fin(class="form-control") }}
+        </div>
+        <div class="col-6">
+        </div>
+        <div class="col-3">
+        </div>
+        <!-- <button type="submit" class="btn btn-primary">Validate</button> -->
+
+
+        <div class="col-3">
+            <br/>
+            <button class="btn btn-primary" type="submit" name='submit' value="submit"> Enregistrer </button>
+        </div>
+
+        <div class="col-3">
+            <br/>
+            <a class="btn btn-primary" href="{{url_for('supprimer_XY', batch_name=Form_XY.Batch_XY_name.data)}}"> Supprimer </a>        </div>
+        </div>
+
+    </form>
+    </br>
+</div>
+
+
+
+
+
+
+{% endblock %}
+ 
+
+
+
+    <body>
+      
+
+    </body>
+
+
+
+</html>

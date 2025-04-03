@@ -37,14 +37,14 @@ def collect_data():
     """
     # gestion des exeptions / erreurs
     try:
-        response = requests.get(f'{url}/OGD/', headers=headers)
+        response = requests.get(f'{url}/XY/', headers=headers)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         logging.error(f" Cannot connect to database\nRequest failed: {e}")
     
     # traitement et sauvegarde pour entrainement ML 
     metadata = pd.DataFrame(response.json())
-    mask = metadata.Batch_OGD_name.to_list()
+    mask = metadata.Batch_XY_name.to_list()
 
     try:
         response = requests.get(f'{url}/analyses/', headers=headers)
@@ -63,7 +63,7 @@ def collect_data():
     targets = pd.DataFrame(out)
     targets = targets.loc[targets['sample'].isin(mask)]
 
-    all = pd.merge(metadata,targets,left_on='Batch_OGD_name',right_on='sample',how='inner')
+    all = pd.merge(metadata,targets,left_on='Batch_XY_name',right_on='sample',how='inner')
     metadata = all.iloc[:,:-2]
     targets = all.loc[:,'conc']
 
@@ -93,20 +93,20 @@ def check_if_within_range(row, check_times):
     Compte le nombre de datetimes dans check_times qui tombent dans la plage
     définie par Heure_debut et Heure_ajout2.
     """
-    return sum(row["Batch_OGD_heure_debut"] <= check_time <= row["Batch_OGD_heure_fin"] for check_time in check_times)
+    return sum(row["Batch_XY_heure_debut"] <= check_time <= row["Batch_XY_heure_fin"] for check_time in check_times)
 
 def clean_data(data):
     """ this function prepare the raw data for ML model : feature ingineering, data cleaning, data transformation"""
     # find columns names that have unique values or identical values (not usefull for ML model)
-    data.drop(index=['Batch_OGD_name', 'Batch_OGD_THF_batch', 'Batch_OGD_Stock'],inplace=True)
+    data.drop(index=['Batch_XY_name', 'Batch_XY_THF_batch', 'Batch_XY_Stock'],inplace=True)
 
     # Data Engineering
     try:
-        data['conc_KC8'] = data['Batch_OGD_KC8_masse'] / data['Batch_OGD_THF_Volume']
+        data['conc_XX'] = data['Batch_XY_XX_masse'] / data['Batch_XY_THF_Volume']
     except:
-        data['conc_KC8'] = 0.04
+        data['conc_XX'] = 0.04
     finally:
-        data.drop(index=['Batch_OGD_KC8_masse','Batch_OGD_THF_Volume'],inplace=True)
+        data.drop(index=['Batch_XY_XX_masse','Batch_XY_THF_Volume'],inplace=True)
 
     # Handeling time data (transform to datetime format)
     datetime_to_remove = list()
@@ -115,12 +115,12 @@ def clean_data(data):
             data[index] = pd.to_datetime(data[index])
             datetime_to_remove.append(index)
 
-    data['month_production'] = data['Batch_OGD_date'].month
-    data['day_production_start'] = data['Batch_OGD_date'].day
-    data['days_exfo'] = (data['Batch_OGD_heure_fin'] - data['Batch_OGD_heure_debut']).days
+    data['month_production'] = data['Batch_XY_date'].month
+    data['day_production_start'] = data['Batch_XY_date'].day
+    data['days_exfo'] = (data['Batch_XY_heure_fin'] - data['Batch_XY_heure_debut']).days
 
-    # ajouter année au batch KC8 
-    data['Batch_OGD_KC8_batch'] = str(data.Batch_OGD_date.year) + "-" + data.Batch_OGD_KC8_batch
+    # ajouter année au batch XX 
+    data['Batch_XY_XX_batch'] = str(data.Batch_XY_date.year) + "-" + data.Batch_XY_XX_batch
 
     # Ajoute data autre source
     gde_marees = get_maree_data(years = [2022,2023,2024,2025])
@@ -134,11 +134,11 @@ def clean_data(data):
 # prepare data for ML
 def set_preprocessor(X):
     """this function instanciate and test a sklearn preprocessor"""
-    categorical_columns = ['Batch_OGD_Technicien','Batch_OGD_KC8_batch', 'Batch_OGD_Analyses',
+    categorical_columns = ['Batch_XY_Technicien','Batch_XY_XX_batch', 'Batch_XY_Analyses',
                         'month_production','day_production_start','exfo_gde_maree']
 
-    numerical_columns = ['Batch_OGD_Temperature','Batch_OGD_Agitation','Batch_OGD_room_HR',
-                    'conc_KC8','Batch_OGD_room_T','days_exfo']
+    numerical_columns = ['Batch_XY_Temperature','Batch_XY_Agitation','Batch_XY_room_HR',
+                    'conc_XX','Batch_XY_room_T','days_exfo']
     
     preprocessor = ColumnTransformer(
         transformers=[

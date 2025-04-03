@@ -26,7 +26,7 @@ def collect_metadata():
     """
     # gestion des exeptions / erreurs
     try:
-        response = requests.get(f'{url}/OGD/', headers=headers)
+        response = requests.get(f'{url}/XY/', headers=headers)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         logging.error(f" Cannot connect to database\nRequest failed: {e}")
@@ -51,38 +51,38 @@ def collect_analyses():
 
 def preprocess_metadata(metadata: pd.DataFrame, sc: StandardScaler, ohe: OneHotEncoder, fit_dv : bool = False):
     
-    time_columns = ['Batch_OGD_date','Batch_OGD_heure_debut','Batch_OGD_heure_fin']
+    time_columns = ['Batch_XY_date','Batch_XY_heure_debut','Batch_XY_heure_fin']
     timed = metadata[time_columns].copy()
     for col in timed.columns:
         timed.loc[:,col] = pd.to_datetime(timed[col])
 
-    timed['year'] = pd.DatetimeIndex(timed['Batch_OGD_date']).year.astype(str)
-    timed['month'] = pd.DatetimeIndex(timed['Batch_OGD_date']).month.astype(str)
-    timed['time_exfo'] = (timed['Batch_OGD_heure_fin'] - timed['Batch_OGD_heure_debut']) / pd.Timedelta(hours=1)
+    timed['year'] = pd.DatetimeIndex(timed['Batch_XY_date']).year.astype(str)
+    timed['month'] = pd.DatetimeIndex(timed['Batch_XY_date']).month.astype(str)
+    timed['time_exfo'] = (timed['Batch_XY_heure_fin'] - timed['Batch_XY_heure_debut']) / pd.Timedelta(hours=1)
     metadata_timed = pd.concat([metadata,timed],axis=1)
 
-    numerical_columns = ['Batch_OGD_KC8_masse',
-                        'Batch_OGD_Temperature',
-                        'Batch_OGD_Agitation',
-                        'Batch_OGD_room_HR',
-                        'Batch_OGD_room_T',
+    numerical_columns = ['Batch_XY_XX_masse',
+                        'Batch_XY_Temperature',
+                        'Batch_XY_Agitation',
+                        'Batch_XY_room_HR',
+                        'Batch_XY_room_T',
                         'time_exfo']
-    categorical_columns = ['Batch_OGD_Technicien',
-                            'Batch_OGD_KC8_batch',
-                            'Batch_OGD_THF_batch',
+    categorical_columns = ['Batch_XY_Technicien',
+                            'Batch_XY_XX_batch',
+                            'Batch_XY_THF_batch',
                             'year',
                             'month']
 
     if fit_dv:
         scaled = sc.fit_transform(metadata_timed[numerical_columns])
-        scaled = pd.DataFrame(scaled, columns=numerical_columns, index=metadata.Batch_OGD_name)
+        scaled = pd.DataFrame(scaled, columns=numerical_columns, index=metadata.Batch_XY_name)
         onehotencoded = ohe.fit_transform(metadata_timed[categorical_columns])
-        onehotencoded = pd.DataFrame(onehotencoded, columns = [a for b in ohe.categories_ for a in b], index=metadata.Batch_OGD_name)
+        onehotencoded = pd.DataFrame(onehotencoded, columns = [a for b in ohe.categories_ for a in b], index=metadata.Batch_XY_name)
     else:
         scaled = sc.transform(metadata_timed[numerical_columns])
-        scaled = pd.DataFrame(scaled, columns=numerical_columns, index=metadata.Batch_OGD_name)
+        scaled = pd.DataFrame(scaled, columns=numerical_columns, index=metadata.Batch_XY_name)
         onehotencoded = ohe.transform(metadata_timed[categorical_columns])
-        onehotencoded = pd.DataFrame(onehotencoded, columns = [a for b in ohe.categories_ for a in b], index=metadata.Batch_OGD_name)
+        onehotencoded = pd.DataFrame(onehotencoded, columns = [a for b in ohe.categories_ for a in b], index=metadata.Batch_XY_name)
 
     metadata_ready = pd.concat([scaled,onehotencoded],axis=1)
 
@@ -193,15 +193,15 @@ def run_optimisation(where_to_log:str, train_val_split:int, mode:str):
     sc = StandardScaler()
     ohe = OneHotEncoder(sparse_output=False,handle_unknown='ignore')
     # split dataset    
-    idxs = meta.Batch_OGD_name.copy().tolist()
+    idxs = meta.Batch_XY_name.copy().tolist()
     random.shuffle(idxs)
     split=train_val_split
     idx_train = idxs[round(len(idxs)*split):]
     idx_val = idxs[:round(len(idxs)*split)]   
     # preprocess data
-    meta_train, sc_fit, ohe_fit = preprocess_metadata(meta.loc[meta['Batch_OGD_name'].isin(idx_train)].sort_values('Batch_OGD_name'),
+    meta_train, sc_fit, ohe_fit = preprocess_metadata(meta.loc[meta['Batch_XY_name'].isin(idx_train)].sort_values('Batch_XY_name'),
                                         sc,ohe,fit_dv=True)
-    meta_val, _, _ = preprocess_metadata(meta.loc[meta['Batch_OGD_name'].isin(idx_val)].sort_values('Batch_OGD_name'),
+    meta_val, _, _ = preprocess_metadata(meta.loc[meta['Batch_XY_name'].isin(idx_val)].sort_values('Batch_XY_name'),
                                         sc_fit,ohe_fit,fit_dv=False)
     out_train, out_val, reduce_r, reduce_uv = preprocess_spectral(idx_train,idx_val, raman, uv, mode=mode)
     # combine data

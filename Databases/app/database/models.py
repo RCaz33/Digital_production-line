@@ -39,45 +39,45 @@ class DB_Matieres_premieres(Base):
  # name of batch + date of analysis + type of analysis + details analysis
                       # "nom_250129_Raman / nom_250202_DLS / .."
  
-class DB_Batch_KC8(Base):
-    __tablename__ = 'Batch_KC8'
-    Batch_KC8_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    Batch_KC8_name = Column(String(10), nullable=False, unique=True)
-    Batch_KC8_date = Column(DateTime, nullable=False)
-    Batch_KC8_Technicien = Column(String(5), nullable=False)
-    Batch_KC8_K_batch = Column(String(50), nullable=False)
-    Batch_KC8_C_batch = Column(String(50), nullable=False)
-    Batch_KC8_masse = Column(Float, nullable=False)
-    Batch_KC8_Temperature = Column(Float, default=20.0, nullable=False)
-    Batch_KC8_Agitation = Column(Integer, nullable=False)
-    Batch_KC8_heure_debut = Column(DateTime, nullable=False)
-    Batch_KC8_heure_fin = Column(DateTime, nullable=True)
-    Batch_KC8_room_HR = Column(Float, default=20.0, nullable=False)
-    Batch_KC8_room_T = Column(Float, default=20.0, nullable=False)
-    Batch_KC8_Stock = Column(Float, default=0.0, nullable=False)
-    Batch_KC8_Analyses = Column(String(50), nullable=True)
+class DB_Batch_XX(Base):
+    __tablename__ = 'Batch_XX'
+    Batch_XX_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Batch_XX_name = Column(String(10), nullable=False, unique=True)
+    Batch_XX_date = Column(DateTime, nullable=False)
+    Batch_XX_Technicien = Column(String(5), nullable=False)
+    Batch_XX_K_batch = Column(String(50), nullable=False)
+    Batch_XX_C_batch = Column(String(50), nullable=False)
+    Batch_XX_masse = Column(Float, nullable=False)
+    Batch_XX_Temperature = Column(Float, default=20.0, nullable=False)
+    Batch_XX_Agitation = Column(Integer, nullable=False)
+    Batch_XX_heure_debut = Column(DateTime, nullable=False)
+    Batch_XX_heure_fin = Column(DateTime, nullable=True)
+    Batch_XX_room_HR = Column(Float, default=20.0, nullable=False)
+    Batch_XX_room_T = Column(Float, default=20.0, nullable=False)
+    Batch_XX_Stock = Column(Float, default=0.0, nullable=False)
+    Batch_XX_Analyses = Column(String(50), nullable=True)
 
 
 
 
-class DB_Batch_OGD(Base):
-    __tablename__ = 'Batch_OGD'
-    Batch_OGD_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    Batch_OGD_name = Column(String(10), nullable=False, unique=True)
-    Batch_OGD_date = Column(DateTime, nullable=False)
-    Batch_OGD_Technicien = Column(String(10), nullable=False)
-    Batch_OGD_KC8_batch = Column(String(10), nullable=False)
-    Batch_OGD_KC8_masse = Column(Float, default=20.0, nullable=False)
-    Batch_OGD_THF_batch = Column(String(50), nullable=False)
-    Batch_OGD_THF_Volume = Column(Float, default=500, nullable=False)
-    Batch_OGD_Temperature = Column(Float, default=20.0, nullable=False)
-    Batch_OGD_Agitation = Column(Integer, nullable=False)
-    Batch_OGD_heure_debut = Column(DateTime, nullable=False)
-    Batch_OGD_heure_fin = Column(DateTime, nullable=True)
-    Batch_OGD_room_HR = Column(Float, default=20.0, nullable=False)
-    Batch_OGD_room_T = Column(Float, default=20.0, nullable=False)
-    Batch_OGD_Stock = Column(Float, default=20.0, nullable=True)
-    Batch_OGD_Analyses = Column(String(50), nullable=False)
+class DB_Batch_XY(Base):
+    __tablename__ = 'Batch_XY'
+    Batch_XY_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    Batch_XY_name = Column(String(10), nullable=False, unique=True)
+    Batch_XY_date = Column(DateTime, nullable=False)
+    Batch_XY_Technicien = Column(String(10), nullable=False)
+    Batch_XY_XX_batch = Column(String(10), nullable=False)
+    Batch_XY_XX_masse = Column(Float, default=20.0, nullable=False)
+    Batch_XY_YY_batch = Column(String(50), nullable=False)
+    Batch_XY_YY_Volume = Column(Float, default=500, nullable=False)
+    Batch_XY_Temperature = Column(Float, default=20.0, nullable=False)
+    Batch_XY_Agitation = Column(Integer, nullable=False)
+    Batch_XY_heure_debut = Column(DateTime, nullable=False)
+    Batch_XY_heure_fin = Column(DateTime, nullable=True)
+    Batch_XY_room_HR = Column(Float, default=20.0, nullable=False)
+    Batch_XY_room_T = Column(Float, default=20.0, nullable=False)
+    Batch_XY_Stock = Column(Float, default=20.0, nullable=True)
+    Batch_XY_Analyses = Column(String(50), nullable=False)
 
 
 class DbTechnicient(Base):
@@ -93,8 +93,8 @@ class DB_Batch_Produit(Base):
     Batch_Produit_ref_CW = Column(String(10), nullable=False, unique=True)
     Batch_Produit_date = Column(DateTime, nullable=False)
     Batch_Produit_Technicien = Column(String(10), nullable=False)
-    Batch_Produit_OGD_batch = Column(String(10), nullable=False, unique=True)
-    Batch_Produit_OGD_Qte = Column(Float, default=20.0, nullable=False)
+    Batch_Produit_XY_batch = Column(String(10), nullable=False, unique=True)
+    Batch_Produit_XY_Qte = Column(Float, default=20.0, nullable=False)
     Batch_Produit_additif_batch = Column(String(10), nullable=False)  # can be EPO ou viscosant
     Batch_Produit_additif_Qte = Column(Float, default=20.0, nullable=False)
     Batch_produit_stock = Column(Float, default=0.0, nullable=False)

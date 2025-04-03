@@ -16,8 +16,8 @@ Tables BD:
  DB_Prediction(Base):
  DB_Analyses(Base):
  DB_Matieres_premieres(Base):
- DB_Batch_KC8(Base):
- DB_Batch_OGD(Base):
+ DB_Batch_XX(Base):
+ DB_Batch_XY(Base):
  DbTechnicient(Base):
  DB_Batch_Produit(Base):
  DB_Envoi(Base):

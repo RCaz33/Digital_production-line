@@ -17,10 +17,10 @@
   </div>
 {% endfor %}
 
-<!-- Script pour calculer la qté de OGD / additif en fonction de la qe de produit voulue -->
+<!-- Script pour calculer la qté de XY / additif en fonction de la qe de produit voulue -->
 <script>
     function performOperation() {
-        const inputValue = document.getElementById('Batch_KC8_masse').value;
+        const inputValue = document.getElementById('Batch_XX_masse').value;
         const number = parseFloat(inputValue);
 
         if (!isNaN(number)) {
@@ -44,40 +44,40 @@
 <!-- Get informations -->
 
 
-<h1> Nouveau batch KC8</h1>
+<h1> Nouveau batch XX</h1>
 <div class="container shadow border border-danger-subtle border-1">
-    <form action="{{ url_for('Add_KC8') }}" method="POST">
-        {{ Form_KC8.csrf_token }}
+    <form action="{{ url_for('Add_XX') }}" method="POST">
+        {{ Form_XX.csrf_token }}
         <br/>
         <div class="row justify-content-start">
         <div class="col-3">
-            <h5>Ajout d'un nouveau KC8</h5>
+            <h5>Ajout d'un nouveau XX</h5>
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_name.label }}
-            {{ Form_KC8.Batch_KC8_name(class="form-control",placeholder="Nomenclature : KAASS") }}
+            {{ Form_XX.Batch_XX_name.label }}
+            {{ Form_XX.Batch_XX_name(class="form-control",placeholder="Nomenclature : KAASS") }}
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_date.label }}
-            {{ Form_KC8.Batch_KC8_date(class="form-control",placeholder="jj/mm/aa") }}
+            {{ Form_XX.Batch_XX_date.label }}
+            {{ Form_XX.Batch_XX_date(class="form-control",placeholder="jj/mm/aa") }}
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_Technicien.label }}
-            {{ Form_KC8.Batch_KC8_Technicien(class="form-control") }}
+            {{ Form_XX.Batch_XX_Technicien.label }}
+            {{ Form_XX.Batch_XX_Technicien(class="form-control") }}
         </div>
         <div class="col-3">
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_K_batch.label }}
-            {{ Form_KC8.Batch_KC8_K_batch(class="form-control") }}
+            {{ Form_XX.Batch_XX_K_batch.label }}
+            {{ Form_XX.Batch_XX_K_batch(class="form-control") }}
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_C_batch.label }}
-            {{ Form_KC8.Batch_KC8_C_batch(class="form-control") }}
+            {{ Form_XX.Batch_XX_C_batch.label }}
+            {{ Form_XX.Batch_XX_C_batch(class="form-control") }}
         </div>
         <div class="col-2">
-            {{ Form_KC8.Batch_KC8_masse.label }}
-            {{ Form_KC8.Batch_KC8_masse(class="form-control") }}
+            {{ Form_XX.Batch_XX_masse.label }}
+            {{ Form_XX.Batch_XX_masse(class="form-control") }}
         </div>
         <div class="col-1">
         </br>
@@ -86,12 +86,12 @@
         <div class="col-3">
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_Temperature.label }}
-            {{ Form_KC8.Batch_KC8_Temperature(class="form-control") }}
+            {{ Form_XX.Batch_XX_Temperature.label }}
+            {{ Form_XX.Batch_XX_Temperature(class="form-control") }}
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_Agitation.label }}
-            {{ Form_KC8.Batch_KC8_Agitation(class="form-control") }}
+            {{ Form_XX.Batch_XX_Agitation.label }}
+            {{ Form_XX.Batch_XX_Agitation(class="form-control") }}
         </div>
         <div class="col-1">
         </div>
@@ -106,8 +106,8 @@
 
 
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_heure_debut.label }}
-            {{ Form_KC8.Batch_KC8_heure_debut(class="form-control") }}
+            {{ Form_XX.Batch_XX_heure_debut.label }}
+            {{ Form_XX.Batch_XX_heure_debut(class="form-control") }}
         </div>
         <div class="col-3">
         </div>
@@ -116,12 +116,12 @@
         <div class="col-3">
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_room_HR.label }}
-            {{ Form_KC8.Batch_KC8_room_HR(class="form-control") }}
+            {{ Form_XX.Batch_XX_room_HR.label }}
+            {{ Form_XX.Batch_XX_room_HR(class="form-control") }}
         </div>
         <div class="col-3">
-            {{ Form_KC8.Batch_KC8_room_T.label }}
-            {{ Form_KC8.Batch_KC8_room_T(class="form-control") }}
+            {{ Form_XX.Batch_XX_room_T.label }}
+            {{ Form_XX.Batch_XX_room_T(class="form-control") }}
         </div>
         <div class="col-1">
         </div>

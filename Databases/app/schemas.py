@@ -59,74 +59,74 @@ class Matieres_premieres_Add(BaseModel):
     MP_stock : float
 
    
-class Batch_KC8_Base(BaseModel):
-    Batch_KC8_id : int 
-    Batch_KC8_name : str
-    Batch_KC8_date : datetime
-    Batch_KC8_Technicien : str
-    Batch_KC8_K_batch : str
-    Batch_KC8_C_batch : str 
-    Batch_KC8_masse : float
-    Batch_KC8_Temperature : float
-    Batch_KC8_Agitation : int 
-    Batch_KC8_heure_debut : datetime
-    Batch_KC8_heure_fin : Optional[datetime] = None  
-    Batch_KC8_room_HR : float
-    Batch_KC8_room_T : float
-    Batch_KC8_Stock : float
-    Batch_KC8_Analyses : str 
+class Batch_XX_Base(BaseModel):
+    Batch_XX_id : int 
+    Batch_XX_name : str
+    Batch_XX_date : datetime
+    Batch_XX_Technicien : str
+    Batch_XX_K_batch : str
+    Batch_XX_C_batch : str 
+    Batch_XX_masse : float
+    Batch_XX_Temperature : float
+    Batch_XX_Agitation : int 
+    Batch_XX_heure_debut : datetime
+    Batch_XX_heure_fin : Optional[datetime] = None  
+    Batch_XX_room_HR : float
+    Batch_XX_room_T : float
+    Batch_XX_Stock : float
+    Batch_XX_Analyses : str 
 
-class Batch_KC8_Add(BaseModel):
-    Batch_KC8_name : str
-    Batch_KC8_date : datetime
-    Batch_KC8_Technicien : str
-    Batch_KC8_K_batch : str
-    Batch_KC8_C_batch : str 
-    Batch_KC8_masse : float
-    Batch_KC8_Temperature : float
-    Batch_KC8_Agitation : int 
-    Batch_KC8_heure_debut : datetime
-    Batch_KC8_heure_fin : Optional[datetime] = None  
-    Batch_KC8_room_HR : float
-    Batch_KC8_room_T : float
-    Batch_KC8_Stock : float
-    Batch_KC8_Analyses : str 
+class Batch_XX_Add(BaseModel):
+    Batch_XX_name : str
+    Batch_XX_date : datetime
+    Batch_XX_Technicien : str
+    Batch_XX_K_batch : str
+    Batch_XX_C_batch : str 
+    Batch_XX_masse : float
+    Batch_XX_Temperature : float
+    Batch_XX_Agitation : int 
+    Batch_XX_heure_debut : datetime
+    Batch_XX_heure_fin : Optional[datetime] = None  
+    Batch_XX_room_HR : float
+    Batch_XX_room_T : float
+    Batch_XX_Stock : float
+    Batch_XX_Analyses : str 
 
-class Batch_OGD_Base(BaseModel):
-    Batch_OGD_id : int 
-    Batch_OGD_name : str
-    Batch_OGD_date : datetime
-    Batch_OGD_Technicien : str
-    Batch_OGD_KC8_batch : str
-    Batch_OGD_KC8_masse : float
-    Batch_OGD_THF_batch : str
-    Batch_OGD_THF_Volume : int
-    Batch_OGD_Temperature : float
-    Batch_OGD_Agitation : int 
-    Batch_OGD_heure_debut : datetime
-    Batch_OGD_heure_fin : Optional[datetime] = None  
-    Batch_OGD_room_HR : float
-    Batch_OGD_room_T : float
-    Batch_OGD_Stock : Optional[float] = None
-    Batch_OGD_Analyses : str 
+class Batch_XY_Base(BaseModel):
+    Batch_XY_id : int 
+    Batch_XY_name : str
+    Batch_XY_date : datetime
+    Batch_XY_Technicien : str
+    Batch_XY_XX_batch : str
+    Batch_XY_XX_masse : float
+    Batch_XY_YY_batch : str
+    Batch_XY_YY_Volume : int
+    Batch_XY_Temperature : float
+    Batch_XY_Agitation : int 
+    Batch_XY_heure_debut : datetime
+    Batch_XY_heure_fin : Optional[datetime] = None  
+    Batch_XY_room_HR : float
+    Batch_XY_room_T : float
+    Batch_XY_Stock : Optional[float] = None
+    Batch_XY_Analyses : str 
 
 
-class Batch_OGD_Add(BaseModel):
-    Batch_OGD_name : str
-    Batch_OGD_date : datetime
-    Batch_OGD_Technicien : str
-    Batch_OGD_KC8_batch : str
-    Batch_OGD_KC8_masse : float
-    Batch_OGD_THF_batch : str
-    Batch_OGD_THF_Volume : int
-    Batch_OGD_Temperature : float
-    Batch_OGD_Agitation : int 
-    Batch_OGD_heure_debut : datetime
-    Batch_OGD_heure_fin : Optional[datetime] = None  
-    Batch_OGD_room_HR : float
-    Batch_OGD_room_T : float
-    Batch_OGD_Stock : Optional[float] = None
-    Batch_OGD_Analyses : str 
+class Batch_XY_Add(BaseModel):
+    Batch_XY_name : str
+    Batch_XY_date : datetime
+    Batch_XY_Technicien : str
+    Batch_XY_XX_batch : str
+    Batch_XY_XX_masse : float
+    Batch_XY_YY_batch : str
+    Batch_XY_YY_Volume : int
+    Batch_XY_Temperature : float
+    Batch_XY_Agitation : int 
+    Batch_XY_heure_debut : datetime
+    Batch_XY_heure_fin : Optional[datetime] = None  
+    Batch_XY_room_HR : float
+    Batch_XY_room_T : float
+    Batch_XY_Stock : Optional[float] = None
+    Batch_XY_Analyses : str 
 
 
 
@@ -135,8 +135,8 @@ class Batch_Produit_Base(BaseModel):
     Batch_Produit_ref_CW : str
     Batch_Produit_date : datetime
     Batch_Produit_Technicien : str
-    Batch_Produit_OGD_batch : str
-    Batch_Produit_OGD_Qte : float
+    Batch_Produit_XY_batch : str
+    Batch_Produit_XY_Qte : float
     Batch_Produit_additif_batch : str
     Batch_Produit_additif_Qte : float
     Batch_produit_stock : float
@@ -147,8 +147,8 @@ class Batch_Produit_Add(BaseModel):
     Batch_Produit_ref_CW : str
     Batch_Produit_date : datetime
     Batch_Produit_Technicien : str
-    Batch_Produit_OGD_batch : str
-    Batch_Produit_OGD_Qte : float
+    Batch_Produit_XY_batch : str
+    Batch_Produit_XY_Qte : float
     Batch_Produit_additif_batch : str
     Batch_Produit_additif_Qte : float
     Batch_produit_stock : float
@@ -192,21 +192,21 @@ class Client_Add(BaseModel):
     Client_adresse : str
 
 
-##### Batch_OGD
+##### Batch_XY
 
 # Batch data retrieved from formulaire
-class Batch_OGDstep0_Base(BaseModel):
+class Batch_XYstep0_Base(BaseModel):
     # REQUEST DATA FROM DbFrom_S0 in models.py
     # Batch_id : int
     Step0_BatchName : str
-    Step0_BatchTHF : str
+    Step0_BatchYY : str
 
 # Batch data to display
-class Batch_OGDstep0_Display(BaseModel):  
+class Batch_XYstep0_Display(BaseModel):  
     # GET DATA FROM DbFrom_S0 in models.py
     Batch_id : int
     Batch_name : str
-    Batch_THF_ref : str
+    Batch_YY_ref : str
 
 ##### TECHNICIENS
 
@@ -230,15 +230,15 @@ class Technicien_Display(BaseModel):
 
 
 # Batch data retrieved from formulaire
-class Batch_OGDstep1_Base(BaseModel):
+class Batch_XYstep1_Base(BaseModel):
 
     Step1_BatchName : str
     Step1_Date : datetime
     Step1_Initiales : str
 
-    Step1_KC8_Batch : str
-    Step1_KC8_Masse : float
-    Step1_KC8_VTHF : int
+    Step1_XX_Batch : str
+    Step1_XX_Masse : float
+    Step1_XX_VYY : int
 
     Step1_Exfoliation_RefPlaque : int
     Step1_Exfoliation_Vitesse : int
@@ -255,16 +255,16 @@ class Batch_OGDstep1_Base(BaseModel):
 
 # Batch data for the display
 ### gets data from bdd --> must have same name/type as in bdd (models.py)
-class Batch_OGDStep1_Display(BaseModel):
+class Batch_XYStep1_Display(BaseModel):
 #   items: List[Article] = []
 #   model_config = ConfigDict(from_attributes = True)
 
     Batch_id : int
     Date : datetime
     Technicien_id : int
-    Batch_KC8 : str
-    Masse_KC8 : float
-    Volume_THF : int
+    Batch_XX : str
+    Masse_XX : float
+    Volume_YY : int
     Ref_plaque : int
     Vitesse_agitation : int
     Heure_debut: datetime
@@ -275,7 +275,7 @@ class Batch_OGDStep1_Display(BaseModel):
     Observations : str
 
 
-class Batch_OGDstep2_Base(BaseModel):
+class Batch_XYstep2_Base(BaseModel):
 #   items: List[Article] = []
 #   model_config = ConfigDict(from_attributes = True)
 
@@ -283,9 +283,9 @@ class Batch_OGDstep2_Base(BaseModel):
     Step2_Date : datetime
     Step2_Initiales : int
     
-    Step2_Ajout_THF_JourJ : bool
+    Step2_Ajout_YY_JourJ : bool
     Step2_Heure_ajout2 : datetime
-    Step2_Volume_THF_ajout2 : float
+    Step2_Volume_YY_ajout2 : float
     Step2_Heure_debut_sedimentation : datetime
     Step2_Heure_fin_sedimentation : datetime
     Step2_Sediments : str
@@ -300,16 +300,16 @@ class Batch_OGDstep2_Base(BaseModel):
     Step2_Observation : str
     Step2_Centrifugation : bool
 
-class Batch_OGDStep2_Display(BaseModel):
+class Batch_XYStep2_Display(BaseModel):
 #   items: List[Article] = []
 #   model_config = ConfigDict(from_attributes = True)
 
     Batch_id : int
     Date : datetime
     Technicien_id : int
-    Ajout_THF_JourJ : bool
+    Ajout_YY_JourJ : bool
     Heure_ajout2 : datetime
-    Volume_THF_ajout2 : float
+    Volume_YY_ajout2 : float
     Heure_debut_sedimentation : datetime
     Heure_fin_sedimentation : datetime
     Sediments : str
@@ -328,7 +328,7 @@ class Batch_OGDStep2_Display(BaseModel):
 
 
 ### gets data from bdd --> must have same name/type as in bdd (models.py)
-class Batch_OGDStep3_Base(BaseModel):
+class Batch_XYStep3_Base(BaseModel):
 #   items: List[Article] = []
 #   model_config = ConfigDict(from_attributes = True)
 
@@ -346,7 +346,7 @@ class Batch_OGDStep3_Base(BaseModel):
 
 
 ### gets data from bdd --> must have same name/type as in bdd (models.py)
-class Batch_OGDStep3_Display(BaseModel):
+class Batch_XYStep3_Display(BaseModel):
 #   items: List[Article] = []
 #   model_config = ConfigDict(from_attributes = True)
 
@@ -363,7 +363,7 @@ class Batch_OGDStep3_Display(BaseModel):
 
 
 ### gets data from bdd --> must have same name/type as in bdd (models.py)
-class Batch_OGDStep4_Base(BaseModel):
+class Batch_XYStep4_Base(BaseModel):
 #   items: List[Article] = []
 #   model_config = ConfigDict(from_attributes = True)
 
@@ -371,10 +371,10 @@ class Batch_OGDStep4_Base(BaseModel):
     Step4_Date : datetime
     Step4_Initiales : int
 
-    Step4_m_OGD : float
-    Step4_m_THF : float
+    Step4_m_XY : float
+    Step4_m_YY : float
     Step4_Abs_800 : float
-    Step4_QC_Conc_OGD : float
+    Step4_QC_Conc_XY : float
     Step4_QC_Categorie : int
 
     Step4_Stockage_recipient : str
@@ -384,17 +384,17 @@ class Batch_OGDStep4_Base(BaseModel):
 
 
 ### gets data from bdd --> must have same name/type as in bdd (models.py)
-class Batch_OGDStep4_Display(BaseModel):
+class Batch_XYStep4_Display(BaseModel):
 #   items: List[Article] = []
 #   model_config = ConfigDict(from_attributes = True)
 
     Batch_id : int
     Date : datetime
     Technicien_id : int
-    m_OGD : float
-    m_THF : float
+    m_XY : float
+    m_YY : float
     Abs_800 : float
-    QC_Conc_OGD : float
+    QC_Conc_XY : float
     QC_Categorie : int
     Stockage_recipient : str
     Stockage_Emplacement : str

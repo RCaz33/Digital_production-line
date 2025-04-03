@@ -10,21 +10,21 @@ from typing import Dict, List, Any
 from pydantic import BaseModel
 
 class Data_In(BaseModel):
-    Batch_OGD_name:str
-    Batch_OGD_date: datetime
-    Batch_OGD_Technicien:str
-    Batch_OGD_KC8_batch:str
-    Batch_OGD_KC8_masse: float
-    Batch_OGD_THF_batch:str
-    Batch_OGD_THF_Volume: float
-    Batch_OGD_Temperature: float
-    Batch_OGD_Agitation:float
-    Batch_OGD_heure_debut: datetime
-    Batch_OGD_heure_fin: datetime
-    Batch_OGD_room_HR:float
-    Batch_OGD_room_T: float
-    Batch_OGD_Stock: float
-    Batch_OGD_Analyses:str
+    Batch_XY_name:str
+    Batch_XY_date: datetime
+    Batch_XY_Technicien:str
+    Batch_XY_XX_batch:str
+    Batch_XY_XX_masse: float
+    Batch_XY_THF_batch:str
+    Batch_XY_THF_Volume: float
+    Batch_XY_Temperature: float
+    Batch_XY_Agitation:float
+    Batch_XY_heure_debut: datetime
+    Batch_XY_heure_fin: datetime
+    Batch_XY_room_HR:float
+    Batch_XY_room_T: float
+    Batch_XY_Stock: float
+    Batch_XY_Analyses:str
     
 class Data_Out(BaseModel):
     pred:float
@@ -59,20 +59,20 @@ def check_if_within_range(row, check_times):
     Compte le nombre de datetimes dans check_times qui tombent dans la plage
     définie par Heure_debut et Heure_ajout2.
     """
-    return sum(row["Batch_OGD_heure_debut"] <= check_time <= row["Batch_OGD_heure_fin"] for check_time in check_times)
+    return sum(row["Batch_XY_heure_debut"] <= check_time <= row["Batch_XY_heure_fin"] for check_time in check_times)
 
 def clean_data(data):
 
     # find columns names that have unique values or identical values (not usefull for ML model)
-    data.drop(index=['Batch_OGD_name', 'Batch_OGD_THF_batch', 'Batch_OGD_Stock'],inplace=True)
+    data.drop(index=['Batch_XY_name', 'Batch_XY_THF_batch', 'Batch_XY_Stock'],inplace=True)
 
     # Data Engineering
     try:
-        data['conc_KC8'] = data['Batch_OGD_KC8_masse'] / data['Batch_OGD_THF_Volume']
+        data['conc_XX'] = data['Batch_XY_XX_masse'] / data['Batch_XY_THF_Volume']
     except:
-        data['conc_KC8'] = 0.04
+        data['conc_XX'] = 0.04
     finally:
-        data.drop(index=['Batch_OGD_KC8_masse','Batch_OGD_THF_Volume'],inplace=True)
+        data.drop(index=['Batch_XY_XX_masse','Batch_XY_THF_Volume'],inplace=True)
 
     # Handeling time data (transform to datetime format)
     datetime_to_remove = list()
@@ -81,12 +81,12 @@ def clean_data(data):
             data[index] = pd.to_datetime(data[index])
             datetime_to_remove.append(index)
 
-    data['month_production'] = data['Batch_OGD_date'].month
-    data['day_production_start'] = data['Batch_OGD_date'].day
-    data['days_exfo'] = (data['Batch_OGD_heure_fin'] - data['Batch_OGD_heure_debut']).days
+    data['month_production'] = data['Batch_XY_date'].month
+    data['day_production_start'] = data['Batch_XY_date'].day
+    data['days_exfo'] = (data['Batch_XY_heure_fin'] - data['Batch_XY_heure_debut']).days
 
-    # ajouter année au batch KC8 
-    data['Batch_OGD_KC8_batch'] = str(data.Batch_OGD_date.year) + "-" + data.Batch_OGD_KC8_batch
+    # ajouter année au batch XX 
+    data['Batch_XY_XX_batch'] = str(data.Batch_XY_date.year) + "-" + data.Batch_XY_XX_batch
 
     # Ajoute data autre source
     gde_marees = get_maree_data(years = [2022,2023,2024,2025])
@@ -128,19 +128,19 @@ def make_chart_for_dash_produits(last_n = 5):
     # make the API CALL (take sample with analytic data)
     response = requests.get('http://127.0.0.1:8000/analyses/')
     analyzed_names = [a['Analyse_name'] for a in response.json()]
-    response = requests.get('http://127.0.0.1:8000/OGD/')
-    OGD_all = pd.DataFrame(response.json())
-    OGD_all = OGD_all.loc[OGD_all['Batch_OGD_name'].isin(analyzed_names)]
-    last_5 = OGD_all['Batch_OGD_name'][-last_n:].values
+    response = requests.get('http://127.0.0.1:8000/XY/')
+    XY_all = pd.DataFrame(response.json())
+    XY_all = XY_all.loc[XY_all['Batch_XY_name'].isin(analyzed_names)]
+    last_5 = XY_all['Batch_XY_name'][-last_n:].values
 
     # fetch analysis
     UV_data=pd.DataFrame()
     RAMAN_data=pd.DataFrame()
     print(5*"\n")
-    for OGD_n in last_5:
-        print(OGD_n)
+    for XY_n in last_5:
+        print(XY_n)
         try:
-            response = requests.get(f'http://127.0.0.1:8000/analyses/name/{OGD_n}')
+            response = requests.get(f'http://127.0.0.1:8000/analyses/name/{XY_n}')
             analyses = pd.DataFrame(response.json())
             analyse_UV = analyses.loc[analyses.Analyse_subname == 'UV']
             analyse_RAMAN = analyses.loc[analyses.Analyse_subname == 'RAMAN']
@@ -148,7 +148,7 @@ def make_chart_for_dash_produits(last_n = 5):
             RAMAN_data = pd.concat([RAMAN_data,analyse_RAMAN])
         except Exception as e:
             print("EEERROR",e)
-            last_5 = last_5[~np.isin(last_5,[OGD_n])]
+            last_5 = last_5[~np.isin(last_5,[XY_n])]
             last_n -= 1
 
 
