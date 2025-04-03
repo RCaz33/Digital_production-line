@@ -8,7 +8,7 @@ from app.database import db_techniciens
 
 router = APIRouter(
   prefix='/techniciens',
-  tags=['routes_techniciens']
+  tags=['Techniciens']
 )
 
 # Create Tech

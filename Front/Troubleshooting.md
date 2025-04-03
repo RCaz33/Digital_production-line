@@ -13,9 +13,3 @@ step3:
     ajouter lien dans navbar.html
 
 
-
-
-# how to predict stock danger ?
-
-table __Envois__
-

@@ -10,8 +10,9 @@ load_dotenv()
 client = TestClient(app)
 
 from app.utils import get_maree_data, clean_data
-def test_get_maree_data():
-   
+
+
+def test_get_maree_data():   
     gde_marees = get_maree_data([2024])
     assert gde_marees.shape == (73,2)
 

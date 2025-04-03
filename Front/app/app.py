@@ -20,19 +20,40 @@ from flask import Flask, jsonify, render_template, flash, redirect, url_for, req
 from flask_login import login_user, logout_user, login_required
 
 # import pour le backend
-from app.utils import predict_OGD_concentration,format_datetime, update_stock_product, update_stock_OGD_additif, get_material_composition_for_product, update_stocks_KC8_THF, fetch_MP, make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
+from app.utils import update_preds_from_UV, update_MPs, predict_OGD_concentration,format_datetime, update_stock_product, update_stock_OGD_additif, get_material_composition_for_product, update_stocks_KC8_THF, fetch_MP, make_chart_for_dash_produits,update_stocks_K_C, populate_form, get_last_10_batch, get_form_data, get_form_data_KC8, get_matieres_premieres
 from app.forms import *
+
+
 
 
 # Instanciate app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "somesecretkey" # secret key stored in app == env variable to hide
 
-
-
 # enable CSRF protection globally for a Flask app
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 csrf = CSRFProtect(app)
+
+# enable monitoring
+from prometheus_flask_exporter import PrometheusMetrics
+metrics = PrometheusMetrics(app)
+
+
+
+from flask import Flask, render_template, redirect, url_for
+from prometheus_flask_exporter import PrometheusMetrics
+import requests
+import pandas as pd
+import time
+
+
+# Define custom metrics
+stock_gauge = metrics.gauge('stock_matieres_premieres', 'Stock levels of materials', labels={'material': 'material_name'})
+batches_in_progress = metrics.gauge('batches_in_progress', 'Number of batches in progress', labels={'batch_type': 'batch_name'})
+external_requests_total = metrics.counter('external_requests_total', 'Total external requests made', labels={'endpoint': 'endpoint_name'})
+errors_total = metrics.counter('acceuil_materiaux_errors_total', 'Total errors in acceuil_materiaux', labels={'error_type': 'error_name'})
+
+
 
 
 
@@ -47,6 +68,7 @@ try:
     BDD_CW.close()
 except:
     print("Can't connect to BDD")
+
 
 
 ########################################################################################
@@ -129,19 +151,22 @@ def logout():
 
 
 
-@app.route("/")
+
 @app.route("/Materiaux", methods=["GET","POST"])
+@metrics.counter('acceuil_materiaux_requests_total', 'Total requests to acceuil_materiaux')
+@metrics.histogram('acceuil_materiaux_request_duration_seconds', 'Duration of requests to acceuil_materiaux', labels={'status': 'status'})
 # @login_required
 def acceuil_materiaux():
 
     # configure default batch
     global default_batch
-
     default_batch = fetch_MP()
-  
-  
-        # batch without ending time
+
+    if type(default_batch) != dict:
+        return redirect(url_for('Add_MP'))
+     
     try:
+        # batch without ending time
         response = requests.get(f'http://127.0.0.1:8000/OGD/')
         OGD_all = pd.DataFrame(response.json())
         OGD_en_cours = OGD_all.loc[OGD_all.Batch_OGD_heure_fin.isnull(),['Batch_OGD_name','Batch_OGD_heure_debut','Batch_OGD_Stock']].values
@@ -151,29 +176,43 @@ def acceuil_materiaux():
     except:
         OGD_en_cours=KC8_en_cours=list()
 
-        # get stock matieres premieres
+    # get stock matieres premieres
     stock_MP = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
-    stock_MP = pd.DataFrame(stock_MP.json())[['MP_ref_fournisseur','MP_stock']]
-    stock_MP.index = stock_MP['MP_ref_fournisseur']
-    stock_MP.drop(columns='MP_ref_fournisseur',inplace=True)
-    stock_MP = stock_MP.T.to_dict()
+
+    if stock_MP.json():
+        stock_MP = pd.DataFrame(stock_MP.json())[['MP_ref_fournisseur','MP_stock']]
+        stock_MP.index = stock_MP['MP_ref_fournisseur']
+        stock_MP.drop(columns='MP_ref_fournisseur',inplace=True)
+        stock_MP = stock_MP.T.to_dict()
+        stock_K = stock_MP[default_batch['K']]['MP_stock']
+        stock_C = stock_MP[default_batch['C']]['MP_stock']
+        stock_THF = stock_MP[default_batch['THF']]['MP_stock']
+    else:
+        stock_K = stock_C = stock_THF = 'na'
+
+
+
+
     Stock_KC8 = requests.get(f'http://127.0.0.1:8000/KC8/name/{default_batch["KC8"]}')
-
-
+    try:
+        Stock_KC8 = Stock_KC8.json()['Batch_KC8_masse']
+    except:
+        Stock_KC8 = 0
+    
     return render_template("acceuil_materiaux.html",
                         n_batch_K = default_batch['K'],
-                        stock_K = stock_MP[default_batch['K']]['MP_stock'],
+                        stock_K = stock_K,
                         n_batch_C = default_batch['C'],
-                        stock_C = stock_MP[default_batch['C']]['MP_stock'],
+                        stock_C = stock_C,
                         n_batch_THF = default_batch['THF'],
-                        stock_THF = stock_MP[default_batch['THF']]['MP_stock'],
+                        stock_THF = stock_THF,
                         n_batch_KC8 = default_batch['KC8'],
-                        stock_KC8 = Stock_KC8.json()['Batch_KC8_masse'],
+                        stock_KC8 = Stock_KC8,
                         OGD_en_cours = OGD_en_cours,
                         KC8_en_cours = KC8_en_cours)
 
 
-
+@app.route("/")
 @app.route("/Nouvelle_matiere_premiere", methods=['GET','POST'])
 def Add_MP():
 
@@ -188,6 +227,8 @@ def Add_MP():
         }
         MP_date_reception_str = request.form['MP_date_reception']
         MP_date_reception = datetime.datetime.strptime(MP_date_reception_str, '%d/%m/%y')
+
+
         data = {
             "MP_nom": request.form['MP_nom'],
             "MP_codeCW": config.ref_CW_matiere_premiere[request.form['MP_nom']],
@@ -198,28 +239,54 @@ def Add_MP():
             "MP_unite": request.form['MP_unite'],
             "MP_Analyses": "None"}
 
-        # if request.form['MaJ']:
-        #     response = requests.post(url+f"/update/{id}", headers=headers, data=json.dumps(data))
-        # else:
-        response = requests.post(url, headers=headers, data=json.dumps(data))
+        response = requests.get(f'http://127.0.0.1:8000/matieres_premieres/')
+        batch_exist = [a['MP_ref_fournisseur'] for a in response.json()]
+        df = pd.DataFrame(response.json())
         
-        if response.status_code == 200:
-            flash("Nouvelle matière première ajoutée avec succès")
-        else:
-            flash(json.dumps(response.json()))
-        return redirect(url_for('Add_MP'))
+
+        if 'MaJ' in request.form.keys():
+                MP_to_update = df.loc[(df.MP_ref_fournisseur == request.form['MP_ref_fournisseur'])]
+                id_MP = MP_to_update.index[0]
+                data = MP_to_update.to_dict()
+                data['MP_stock'] = request.form['MP_stock']
+
+                print(10*"\n","CECI EST UNE MISE A JOUR")
+                data['MP_id'] = str(id_MP)
+                response = requests.post(url+f"update/{id_MP}", headers=headers, data=json.dumps(data))
+        elif 'submit_new' in request.form.keys() : # check if batch name exists and returns error if so
+            print(10*"\n","CECI EST UN NVX BATCH")
+            # verifie que la référence unique reste unique
+            print(data)
+            if data['MP_ref_fournisseur'] in batch_exist:
+                flash("reference existante")
+                return redirect(url_for('Add_MP'))
+            # ajout nvlle matiere premiere
+            response = requests.post(url, headers=headers, data=json.dumps(data))
+            if response.status_code == 200:
+                flash("Nouvelle matière première ajoutée avec succès")
+            else:
+                flash(json.dumps(response.json()))
+
+        batch_C,batch_K,batch_THF = update_MPs()
+        return render_template("Add_matiere_premiere.html",
+                           Form_Matieres_premieres=form_MP,
+                           batch_C=batch_C[::-1],
+                           batch_K=batch_K[::-1],
+                           batch_THF=batch_THF[::-1],
+                           Inspect=False)
+    
     else:
         for field,errors in form_MP.errors.items():
             for error in errors:
                 flash(f"Erreur pour le champ '{getattr(form_MP, field).label.text}' : {error}")
     
     form_MP.MP_date_reception.data = datetime.datetime.now()
-
-    MP = pd.DataFrame(requests.get(f'http://127.0.0.1:8000/matieres_premieres/').json())
-    batch_C = MP.loc[MP.MP_nom=='Carbone',['MP_ref_fournisseur','MP_stock','MP_unite']].values
-    batch_K = MP.loc[MP.MP_nom=='Potassium',['MP_ref_fournisseur','MP_stock','MP_unite']].values
-    batch_THF = MP.loc[MP.MP_nom=='THF',['MP_ref_fournisseur','MP_stock','MP_unite']].values
-
+  
+    try:
+        batch_C,batch_K,batch_THF = update_MPs()
+    except Exception as e:
+        print(e)
+        batch_C=batch_K=batch_THF=[]
 
     # visualistion baisse des stocks:
 
@@ -333,12 +400,12 @@ def Add_KC8():
     response = requests.get(url+'last', headers=headers)
     # make batch KC8 ONE more than the last one --> TO DO : here is the last KC8 batch appears
     # make guard that the new batch of KC8 should not be a batch that already exiosts
-    form_KC8.Batch_KC8_name.data = response.json()['Batch_KC8_name']
+    if response.status_code == 200:
+        form_KC8.Batch_KC8_name.data = response.json()['Batch_KC8_name']
+        form_KC8.Batch_KC8_K_batch.data = default_batch['K']
+        form_KC8.Batch_KC8_C_batch.data = default_batch['C']
     form_KC8.Batch_KC8_date.data = datetime.datetime.now()
     form_KC8.Batch_KC8_heure_debut.data = datetime.datetime.now()
-    form_KC8.Batch_KC8_K_batch.data = default_batch['K']
-    form_KC8.Batch_KC8_C_batch.data = default_batch['C']
-    
      # Get the data
     headers = {'accept': 'application/json','Content-Type': 'application/json'}
     # Batch OGD existants
@@ -389,7 +456,8 @@ def Add_OGD():
             "Batch_OGD_room_T": request.form['Batch_OGD_room_T'],
             "Batch_OGD_Stock" : None,
             "Batch_OGD_Analyses": "None"}
-        print(data)
+
+
         # Update matiere premiere and check if new mass >= 0
         status = update_stocks_KC8_THF(data) 
         if not status['post_KC8'] or not status['post_THF']:
@@ -397,12 +465,12 @@ def Add_OGD():
             return redirect(url_for('Add_OGD'))
         
 
-        # predict and log concentration
+        # make prediction on OGD concentration
         pred = predict_OGD_concentration(data,OGD_heure_debut)
-        
         # on calcule la qté de produit et le met dans stocks
-        data['Batch_OGD_Stock'] = float(pred) * float(data['Batch_OGD_THF_Volume']) * 4/5 ## PRECISER LE RATIO DE VOLUME RECUPERE
+        data['Batch_OGD_Stock'] = float(pred) * float(data['Batch_OGD_THF_Volume']) * 1 ## g/L x L ==> grammes PRECISER LE RATIO DE VOLUME RECUPERE
         response = requests.post(url, headers=headers, data=json.dumps(data))
+
 
         if response.status_code != 200:
             flash(json.dumps('Probleme de connection à la base de donnée'))
@@ -420,7 +488,7 @@ def Add_OGD():
        
     # formate le nom de batch OGD avec la semaine (today.isocalendar()[1]:02)
     today = datetime.datetime.now()
-    form_OGD.Batch_OGD_name.data = f"OGD{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
+    form_OGD.Batch_OGD_name.data = f"P{str(today.year)[-2:]}{today.isocalendar()[1]:02}"
     form_OGD.Batch_OGD_date.data = today
     form_OGD.Batch_OGD_heure_debut.data = today
     form_OGD.Batch_OGD_KC8_batch.data = default_batch['KC8']
@@ -441,34 +509,28 @@ def Add_OGD():
 @app.route("/Nouveau_batch_produit/<produit>", methods=['GET','POST'])
 def Add_Produit(produit):
 
-    print(5*"\n PRODUIT")
-    print(produit)
-
     headers = {'accept': 'application/json','Content-Type': 'application/json'}
     form_produit = Form_Produit()
-    # MaJ choix batch OGD
+    # MaJ choix batch OGD : ONLY batch terminated and with stock > 0
     response = requests.get(url='http://127.0.0.1:8000/OGD/',headers=headers)
-    form_produit.Batch_Produit_OGD_batch.choices = [a['Batch_OGD_name'] for a in response.json() if a['Batch_OGD_Stock'] > 0][::-1]
-
+    batchs_OGD = pd.DataFrame(response.json())
+    batchs_OGD_ready = batchs_OGD.loc[(~batchs_OGD.Batch_OGD_heure_fin.isnull()) & (batchs_OGD.Batch_OGD_Stock > 0), 'Batch_OGD_name']
+    form_produit.Batch_Produit_OGD_batch.choices = batchs_OGD_ready.tolist()
 
     # FillIn fom from  #### UPDATE BY SHOWINF ONLY BACTH WHERE THERE IS STILL STOCK
     response = requests.get(url='http://127.0.0.1:8000/matieres_premieres/',headers=headers)
+    MP_with_stock = [a for a in response.json() if a['MP_stock'] >0]
     if ('W' in produit) and not (produit =='W1'):
         # form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'Viscosant'][:-10:-1]
-        form_produit.Batch_Produit_additif_batch.choices = [a['MP_nom'] for a in response.json() if a['MP_nom'] == 'Viscosant'][:-10:-1]
+        form_produit.Batch_Produit_additif_batch.choices = [a['MP_nom'] for a in MP_with_stock if a['MP_nom'] == 'Viscosant'][:-5:-1]
     elif ('Epo' in produit) and not (produit == 'EpoC'):
         # form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'ResineEpikote827'][:-10:-1]
-        form_produit.Batch_Produit_additif_batch.choices = [a['MP_nom'] for a in response.json() if a['MP_nom'] == 'ResineEpikote827'][:-10:-1]
+        form_produit.Batch_Produit_additif_batch.choices = [a['MP_nom'] for a in MP_with_stock if a['MP_nom'] == 'ResineEpikote827'][:-5:-1]
     elif produit in ['EpoF, EpoR']:
         # form_produit.Batch_Produit_additif_batch.choices = [a['MP_codeCW'] for a in response.json() if a['MP_nom'] == 'ResineEpikote1001'][:-10:-1]
-        form_produit.Batch_Produit_additif_batch.choices = [a['MP_nom'] for a in response.json() if a['MP_nom'] == 'ResineEpikote1001'][:-10:-1]
+        form_produit.Batch_Produit_additif_batch.choices = [a['MP_nom'] for a in MP_with_stock if a['MP_nom'] == 'ResineEpikote1001'][:-5:-1]
     else:
         flash("produit n'a pas d'additifs")
-
-    print(10*"\n")
-    print(form_produit.Batch_Produit_additif_batch.choices)
-
-
 
     if form_produit.validate_on_submit():
         
@@ -702,61 +764,86 @@ def Add_analyse(batch_name):
         if not data_UV and not data_Raman:
             flash("Pas d'analyses ajoutées")
             return redirect(url_for('Add_analyse',batch_name=batch_name))
-        
-        if 'OGD' in batch_name:
+
+        if 'KC8' in batch_name:
+            # RAMAN
+            data_Raman = request.files['file_Raman']
+            file_Raman = pd.read_csv(data_Raman,sep='\t')
+            file_Raman=file_Raman.to_dict()
+            analyse=dict()
+            analyse['Analyse_name'] = batch_name
+            analyse['Analyse_subname'] = 'RAMAN'
+            analyse['Analyse_details'] = dict({'methode':request.form.get('type_raman'),
+            'details':request.form.get('details_RAMAN')})
+            analyse['Analyses_data'] = file_Raman
+            response = requests.post('http://127.0.0.1:8000/analyses/', headers=headers, data=json.dumps(analyse))
+
+        else:
+            print("HERE WE ADD DATA")
             # UV
-            file_UV = pd.read_csv(data_UV,sep='\t')
-            file_UV=file_UV.to_dict()
+            file_UV = pd.read_csv(data_UV,sep='\t',index_col=0,header=None)
+
+            abs_800 = file_UV.values[-1]
+            dilution = request.form.get("dilution")
+            conc = abs_800 * float(dilution)
+
             analyse=dict()
             analyse['Analyse_name'] = batch_name
             analyse['Analyse_subname'] = 'UV'
-            analyse['Analyse_details'] = {'dilution':f'1:{ request.form.get("dilution") }',
+            analyse['Analyse_details'] = {'dilution':f'1:{ dilution }',
                                           'centrifuge':request.form.get('centrif'),
-                                          'details':request.form.get('details_UV')}
-            analyse['Analyses_data'] = file_UV
+                                          'details':request.form.get('details_UV'),
+                                          'conc':f'{conc}'}
+            analyse['Analyses_data'] = file_UV.to_dict()[1]
+
+
+            print(10*"\n")
+            print(analyse)
             response = requests.post('http://127.0.0.1:8000/analyses/', headers=headers, data=json.dumps(analyse))
+            
+            
+            ######## METTRE A JOUR LA TABLE DES PREDICTIONS AVEC LA CONCENTRATION RELLE
+            code_get,code_post = update_preds_from_UV(batch_name,conc)
+            print(10*"\n")
+            print('MaJ PREDICTIONS',code_post,code_get)
+            # response = requests.get("http://127.0.0.1:8000/Predictions")
+            # a = pd.DataFrame(response.json())
+            # mask = [batch_name in a.Prediction_data[i]['sample'] for i in range(a.shape[0])]
+
+            #     data = {"Prediction_date": date,  # AJOUTER DATE AUJ
+            #             "Prediction_type": "OGD_conc",
+            #             "Prediction_model_version": "string",
+            #             "Prediction_data": {"sample":data.Batch_OGD_name,
+            #                                 "pred":float(pred[0]),
+            #                                 "reel":0}}
+
+
+                # headers = {'accept': 'application/json','Content-Type': 'application/json'}
+                # response = requests.post(url='http://127.0.0.1:8000/Predictions/', headers=headers, data=json.dumps(data))  
+                        
+
 
             # RAMAN
             data_Raman = request.files['file_Raman']
-            file_Raman = pd.read_csv(data_Raman,sep='\t')
-            file_Raman=file_Raman.to_dict()
-            analyse=dict()
-            analyse['Analyse_name'] = batch_name
-            analyse['Analyse_subname'] = 'RAMAN'
-            analyse['Analyse_details'] = dict({'methode':request.form.get('type_raman'),
-            'details':request.form.get('details_RAMAN')})
-            analyse['Analyses_data'] = file_Raman
-            response = requests.post('http://127.0.0.1:8000/analyses/', headers=headers, data=json.dumps(analyse))
-
-
-        elif 'KC8' in batch_name:
-            # RAMAN
-            data_Raman = request.files['file_Raman']
-            file_Raman = pd.read_csv(data_Raman,sep='\t')
-            file_Raman=file_Raman.to_dict()
-            analyse=dict()
-            analyse['Analyse_name'] = batch_name
-            analyse['Analyse_subname'] = 'RAMAN'
-            analyse['Analyse_details'] = dict({'methode':request.form.get('type_raman'),
-            'details':request.form.get('details_RAMAN')})
-            analyse['Analyses_data'] = file_Raman
-            response = requests.post('http://127.0.0.1:8000/analyses/', headers=headers, data=json.dumps(analyse))
+            if data_Raman:
+                file_Raman = pd.read_csv(data_Raman,sep='\t')
+                analyse=dict()
+                analyse['Analyse_name'] = batch_name
+                analyse['Analyse_subname'] = 'RAMAN'
+                analyse['Analyse_details'] = dict({'methode':request.form.get('type_raman'),
+                'details':request.form.get('details_RAMAN')})
+                analyse['Analyses_data'] = file_Raman.to_dict()
+                response = requests.post('http://127.0.0.1:8000/analyses/', headers=headers, data=json.dumps(analyse))
 
         flash(f"Analyse ajoutée avec succés pour {batch_name}")
         return redirect(url_for('Add_analyse',batch_name=batch_name))
 
 
-    if 'OGD' in batch_name:
-
+    if batch_name.startswith('P') or batch_name.startswith('2'):
         print('IT IS OGD BATCH')
-        
-
         # request info on batch
         response = requests.get(f'http://127.0.0.1:8000/OGD/name/{batch_name}',headers=headers)
         form_OGD = populate_form(form_OGD, response)
-
-
-
         return render_template("Ajout_analyse_OGD.html",
                                Form_OGD = form_OGD)
 
@@ -764,8 +851,6 @@ def Add_analyse(batch_name):
         # request info on batch
         response = requests.get(f'http://127.0.0.1:8000/KC8/name/{batch_name}',headers=headers)
         form_KC8 = populate_form(form_KC8, response)
-
-
         return render_template("Ajout_analyse_KC8.html",
                                Form_KC8 = form_KC8)
 
@@ -811,11 +896,12 @@ def cahier_prod():
     'accept': 'application/json',
     'Content-Type': 'application/json'}
 
-    response = requests.get(url+f'OGD',headers=headers)
+    response = requests.get(url+f'OGD/',headers=headers)
     batch_OGD = pd.DataFrame(response.json()).sort_values('Batch_OGD_id', ascending=False)['Batch_OGD_name'].values
 
 
-    response = requests.get(url+f'KC8',headers=headers)
+    response = requests.get(url+f'KC8/',headers=headers)
+
     batch_KC8 = pd.DataFrame(response.json()).sort_values('Batch_KC8_id', ascending=False)['Batch_KC8_name'].values
 
 
@@ -845,16 +931,59 @@ def dash_prod():
     except:
         WNC_en_cours = W_en_cours = Epo_en_cours = []
 
-
-    # get the latest 5 OGD
-    # img_UV, img_RAMAN = make_chart_for_dash_produits(last_n = 5)
+    response = requests.get('http://127.0.0.1:8001/get_fig_uv/')
+    img_UV = response.content
+    response = requests.get('http://127.0.0.1:8001/get_fig_raman/')
+    img_RAMAN = response.content
+    print(10*"\n","DASHBOARD production")
+    
+    print(img_RAMAN)
 
     return render_template("acceuil_production.html",
                            WNC_en_cours=WNC_en_cours,
                            W_en_cours=W_en_cours,
-                           Epo_en_cours=Epo_en_cours,)
-                        #    img_UV=img_UV,
-                        #    img_RAMAN=img_RAMAN)
+                           Epo_en_cours=Epo_en_cours,
+                           img_UV=img_UV.decode(),
+                           img_RAMAN=img_RAMAN.decode())
+
+@app.route("/Dashboard_ML", methods=['GET','POST'])
+def dash_ML():
+    response = requests.get('http://127.0.0.1:8000/Predictions/')
+    all_preds = pd.DataFrame(response.json())
+    all_preds['Prediction_data']
+    table_preds = pd.concat([pd.DataFrame(all_preds['Prediction_data'][i], index=[i]) for i in range(all_preds.shape[0])])
+    table_preds = table_preds.to_html(classes='table table-striped table-bordered', index=False)
+
+
+    print(all_preds['Prediction_data'])
+    se=list()
+    for pred in all_preds['Prediction_data']:
+        se.append((pred['pred']-pred['reel'])**2)
+    rmse = (np.sum(np.array(se))/len(se))**0.5
+
+
+    headers = {
+        "Supervized-API-Key": os.getenv('API_SUPERVIZED_SECRET_KEY'), 
+        "Content-Type": "application/json"
+    }
+    response = requests.get('http://127.0.0.1:8001/variable_importance/',headers=headers)
+    img= response.content
+
+
+    if request.method == 'POST':
+        response = requests.get('http://127.0.0.1:8001/restart_training_regression/',headers=headers)
+
+        print(10*"\n","RESTART TRAINING")
+        print(response.content)
+        
+    form_regr = Form_submit_training_regr()
+
+    return render_template("acceuil_ML.html",
+                           table_preds=table_preds,
+                           all_preds=all_preds.iloc[:,:-1],
+                           rmse=rmse,
+                           img=img.decode(),
+                           form_regr=form_regr)
 
 
 
@@ -865,12 +994,17 @@ def dash_commerce():
 
 
     # demande batch produit 
-    response = requests.get(f'http://127.0.0.1:8000/Envoi/')
-    Envois_all = pd.DataFrame(response.json())
-    Envois_en_attente = Envois_all.loc[Envois_all.Envoi_produit_batch.isnull(),['Envoi_produit_name','Envoi_produit_Qte','Envoi_client_name','Envoi_id']][::-1].values
+    try :
+        response = requests.get(f'http://127.0.0.1:8000/Envoi/')
+        Envois_all = pd.DataFrame(response.json())
+        Envois_en_attente = Envois_all.loc[Envois_all.Envoi_produit_batch.isnull(),['Envoi_produit_name','Envoi_produit_Qte','Envoi_client_name','Envoi_id']][::-1].values
+    except:
+        Envois_en_attente = list()
+
 
     response = requests.get(f'http://127.0.0.1:8000/Produit/')
-    if response.status_code == 200:
+    print(response.status_code)
+    if response.status_code == 200 and response.json() != []:
         array = np.array([(a['Batch_Produit_ref_CW'],a['Batch_produit_stock']) for a in response.json() if a['Batch_produit_stock']>0])
         df = pd.DataFrame(array, columns=['produit','Qté'])
         df['Categorie'] = df.produit.apply(lambda x :x.split("-")[0])
@@ -1110,42 +1244,6 @@ if __name__ == "__main__":
     ### -----------------
 
 
-    app.run(debug=True, host='0.0.0.0', port=4000) 
+    app.run(debug=True, host='0.0.0.0', port=5000) 
     # run("app:app", host="0.0.0.0", port=5000, workers=1)
 
-
-# afficher figure et tableaux
-    #     url = 'http://127.0.0.1:8000/'
-    # headers = {
-    # 'accept': 'application/json',
-    # 'Content-Type': 'application/json'}
-    # response = requests.get(url+f'analyses_UV',headers=headers)
-    # UV_OGD = pd.DataFrame(response.json())[['Analyse_UV_name','Analyse_UV_subname','Analyse_UV_details','Analyses_UV_data']]
-    # UV_OGD = UV_OGD.loc[UV_OGD.Analyse_UV_subname == 'UV']
-    # print(UV_OGD)
-    # UV_OGD['conc'] = UV_OGD.apply(lambda x: x[3]['200'] / float(x[2]['dillution'].split(':')[1]), axis=1)
-    #     # info batch date
-    # response = requests.get(url+f'OGD',headers=headers)
-    # batch_OGD = pd.DataFrame(response.json())
-
-    # # create new df
-    # df=pd.merge(batch_OGD[['Batch_OGD_name','Batch_OGD_date','Batch_OGD_KC8_masse']],
-    #         UV_OGD[['Analyse_UV_name','conc']],
-    #         left_on='Batch_OGD_name',
-    #         right_on='Analyse_UV_name',
-    #         how='inner')
-    #     # format date
-    # df['Batch_OGD_date'] = pd.to_datetime(df['Batch_OGD_date'])
-    # df['week'] = df.Batch_OGD_date.apply(lambda x : x.week) #df.Batch_name.apply(lambda x : pd.to_datetime(int(x[2:4]),unit='W').week)  # df['date'].dt.week # 
-    # df['month'] = df.Batch_OGD_date.apply(lambda x : x.month) #Batch_name.apply(lambda x : pd.to_datetime(int(x[2:4]),unit='W').month) # df['date'].dt.month # 
-    # df['year'] = df.Batch_OGD_date.apply(lambda x : x.year)
-    # df.Batch_OGD_KC8_masse = df.Batch_OGD_KC8_masse.apply(lambda x : int(round(x)))
-    #     # Pivot Table
-    # table = pd.pivot_table(df, 
-    #                 index=[ 'month', 'week'], 
-    #                 values=['Batch_OGD_name', 'conc'], 
-    #                 aggfunc={'Batch_OGD_name': 'count', 'conc': ['sum', 'mean']})
-    # html_table = table.to_html(index=True)
-    #     # create graph
-    # fig = px.box(df, x='Batch_OGD_date', y="conc", points="all")
-    # graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)

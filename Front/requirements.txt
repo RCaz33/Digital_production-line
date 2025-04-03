@@ -12,3 +12,5 @@ Requests==2.32.3
 Werkzeug==3.1.3
 WTForms==3.2.1
 gunicorn==20.1.0
+dotenv
+prometheus_flask_exporter==0.18

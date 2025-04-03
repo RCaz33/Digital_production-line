@@ -33,15 +33,15 @@ app = FastAPI(openapi_tags=tags_metadata)
 
 app = FastAPI()
 
-app.include_router(Predictions_router.router)
-app.include_router(Clients_router.router)
+app.include_router(Techniciens_router.router)
 app.include_router(Analyses_router.router)
+app.include_router(Predictions_router.router)
 app.include_router(Matieres_premieres_router.router)
 app.include_router(KC8_router.router)
 app.include_router(OGD_router.router)
 app.include_router(Produit_router.router)
+app.include_router(Clients_router.router)
 app.include_router(Envoi_router.router)
-app.include_router(Techniciens_router.router)
 
 
 @app.get('/')

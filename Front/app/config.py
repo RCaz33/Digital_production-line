@@ -1,9 +1,9 @@
 
 
 allowed_email_pattern = r'@carbon-waters.com'  # Example pattern: email must end with @example.com
-allowed_emails=['a@carbon-waters.com','b@carbon-waters.com','c@carbon-waters.com']
+allowed_emails=['a@carbon-waters.com','b@carbon-waters.com','c@carbon-waters.com','remi.cazelles@carbon-waters.com']
 
-matieres_premieres = ['Carbone', 'Potassium','THF']
+matieres_premieres = ['THF','Carbone','Potassium','Viscosant','ResineEpikote1001','ResineEpikote827']
 codes_MP_CW = [f'CW_00{i}' for i in range(1,10)]
 
 Techniciens_CW = ['FB','IT','CD','JP','MM','RS','WL','LB','LC','TB']
@@ -11,7 +11,10 @@ Techniciens_CW = ['FB','IT','CD','JP','MM','RS','WL','LB','LC','TB']
 
 codes_MP_CW = dict({'Carbone': 'CW_001',
                     'Potassium': 'CW_002',
-                    'THF': 'CW_003'})
+                    'THF': 'CW_003',
+                    'Viscosant':'code_viscosant',
+                    'ResineEpikote1001':'code_resine1',
+                    'ResineEpikote827':'code_resine2'})
 
 unitees = ['Kg','L']
 
@@ -27,8 +30,8 @@ clients = ['Client 1 ',
           'Client 4 Site 2']
 
 
-ref_CW_matiere_premiere=dict({'Epikote1001X75':'EPO1',
-                              'Epikote827':'EPO3',
+ref_CW_matiere_premiere=dict({'ResineEpikote1001':'EPO1',
+                              'ResineEpikote827':'EPO3',
                               'RTM6-2':'EPO5',
                               'SikaBiresinCR87':'EPO6',
                               'ELIUM150':'EPO7',

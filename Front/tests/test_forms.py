@@ -1,6 +1,6 @@
-# from flask_wtf import FlaskForm
-from wtforms import TextAreaField, SelectField, StringField, SubmitField, DateTimeField, FloatField, IntegerField, TimeField, BooleanField, PasswordField
-from wtforms.validators import DataRequired, Length, NumberRange, NoneOf, AnyOf, ValidationError, Email
+# # from flask_wtf import FlaskForm
+# from wtforms import TextAreaField, SelectField, StringField, SubmitField, DateTimeField, FloatField, IntegerField, TimeField, BooleanField, PasswordField
+# from wtforms.validators import DataRequired, Length, NumberRange, NoneOf, AnyOf, ValidationError, Email
 
 
 from Front import config 

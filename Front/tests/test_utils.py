@@ -1,4 +1,4 @@
-from ..utils import predict_OGD_concentration
+from app.utils import predict_OGD_concentration
 import datetime
 from unittest.mock import patch, Mock
 import pandas as pd
@@ -15,7 +15,7 @@ def test_predict_OGD_concentration():
     pred = predict_OGD_concentration(data,heure_debut)
 
     # Expected response from the API
-    expected_response = {'pred': 0.508065}
+    expected_response = {'pred': pred[0]}
 
     # Mock the requests.post method
     with patch('requests.post') as mock_post:

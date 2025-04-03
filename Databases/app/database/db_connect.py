@@ -1,13 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 
-db_user = 'root' #os.environ['DB_USER']
-db_pass = 'passpass' #os.environ['DB_PASS']
-db_name = 'CW_BDD_new' #os.environ['DB_NAME']
+db_user = os.getenv('LOCAL_DB_USER') #os.environ['DB_USER']
+db_pass = os.getenv('LOCAL_DB_PASS') #os.environ['DB_PASS']
+db_name = os.getenv('LOCAL_DB_BDD') #os.environ['DB_NAME']
+db_host=os.getenv('LOCAL_DB_HOST')
 
-MYSQL_DATABASE_URL = f"mysql+mysqlconnector://{db_user}:{db_pass}@localhost:3306/{db_name}"
+MYSQL_DATABASE_URL = f"mysql+mysqlconnector://{db_user}:{db_pass}@{db_host}:3306/{db_name}"
 
 engine = create_engine(
     MYSQL_DATABASE_URL, #connect_args={"check_same_thread": False}

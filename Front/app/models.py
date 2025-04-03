@@ -4,12 +4,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # une classe utilisateur qui interagit directement avec la base de données via mysql.connector
 import mysql.connector as bdd_connect
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 def get_db_connection():
-    BDD_CW = bdd_connect.connect(host='localhost',
-                                user='root',
-                                password='passpass',
-                                database='CW_BDD_new',
+    BDD_CW = bdd_connect.connect(host=os.getenv('LOCAL_DB_HOST'),
+                                user=os.getenv('LOCAL_DB_USER'),
+                                password=os.getenv('LOCAL_DB_PASS'),
+                                database=os.getenv('LOCAL_DB_BDD'),
                                 port=3306
                                 )
     curseur = BDD_CW.cursor()

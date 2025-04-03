@@ -90,7 +90,7 @@ class Form_Batch_OGD(FlaskForm):
     Batch_OGD_Analyses = StringField('reference_analyses', [Length(max=60)])
 
 class Form_Produit(FlaskForm):
-    Batch_Produit_ref_CW = StringField('Nom Batch', [Length(max=10)])
+    Batch_Produit_ref_CW = StringField('Nom Batch', [Length(max=10)])#, validators=[NoneOf([],message='Ce batch existe déjà'),Length(max=10)])
     Batch_Produit_date = DateTimeField('Date début production', format='%d/%m/%y')
     Batch_Produit_Technicien = SelectField('Technicien', choices=config.Techniciens_CW)
     Batch_Produit_OGD_batch =  SelectField('Batch_OGD_name', choices=[])
@@ -124,3 +124,7 @@ class Form_calculate_K_C(FlaskForm):
 class Form_Client(FlaskForm):
     Client_name = StringField('Nom client')
     Client_adresse = StringField('Adresse client')
+
+
+class Form_submit_training_regr(FlaskForm):
+    submit = SubmitField('Actualiser algorithme')

@@ -41,7 +41,11 @@
         let additif_type;
         let OGD_qte;
 
-        if (produitType.includes('W2')) {
+
+        if (produitType.includes('W')) {
+            result = 0 ;
+            OGD_qte = number;
+        } else if (produitType.includes('W2')) {
             result = number * 0.005;
             additif_type = 'Viscosant';
             OGD_qte = number*0.5;

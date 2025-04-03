@@ -1,1 +1,0 @@
-SGDRegressor(loss='epsilon_insensitive', max_iter=10000, penalty='elasticnet')
