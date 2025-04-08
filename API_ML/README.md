@@ -18,10 +18,9 @@ Tracking avec ML-Flow, stockés local ou Azure blob
 *    |---|--- 6-8 : data in new db form
 *    |---/ML_unsupervized : scripts et analyses
 *    |---|---xxx.ipynb : tests avant scripts
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   c bbv vccxf
-/tests : test des point de terminaison
+* **/tests** : test des point de terminaison
 
-
+```
 Les routes sont:
 @app.get("/info") 
     --> pour vérifier santé app
@@ -34,4 +33,4 @@ Les routes sont:
 @app.get("/get_fig_uv")
     --> resulat classification données analytiques spectrales 1
 @app.get("/get_fig_raman")
-    --> resulat classification données analytiques spectrales 2
+    --> resulat classification données analytiques spectrales 2```
