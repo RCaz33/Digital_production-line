@@ -1,0 +1,11 @@
+**__pycache__/
+secret_config
+.env
+__pycache__/
+.pytest_cache
+data/
+Lior
+lior
+2025-03-17_uv.csv
+Gantt chart.xlsx
+.DS_Store
