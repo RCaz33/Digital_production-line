@@ -4,28 +4,28 @@ Application qui permet entrainement et mise à disposition les modeles Ml:
 Tracking avec ML-Flow, stockés local ou Azure blob
 
 
-/app
-    |-/data : modeles ML sauvegardés
-    |-main.py : définition des routes
-    |-utils_regr.py : entrainement regr supervisé
-    |-utils_class.py : entrainement class supervisé
-    |-utils_pipe : classification non supervisé
-/ML-models
-    |-xxx.py : scripts aggregation / nettoyage / train ml-flow
-    |-xxx.ipynb : tests avant scripts
-    |-/ML_supervised : scripts et analyses 
-        | 0-4 : digitalized data
-        | 6-8 : data in new db form
-    |-/ML_unsupervized : scripts et analyses
-        | h gfc         |-xxx.ipynb : tests avant scripts
-        |-xxx.ipynb : tests avant scripts
-        |-xxx.ipynb : tests avant scripts
-        |-xxx.ipynb : tests avant scripts
-        |-xxx.ipynb : tests avant scripts
-        |-xxx.ipynb : tests avant scripts
-        |-xxx.ipynb : tests avant scripts
-        |-xxx.ipynb : tests avant scripts
-vvv                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   c bbv vccxf
+* /app
+*    |-/data : modeles ML sauvegardés
+*    |-main.py : définition des routes
+*    |-utils_regr.py : entrainement regr supervisé
+*    |-utils_class.py : entrainement class supervisé
+*    |-utils_pipe : classification non supervisé
+* /ML-models
+*    |-xxx.py : scripts aggregation / nettoyage / train ml-flow
+*    |-xxx.ipynb : tests avant scripts
+*    |-/ML_supervised : scripts et analyses 
+*    |    | 0-4 : digitalized data
+*    |    | 6-8 : data in new db form
+*    |-/ML_unsupervized : scripts et analyses
+*    |    | h gfc         |-xxx.ipynb : tests avant scripts
+*    |    |-xxx.ipynb : tests avant scripts
+*    |    |-xxx.ipynb : tests avant scripts
+*    |    |-xxx.ipynb : tests avant scripts
+*    |    |-xxx.ipynb : tests avant scripts
+*    |    |-xxx.ipynb : tests avant scripts
+*    |    |-xxx.ipynb : tests avant scripts
+*    |    |-xxx.ipynb : tests avant scripts
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   c bbv vccxf
 /tests : test des point de terminaison
 
 
