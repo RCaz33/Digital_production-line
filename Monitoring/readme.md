@@ -5,7 +5,7 @@
 * visualiser et alerter avec graphana
 
 
-
+```
 docker-compose up --build   # ligne de commande
 localhost:9090/targets      # navigateur
     --> vérifier "State" est "UP"
@@ -18,5 +18,5 @@ http://localhost:3000/connections/datasources/new # navigateur
     --> iniquer meme URL que prometheus.yml http://host.docker.internal:9090
 
 http://localhost:3000/dashboard/new # navigateur
-    --> configurer metriques
+    --> configurer metriques```
 
