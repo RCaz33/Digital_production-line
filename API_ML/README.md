@@ -18,13 +18,6 @@ Tracking avec ML-Flow, stockés local ou Azure blob
 *    |---|--- 6-8 : data in new db form
 *    |---/ML_unsupervized : scripts et analyses
 *    |---|---xxx.ipynb : tests avant scripts
-*    |---|---xxx.ipynb : tests avant scripts
-*    |---|---xxx.ipynb : tests avant scripts
-*    |---|---xxx.ipynb : tests avant scripts
-*    |---|---xxx.ipynb : tests avant scripts
-*    |---|---xxx.ipynb : tests avant scripts
-*    |---|---xxx.ipynb : tests avant scripts
-*    |---|---xxx.ipynb : tests avant scripts
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    c bbv vccxf
 /tests : test des point de terminaison
 
