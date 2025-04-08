@@ -4,7 +4,8 @@ Permet d'automatiser, personnaliser et exécuter les workflows de développement
 
 workflow/main.yml [Exemple]
 
-name: GitHub Actions Demo
+```
+name: GitHub Actions Update Models
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
@@ -21,4 +22,4 @@ jobs:
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - run: echo "🍏 This job's status is ${{ job.status }}."```
