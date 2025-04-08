@@ -46,31 +46,43 @@
 
 
 **Les utilitaires**
-`def update_preds_from_UV(batch_name,conc):
+```def update_preds_from_UV(batch_name,conc):
     """ met à jour les prédictions de concentration réelle dans la BDD """
+
 def update_MPs():
     """ met à jour les stocks disponibles des matières premières """
+
 def predict_OGD_concentration(data,heure_debut):
     """ route protégée 
-    utilise API_ML pour prédire la concentration de graphene dans l'OGD"""
+    utilise API_ML pour prédire la concentration de graphene dans XY"""
+
 def format_datetime(date,heure):
     """ transforme les dates et heures en format datetime """
+
 def fetch_MP():
-    """ fetch les derniers batch de matieres premieres et de KC8 """    
+    """ fetch les derniers batch de matieres premieres et de XX """
+  
 def update_stock_product(data):
         """ met à jour le stock des produits après envoie de batch """
+
 def update_stock_OGD_additif(data):
         """ met à jour le stock des OGD et des additifs après fabrication produit """
+
 def update_stocks_K_C(data):
-        """ met à jour le stock de K et C après fabrication de KC8 """
+        """ met à jour le stock de K et C après fabrication de XX """
+
 def update_stocks_KC8_THF(data):
-        """ met à jour le stock de KC8 et THF après fabrication de OGD """
+        """ met à jour le stock de KC8 et THF après fabrication de XY """
+
 def populate_form(form,response):
     """ renseigne les champ du form avec la data de l'API """
+
 def get_last_10_batch():
-    """ recupere les 10 derniers batch de matieres premieres et de KC8 """
+    """ recupere les 10 derniers batch de matieres premieres et de XX """
+
 def get_matieres_premieres(response):
     """ recupere les dernieres matieres premieres """
+
 class get_material_composition_for_product:
-    """ compute the qty of material needed as a function of product`
+    """ compute the qty of material needed as a function of product```
     
