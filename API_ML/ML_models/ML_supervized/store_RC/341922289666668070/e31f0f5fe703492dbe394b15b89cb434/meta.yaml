@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/remicazelles/Documents/Travail/2023-SImplon_microsoft/PROJET_FINAL/API_ML/ML_models/ML_supervized/artifacts_RC/341922289666668070/e31f0f5fe703492dbe394b15b89cb434/artifacts
+end_time: 1746454409508
+entry_point_name: ''
+experiment_id: '341922289666668070'
+lifecycle_stage: active
+run_id: e31f0f5fe703492dbe394b15b89cb434
+run_name: traveling-lamb-917
+run_uuid: e31f0f5fe703492dbe394b15b89cb434
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746454409304
+status: 3
+tags: []
+user_id: remicazelles

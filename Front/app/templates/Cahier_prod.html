@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+<!-- Display flash messages -->
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }} <!-- Display batch that was submitted -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+
+<div class="container">
+  <div class="row">
+      <!-- First Column -->
+      <div class="col-md-12">
+        <h3> Les différents batchs sont ordonnés par ordre d'ajout.</h3>
+      </div>
+      <div class="col-md-4">
+        <h5> Batch XYs :</h5>
+        {% for batch_XY in batch_XYs: %}
+            {{ batch_XY }}
+            <a href="{{ url_for('update_batch_XY', batch_name=batch_XY) }}" >Analyser</a>.
+            <a href="{{ url_for('Add_analyse', batch_name=batch_XY) }}" >Ajout analyses</a>.
+            <br/>
+        {% endfor %}
+    </div>
+      <!-- Second Column -->
+      <div class="col-md-4">
+          <h5> Batch XXs :</h5>
+          {% for batch_XX in batch_XXs: %}
+              {{ batch_XX }}
+              <a href="{{ url_for('update_batch_XX', batch_name=batch_XX) }}" >Analyser</a>.
+              <a href="{{ url_for('Add_analyse', batch_name=batch_XX) }}" >Ajout analyses</a>.
+              <br/>
+          {% endfor %}
+      </div>
+  </div>
+</div>
+
+
+{% endblock %}

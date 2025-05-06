@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>
+    Nouveau produit
+</title>
+{% endblock %}
+
+
+
+
+
+
+<!-- #######  A COMPLETER  -->
+
+
+
+
+
+{% block content %}
+
+<!-- Display flash messages -->
+{% for message in get_flashed_messages() %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }} <!-- Display batch that was submitted -->
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+
+<!-- Script pour calculer la qté de XY / additif en fonction de la qe de produit voulue -->
+
+<script>
+    function Calculate() {
+        const produit_qte = document.getElementById('Batch_produit_stock').value;
+        const number = parseFloat(produit_qte);
+
+        const produit_nom = document.getElementById('Batch_Produit_ref_CW').value;
+        const produitType = produit_nom.split('-')[0];
+        let result;
+        let additif_type;
+        let XY_qte;
+
+
+        if (produitType.includes('W')) {
+            result = 0 ;
+            XY_qte = number;
+        } else if (produitType.includes('W2')) {
+            result = number * 0.005;
+            additif_type = 'Viscosant';
+            XY_qte = number*0.5;
+        } else if (produitType.includes('W3')) {
+            result = number * 0.005;
+            additif_type = 'Viscosant';
+            XY_qte = number*2.4;
+        } else if (produitType.includes('W3NC')) {
+            result = number * 0.006;
+            additif_type = 'Viscosant';
+            XY_qte = number*2.4;
+        } else if (produitType.includes('W10NC')) {
+            result = number * 0.006;
+            additif_type = 'Viscosant';
+            XY_qte = number*4.9;
+        } else if (produitType.includes('W10'))  {
+            result = number * 0.008;
+            additif_type = 'Viscosant';
+            XY_qte = number*4.9;
+        } else if (produitType.includes('W20NC')) {
+            result = number * 0.001;
+            additif_type = 'Viscosant';
+            XY_qte = number*9.4;
+        } else if (produitType.includes('EpoC')) {
+            result = number * 1.2;
+            additif_type = 'Epikote1001';
+            XY_qte = number*3.6;
+        } else if (produitType.includes('EpoF')) {
+            result = number * 1.2;
+            additif_type = 'Epikote827';
+            XY_qte = number*13.2;
+        } else if (produitType.includes('EpoR')) {
+            result = number * 1.2;
+            additif_type = 'Epikote827';
+            XY_qte = number*3.6;
+        } else {
+            result = 0; 
+        }
+
+        document.getElementById('Batch_Produit_additif_Qte').value = `${result.toFixed(2)}`;
+        document.getElementById('Batch_Produit_additif_batch').value = additif_type;
+        document.getElementById('Batch_Produit_XY_Qte').value = parseFloat(XY_qte);
+
+        // console.log("Quantity:", number);
+        // console.log("Product Type:", produit_type);
+        // console.log("Additif Type", additif_type);
+    }
+</script>
+
+<!-- Get informations -->
+<h1> Nouveau Produit</h1>
+<div class="container shadow border border-danger-subtle border-1">
+    <form action="{{ url_for('Add_Produit', produit=produit)}}" method="POST">
+        {{ Form_Produit.csrf_token }}
+        <br/>
+        <div class="row justify-content-start">
+        <div class="col-3">
+            <h5>Ajout d'un nouveau produit </h5>
+            <h6>  Code ISO : {{ name }} </h6>     
+        </div>
+
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_ref_CW.label }}
+            {{ Form_Produit.Batch_Produit_ref_CW(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_date.label }}
+            {{ Form_Produit.Batch_Produit_date(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_Technicien.label }}
+            {{ Form_Produit.Batch_Produit_Technicien(class="form-control") }}
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_XY_batch.label }}
+            {{ Form_Produit.Batch_Produit_XY_batch(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_XY_Qte.label }}
+            {{ Form_Produit.Batch_Produit_XY_Qte(class="form-control", disabled='disabled', id='Batch_Produit_XY_Qte') }}
+        </div>
+        <div class="col-2">
+            {{ Form_Produit.Batch_produit_stock.label }}
+            {{ Form_Produit.Batch_produit_stock(class="form-control") }}
+        </div>
+        <div class="col-1">
+            </br>
+            <button type="button" class="btn btn-light" onclick="Calculate()">Calculate</button>
+        </div>
+        <div class="col-3">
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_additif_batch.label }}
+            {{ Form_Produit.Batch_Produit_additif_batch(class="form-control") }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_additif_Qte.label }}
+            {{ Form_Produit.Batch_Produit_additif_Qte(class="form-control", disabled='disabled') }}
+        </div>
+        <div class="col-3">
+            {{ Form_Produit.Batch_Produit_Analyses.label }}
+            {{ Form_Produit.Batch_Produit_Analyses(class="form-control") }}
+        </div>
+    </div>
+
+        <div class="col-2">
+            </br>
+                <button type="submit" class="btn btn-primary align-right">Démarrer production </button>
+            </br>
+        </div>
+    </form>
+
+
+
+
+
+
+{% endblock %}
+

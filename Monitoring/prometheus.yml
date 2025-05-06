@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s  # Intervalle récupération données
+scrape_configs:
+  - job_name: 'monitoring-app'
+    static_configs:
+      - targets: ['host.docker.internal:8001']  # API FASTAPI ML
+        labels:
+          application: fastapi-app
+      - targets: ['host.docker.internal:5000']  # APP FLASK
+        labels:
+          application: flask-app
+

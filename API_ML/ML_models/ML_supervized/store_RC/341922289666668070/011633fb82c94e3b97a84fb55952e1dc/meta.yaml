@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/remicazelles/Documents/Travail/2023-SImplon_microsoft/PROJET_FINAL/API_ML/ML_models/ML_supervized/artifacts_RC/341922289666668070/011633fb82c94e3b97a84fb55952e1dc/artifacts
+end_time: 1746454407578
+entry_point_name: ''
+experiment_id: '341922289666668070'
+lifecycle_stage: active
+run_id: 011633fb82c94e3b97a84fb55952e1dc
+run_name: clean-doe-110
+run_uuid: 011633fb82c94e3b97a84fb55952e1dc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746454407502
+status: 3
+tags: []
+user_id: remicazelles

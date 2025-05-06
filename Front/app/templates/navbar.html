@@ -1,0 +1,82 @@
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+
+    <a class="navbar-brand" href="https://www.carbon-waters.com/">
+      <img src="..\static\pict\CARBONWATERS-LogoSansBaselineWhite-RVB.png" alt="Logo CarbonWaters" height="50%" width="50%"   >
+    </a>
+
+    <div class="container-fluid">
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerProd" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarTogglerProd">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+          <li class="nav-item">
+            <a class="nav-link disable" href="{{url_for('dash_commerce')}}"> 
+                <img src="../static/pict/speedometer.png" alt="Link_Dash" width="30" height="24" class="align-text-top">
+                <br/>Commerce
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('dash_prod')}}">
+                <img src="../static/pict/speedometer.png" alt="Link_Dash" width="30" height="24" class="align-text-top">
+                <br/>Produits
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{url_for('acceuil_materiaux')}}">
+              <br/>Matériaux
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('Add_MP')}}">
+                <img src="../static/pict/graph.png" alt="Link_Add_old_batch" width="30" height="24" class="align-text-top">
+                <br/> Matieres Premieres
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('cahier_prod')}}">
+                <img src="../static/pict/transfer.png" alt="Link_Prod" width="30" height="24" class="align-text-top">
+                <br/>Cahier de <br/> Production
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('dash_ML')}}">
+                <img src="../static/pict/transfer.png" alt="Link_ML" width="30" height="24" class="align-text-top">
+                <br/>Suivi <br/> IA/ML
+            </a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="{{url_for('update_batch_XX', batch_name='')}}">
+                <img src="../static/pict/lab-coat.png" alt="New_Batch_XX" width="30" height="24" class="align-text-top">
+                <br/>MaJ <br/> Batch XX
+            </a>
+          </li> -->
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('logout')}}">
+                <br/> Logout
+            </a>
+          </li>
+
+
+
+        </ul>
+        
+        <form class="d-flex" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-dark" type="submit">Search</button>
+        </form>
+
+        
+      </div>
+
+      
+
+    </div>
+
+</nav>

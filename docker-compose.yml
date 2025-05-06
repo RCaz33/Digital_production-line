@@ -1,0 +1,113 @@
+
+services:
+
+
+  mysql-db:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_USER: ${DB_USER}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - ./mysql-data-sauvegardees:/var/lib/mysql
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -uroot -p${DB_PASS} -e 'SELECT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  fastapi-database:
+    build: ./Databases
+    ports:
+      - "8000:8000"
+    environment:
+      - MYSQL_HOST=mysql-db
+      - MYSQL_PORT=3306
+      - LOCAL_DB_USER=${DB_USER}
+      - LOCAL_DB_PASS=${DB_PASS}
+      - LOCAL_DB_BDD=${DB_NAME}
+      - LOCAL_DB_HOST=mysql-db
+    depends_on:
+      - mysql-db
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+      start_period: 5s
+
+
+
+  flask-app:
+    build: ./Front
+    ports:
+      - "5005:5005"
+    environment:
+      - MYSQL_PORT=3306
+      - LOCAL_DB_USER=${DB_USER}
+      - LOCAL_DB_PASS=${DB_PASS}
+      - LOCAL_DB_BDD=${DB_NAME}
+      - LOCAL_DB_HOST=mysql-db
+      - API_SUPERVIZED_SECRET_KEY=${API_SUPERVIZED_SECRET_KEY}
+    depends_on:
+      - fastapi-database
+      - fastapi-ml
+    networks:
+      - app_network
+
+  fastapi-ml:
+    build: ./API_ML
+    ports:
+      - "8001:8001"
+    environment:
+      - API_SUPERVIZED_SECRET_KEYS=['12345678',23456789]
+      - MYSQL_PORT=3306
+      - LOCAL_DB_USER=${DB_USER}
+      - LOCAL_DB_PASS=${DB_PASS}
+      - LOCAL_DB_BDD=${DB_NAME}
+      - LOCAL_DB_HOST=mysql-db
+      # - MLFLOW_TRACKING_URI=http://mlflow:5000
+      # - DATABASE_URL=mysql://:password@db:5432/mlflowdb
+    volumes:
+      - ./API_ML/app/data/ML_sup:/app/data/ML_sup # binds folder on volume
+    networks:
+      - app_network
+
+
+  prometheus:
+      image: prom/prometheus
+      container_name: prometheus
+      volumes:
+        - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      ports:
+        - "9090:9090"
+      depends_on:
+        - fastapi-ml  
+        - fastapi-database
+        - flask-app
+      networks:
+        - app_network
+
+  grafana:
+      image: grafana/grafana
+      container_name: grafana
+      ports:
+        - "3000:3000"
+      environment:
+        - GF_SECURITY_ADMIN_USER=${GRAPHANA_ADMIN_USER}
+        - GF_SECURITY_ADMIN_PASSWORD=${GRAPHANA_ADMIN_PASS}
+      depends_on:
+        - prometheus 
+      networks:
+        - app_network
+
+networks:
+  app_network:
+    driver: bridge
